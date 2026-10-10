@@ -1,0 +1,8 @@
+/* eslint-disable react/no-unescaped-entities */
+import { notFound, redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
+export default async function AccountOrderDetail({ params }: { params: Promise<{ id: string }> }) { const session = await getServerSession(authOptions); if (!session?.user?.id) redirect("/login"); const { id } = await params; const order = await prisma.order.findFirst({ where: { id, userId: session.user.id }, include: { items: true } }); if (!order) notFound(); return <main className="mx-auto max-w-[1000px] px-6 py-16 lg:px-0"><p className="text-xs tracking-[.2em] text-neutral-400">DAISY DESIGNS / ORDER</p><h1 className="mt-3 text-4xl font-semibold">{order.number}</h1><div className="mt-12 grid gap-12 md:grid-cols-[1fr_300px]"><div>{order.items.map(item => <div key={item.id} className="border-t border-neutral-200 py-5"><div className="flex justify-between"><span>{item.productName} �- {item.quantity}</span><span>{item.unitPrice.toLocaleString("ar-EG")} ج.�.</span></div>{item.customization && <p className="mt-2 text-xs text-neutral-500">ا�"تخص�Sص �.حف�^ظ �.ع ا�"ط�"ب</p>}</div>)}</div><aside className="border-t border-neutral-950 pt-5"><p className="flex justify-between"><span>ا�"حا�"ة</span><strong>{order.status}</strong></p><p className="mt-4 flex justify-between"><span>ا�"شح�?</span><span>{order.shipping.toLocaleString("ar-EG")} ج.�.</span></p><p className="mt-4 flex justify-between border-t border-neutral-200 pt-4"><span>ا�"إج�.ا�"�S</span><strong>{order.total.toLocaleString("ar-EG")} ج.�.</strong></p></aside></div></main>; }

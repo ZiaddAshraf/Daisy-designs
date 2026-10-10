@@ -1,0 +1,3 @@
+import { ContentPage } from "@/components/content-page";
+const questions = [["كم يستغرق تجهيز المنتج المخصص؟", "من يومين إلى أربعة أيام عمل قبل الشحن."], ["هل يمكن تغيير الاسم بعد الطلب؟", "تواصل معنا فورًا، وإذا لم يبدأ التجهيز يمكن تحديث التفاصيل."], ["ما طرق الدفع؟", "الدفع عند الاستلام متاح حاليًا."], ["كيف أتابع طلبي؟", "نرسل لك تفاصيل التتبع بعد الشحن."]];
+export default function FaqPage() { return <ContentPage eyebrow="الأسئلة الشائعة" title="إجابات واضحة." intro="كل ما تحتاج معرفته قبل وبعد طلبك.">{questions.map(([question, answer]) => <details key={question} className="border-b border-neutral-200 pb-5"><summary className="cursor-pointer text-lg font-medium text-neutral-950">{question}</summary><p className="mt-4">{answer}</p></details>)}</ContentPage>; }

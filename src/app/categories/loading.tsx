@@ -1,0 +1,1 @@
+export default function CategoriesLoading() { return <main className="catalog-page"><div className="catalog-loading-bar" /><div className="catalog-category-grid">{Array.from({ length: 4 }, (_, index) => <div className="catalog-skeleton" key={index} />)}</div></main>; }

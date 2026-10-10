@@ -1,0 +1,1 @@
+export default function ProductsLoading() { return <main className="mx-auto max-w-[1400px] px-6 py-16 lg:px-16"><div className="h-10 w-52 animate-pulse bg-neutral-200" /><div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-4">{Array.from({ length: 8 }, (_, index) => <div key={index} className="aspect-[4/5] animate-pulse bg-neutral-100" />)}</div></main>; }

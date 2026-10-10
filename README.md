@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Daisy Designs
 
-## Getting Started
+متجر عربي لمنتجات الأطفال المخصصة، مبني باستخدام Next.js 16 وPrisma 7 وPostgreSQL وAuth.js. الدفع المتاح حاليًا هو الدفع عند الاستلام فقط.
 
-First, run the development server:
+## Local development
+
+1. Install dependencies with `npm install`.
+2. Set `DATABASE_URL`, `SHADOW_DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` in `.env`.
+3. Generate Prisma Client with `npm run db:generate` (also runs after dependency installation).
+4. Apply development migrations with `npm run db:migrate`.
+5. Start the application with `npm run dev`.
+
+`.env.example` contains blank secret fields. Do not put credentials in it or commit `.env`.
+
+## Database commands
+
+- `npm run db:migrate` creates and applies migrations for local development.
+- `npm run db:deploy` applies committed migrations with `prisma migrate deploy`.
+- `npm run db:validate` validates the Prisma schema.
+- `npm run db:health` performs a read-only database health check.
+
+Review the database target and migration status before running `db:deploy` against any production database. Do not use `db push` in place of the migration history.
+
+`npm run db:seed` is a destructive development seed. It deletes existing catalog, customer, order, cart, review, coupon, and settings records, then creates demo data. It is blocked in production and refuses non-local databases; to run it locally, explicitly set `ALLOW_DESTRUCTIVE_SEED=true`. Demo-account passwords are random and unavailable. Never run it against a database containing data you need to keep.
+
+## Validation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx tsc --noEmit
+npm run lint
+npm test
+npm run build
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

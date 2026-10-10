@@ -1,0 +1,7 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { z } from "zod";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+const schema = z.object({ slugs: z.array(z.string()).max(200) });
+export async function POST(request: Request) { const session = await getServerSession(authOptions); if (!session?.user?.id) return NextResponse.json({ error: "غير مصرح" }, { status: 401 }); const parsed = schema.safeParse(await request.json()); if (!parsed.success) return NextResponse.json({ error: "بيانات المفضلة غير صالحة" }, { status: 400 }); const result = await prisma.$transaction(async transaction => { const wishlist = await transaction.wishlist.upsert({ where: { userId: session.user.id }, update: {}, create: { userId: session.user.id } }); const products = await transaction.product.findMany({ where: { slug: { in: parsed.data.slugs }, published: true }, select: { id: true } }); for (const product of products) await transaction.wishlistItem.upsert({ where: { wishlistId_productId: { wishlistId: wishlist.id, productId: product.id } }, update: {}, create: { wishlistId: wishlist.id, productId: product.id } }); return transaction.wishlistItem.findMany({ where: { wishlistId: wishlist.id }, include: { product: { include: { images: { orderBy: { position: "asc" }, take: 1 }, category: true } } } }); }); return NextResponse.json(result); }

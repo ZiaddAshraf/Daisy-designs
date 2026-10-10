@@ -1,0 +1,2 @@
+import Link from "next/link";
+export function DatabaseUnavailable({ message = "المتجر غير متاح مؤقتًا" }: { message?: string }) { return <section className="border-y border-neutral-200 py-24 text-center"><h2 className="text-2xl font-semibold">{message}</h2><p className="mt-3 text-sm text-neutral-500">تحقق من إعدادات قاعدة البيانات ثم حاول مرة أخرى.</p><Link href="/" className="mt-6 inline-block underline">العودة للرئيسية</Link></section>; }

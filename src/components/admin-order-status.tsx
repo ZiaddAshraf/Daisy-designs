@@ -1,0 +1,4 @@
+"use client";
+import { useState } from "react";
+const statuses = [["PENDING", "قيد الانتظار"], ["CONFIRMED", "مؤكد"], ["PROCESSING", "قيد التجهيز"], ["SHIPPED", "تم الشحن"], ["DELIVERED", "تم التسليم"], ["CANCELLED", "ملغي"]] as const;
+export function AdminOrderStatus({ id, value }: { id: string; value: typeof statuses[number][0] }) { const [status, setStatus] = useState(value); return <select value={status} onChange={async event => { const next = event.target.value as typeof status; const response = await fetch(`/api/admin/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: next }) }); if (response.ok) setStatus(next); }} className="border-b border-neutral-300 bg-white py-2" aria-label="حالة الطلب">{statuses.map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select>; }

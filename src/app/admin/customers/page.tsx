@@ -1,0 +1,7 @@
+/* eslint-disable react/no-unescaped-entities */
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+export const dynamic = "force-dynamic";
+export default async function AdminCustomersPage() { const session = await getServerSession(authOptions); if (session?.user?.role !== "ADMIN") redirect("/login"); const customers = await prisma.user.findMany({ where: { role: "CUSTOMER" }, include: { _count: { select: { orders: true, addresses: true } }, orders: { select: { total: true } } }, orderBy: { createdAt: "desc" } }); return <main className="mx-auto max-w-[1300px] px-6 py-12 lg:px-0"><p className="text-xs tracking-[.2em] text-neutral-400">ADMIN / CUSTOMERS</p><h1 className="mt-3 text-4xl font-semibold">ا�"ع�.�"اء</h1><div className="mt-12 overflow-x-auto"><table className="w-full min-w-[850px] text-right text-sm"><thead><tr className="border-b border-neutral-950"><th className="py-4">ا�"ع�.�S�"</th><th>ا�"بر�Sد</th><th>ا�"�?اتف</th><th>ا�"ط�"بات</th><th>ا�"إ�?فا�,</th><th>ا�"تسج�S�"</th></tr></thead><tbody>{customers.map(customer => <tr key={customer.id} className="border-b border-neutral-200"><td className="py-5">{customer.name ?? "بد�^�? اس�."}</td><td>{customer.email}</td><td>{customer.phone ?? "-"}</td><td>{customer._count.orders}</td><td>{customer.orders.reduce((sum, order) => sum + order.total, 0).toLocaleString("ar-EG")} ج.�.</td><td>{customer.createdAt.toLocaleDateString("ar-EG")}</td></tr>)}</tbody></table></div></main>; }

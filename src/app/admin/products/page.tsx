@@ -1,0 +1,9 @@
+/* eslint-disable react/no-unescaped-entities */
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
+export default async function AdminProductsPage() { const session = await getServerSession(authOptions); if (session?.user?.role !== "ADMIN") redirect("/login"); const products = await prisma.product.findMany({ include: { category: true }, orderBy: { createdAt: "desc" } }); return <main className="mx-auto max-w-[1400px] px-6 py-12 lg:px-16"><div className="flex items-end justify-between"><div><p className="text-xs tracking-[.2em] text-neutral-400">ADMIN / CATALOG</p><h1 className="mt-3 text-4xl font-semibold">ا�"�.�?تجات</h1></div><Link href="/admin/products/new" className="bg-neutral-950 px-5 py-3 text-sm text-white">إضافة �.�?تج</Link></div><div className="mt-12 overflow-x-auto"><table className="w-full min-w-[760px] text-right text-sm"><thead><tr className="border-b border-neutral-950"><th className="py-4">ا�"�.�?تج</th><th>SKU</th><th>ا�"�,س�.</th><th>ا�"سعر</th><th>ا�"�.خز�^�?</th><th>ا�"�?شر</th><th /></tr></thead><tbody>{products.map(product => <tr key={product.id} className="border-b border-neutral-200"><td className="py-5 font-medium">{product.name}</td><td className="text-neutral-500">{product.sku}</td><td>{product.category.arabicName}</td><td>{product.price.toLocaleString("ar-EG")} ج.�.</td><td className={product.stock <= product.lowStockThreshold ? "text-red-600" : ""}>{product.stock}</td><td>{product.published ? "�.�?ش�^ر" : "�.س�^دة"}</td><td><Link href={`/admin/products/${product.id}`} className="underline">تعد�S�"</Link></td></tr>)}</tbody></table></div></main>; }
