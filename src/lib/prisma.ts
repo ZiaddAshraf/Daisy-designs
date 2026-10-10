@@ -25,7 +25,9 @@ export function isDatabaseUnavailable(error: unknown) {
     }
     if (error instanceof DatabaseUnavailableError) return true;
     if (!(error instanceof Error)) return false;
-    return /P1000|P1001|P1017|DATABASE_URL|PrismaClientInitializationError|Can't reach database/i.test(error.message);
+    const code = "code" in error && typeof error.code === "string" ? error.code : "";
+    return ["P1000", "P1001", "P1017", "P2021", "P2022"].includes(code)
+        || /DATABASE_URL|PrismaClientInitializationError|Can't reach database/i.test(error.message);
 }
 
 function createPrismaClient() {
