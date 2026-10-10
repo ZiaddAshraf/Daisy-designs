@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/site-image";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { ArrowLeft, Minus, Plus, ShieldCheck, Truck } from "lucide-react";
@@ -59,7 +59,7 @@ export function ProductDetail({ product, images = [], variants = [], customizati
     <div className="product-detail-layout">
       <div className="product-detail-gallery">
         <div className="product-detail-media">
-          {activeImage ? <Image src={activeImage.url} alt={activeImage.alt ?? product.name} fill priority sizes="(max-width: 760px) 100vw, 54vw" className="daisy-image" /> : <div className="product-gallery-placeholder" role="img" aria-label="لا توجد صورة متاحة لهذا المنتج"><span>لا توجد صورة متاحة</span></div>}
+          <Image src={activeImage?.url ?? "/daisy-designs.png"} alt="Daisy Designs" fill priority sizes="(max-width: 760px) 100vw, 54vw" className="daisy-image" />
         </div>
         {galleryImages.length > 1 && <div className="product-gallery-thumbnails" role="group" aria-label="صور المنتج">{galleryImages.map((image, index) => <button key={`${image.url}-${index}`} type="button" className={`product-gallery-thumbnail ${selectedImage === index ? "is-selected" : ""}`} aria-label={`عرض صورة ${index + 1} من ${galleryImages.length}`} aria-pressed={selectedImage === index} onClick={() => setSelectedImage(index)}><Image src={image.url} alt="" fill sizes="88px" className="daisy-image" /></button>)}</div>}
       </div>

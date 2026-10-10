@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/site-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpLeft } from "lucide-react";
 import { ProductCard } from "@/components/storefront";
@@ -72,7 +72,7 @@ export default async function Home() {
       </header>
       {!databaseAvailable ? <p className="daisy-empty">الأقسام غير متاحة الآن. حاولي مرة أخرى بعد قليل.</p> : categories.length ? <div className="daisy-category-grid">
         {categories.map((category, index) => <Link href={`/categories/${category.slug}`} key={category.id} className={`daisy-category daisy-category--${index + 1}`}>
-          <div className="daisy-category__image">{category.image && <Image src={category.image} alt={category.arabicName} fill sizes={index === 0 ? "(max-width: 760px) 100vw, 52vw" : "(max-width: 760px) 48vw, 24vw"} className="daisy-image" />}</div>
+          <div className="daisy-category__image"><Image src={category.image ?? "/daisy-designs.png"} alt="Daisy Designs" fill sizes={index === 0 ? "(max-width: 760px) 100vw, 52vw" : "(max-width: 760px) 48vw, 24vw"} className="daisy-image" /></div>
           <div className="daisy-category__label"><span>{category.arabicName}</span><span className="daisy-category__count">{String(category._count.products).padStart(2, "0")}</span></div>
         </Link>)}
       </div> : <p className="daisy-empty">ستظهر الأقسام هنا قريبًا.</p>}
