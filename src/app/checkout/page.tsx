@@ -13,7 +13,7 @@ type OrderConfirmation = {
 };
 
 export default function CheckoutPage() {
-    const { items, clear } = useCart();
+    const { items, clear, demoMode } = useCart();
     const router = useRouter();
     const submitting = useRef(false);
     const requestId = useRef<string | null>(null);
@@ -22,6 +22,7 @@ export default function CheckoutPage() {
 
     async function submit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (demoMode) return;
         if (submitting.current || !items.length) return;
         submitting.current = true;
         setLoading(true);
@@ -69,6 +70,8 @@ export default function CheckoutPage() {
             setLoading(false);
         }
     }
+
+    if (demoMode) return <main dir="rtl" className="mx-auto max-w-[900px] px-6 py-16"><h1 className="text-3xl font-semibold">إتمام الطلب غير متاح</h1><p className="mt-5 text-neutral-600">هذه معاينة لمنتجات وأسعار افتراضية. لا يتم استقبال طلبات أو عمليات شراء في وضع العرض.</p><Link href="/products" className="mt-8 inline-flex bg-neutral-950 px-6 py-3 text-sm text-white">العودة للمعاينة</Link></main>;
 
     return <main dir="rtl" className="mx-auto max-w-[900px] px-6 py-12 sm:py-16">
         <Link href="/cart" className="text-sm underline underline-offset-4">العودة إلى السلة</Link>

@@ -2,8 +2,8 @@ import Link from "next/link";
 import { CatalogControls, CatalogPagination } from "@/components/catalog-controls";
 import { DatabaseUnavailable } from "@/components/database-state";
 import { ProductCard } from "@/components/storefront";
-import { getCatalogPage, toStorefrontProduct } from "@/lib/catalog";
-import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
+import { getCatalogCategories, getCatalogCollectionOptions, getCatalogPage, toStorefrontProduct } from "@/lib/catalog";
+import { isDatabaseUnavailable } from "@/lib/prisma";
 
 type SearchFilters = { category?: string; collection?: string; min?: string; max?: string; availability?: string; customizable?: string; sort?: string; page?: string; limit?: string };
 const sortValues = new Set(["newest", "price-asc", "price-desc", "best-selling"]);
@@ -19,8 +19,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   try {
     [result, categories, collections] = await Promise.all([
       getCatalogPage(filters),
-      prisma.category.findMany({ where: { published: true }, select: { slug: true, arabicName: true }, orderBy: { arabicName: "asc" } }),
-      prisma.collection.findMany({ where: { published: true }, select: { slug: true, name: true }, orderBy: { name: "asc" } }),
+      getCatalogCategories(),
+      getCatalogCollectionOptions(),
     ]);
   } catch (error) {
     if (isDatabaseUnavailable(error)) unavailable = true;

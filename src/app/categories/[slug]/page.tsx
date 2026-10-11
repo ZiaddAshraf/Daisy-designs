@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { CatalogControls, CatalogPagination } from "@/components/catalog-controls";
 import { ProductCard } from "@/components/storefront";
 import { DatabaseUnavailable } from "@/components/database-state";
-import { getCatalogPage, toStorefrontProduct } from "@/lib/catalog";
-import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
+import { getCatalogCategory, getCatalogCollectionOptions, getCatalogPage, toStorefrontProduct } from "@/lib/catalog";
+import { isDatabaseUnavailable } from "@/lib/prisma";
 
 type SearchFilters = { collection?: string; min?: string; max?: string; availability?: string; customizable?: string; sort?: string; page?: string };
 function normalizeFilters(params: SearchFilters) { const numeric = (value?: string) => value && /^\d{1,8}$/.test(value) ? value : undefined; return { collection: params.collection?.slice(0, 80), min: numeric(params.min), max: numeric(params.max), availability: params.availability === "in-stock" ? params.availability : undefined, customizable: params.customizable === "true" ? params.customizable : undefined, sort: ["price-asc", "price-desc", "best-selling", "newest"].includes(params.sort ?? "") ? params.sort : "newest", page: numeric(params.page), limit: "12" }; }
@@ -18,14 +18,14 @@ export default async function CategoryPage({ params, searchParams }: { params: P
   let result: Awaited<ReturnType<typeof getCatalogPage>> | null = null;
   let collections: { slug: string; name: string }[] = [];
   let unavailable = false;
-  try { category = await prisma.category.findUnique({ where: { slug, published: true } }); }
+  try { category = await getCatalogCategory(slug); }
   catch (error) { if (isDatabaseUnavailable(error)) unavailable = true; else throw error; }
   if (unavailable) return <main className="catalog-page"><DatabaseUnavailable message="لا يمكن تحميل هذا القسم الآن" /></main>;
   if (!category) notFound();
   try {
     [result, collections] = await Promise.all([
       getCatalogPage({ ...filters, category: slug }),
-      prisma.collection.findMany({ where: { published: true }, select: { slug: true, name: true }, orderBy: { name: "asc" } }),
+      getCatalogCollectionOptions(),
     ]);
   } catch (error) { if (isDatabaseUnavailable(error)) unavailable = true; else throw error; }
   if (unavailable || !result) return <main className="catalog-page"><DatabaseUnavailable message="لا يمكن تحميل منتجات هذا القسم الآن" /></main>;

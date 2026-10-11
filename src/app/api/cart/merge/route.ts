@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { cartIdentity, mergeQuantities } from "@/lib/commerce-rules";
 import { validateCustomization } from "@/lib/customization-validation";
+import { isOrderableCatalogProduct } from "@/lib/demo-preview-safety";
+import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
 
 const schema = z.object({
     items: z.array(z.object({
@@ -17,16 +19,17 @@ const schema = z.object({
 type PreparedCartItem = { productId: string; variantId?: string; quantity: number; unitPrice: number; customization?: Record<string, string> };
 
 export async function POST(request: Request) {
+    if (shouldBlockDemoTransactions(isDemoModeEnabled())) return NextResponse.json({ error: "DEMO_MODE_READ_ONLY" }, { status: 503 });
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     const parsed = schema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: "بيانات السلة غير صالحة" }, { status: 400 });
 
     const incomingSlugs = [...new Set(parsed.data.items.map(item => item.slug))];
-    const products = await prisma.product.findMany({
+    const products = (await prisma.product.findMany({
         where: { slug: { in: incomingSlugs }, published: true },
         include: { variants: true, customizationFields: { include: { options: true } } },
-    });
+    })).filter(isOrderableCatalogProduct);
     const prepared: PreparedCartItem[] = [];
     for (const item of parsed.data.items) {
         const product = products.find(candidate => candidate.slug === item.slug);

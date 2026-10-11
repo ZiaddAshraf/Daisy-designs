@@ -7,10 +7,13 @@ import { CashOnDeliveryProvider } from "@/lib/payments";
 import { checkoutSchema } from "@/lib/order-validation";
 import { calculateDiscount, calculateShipping } from "@/lib/commerce-rules";
 import { validateCustomization } from "@/lib/customization-validation";
+import { isDemoCatalogProduct } from "@/lib/demo-preview-safety";
+import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+    if (shouldBlockDemoTransactions(isDemoModeEnabled())) return NextResponse.json({ error: "DEMO_MODE_READ_ONLY" }, { status: 503 });
     let body: unknown;
     try { body = await request.json(); } catch { return NextResponse.json({ error: "INVALID_REQUEST" }, { status: 400 }); }
     const parsed = checkoutSchema.safeParse(body);
@@ -27,6 +30,7 @@ export async function POST(request: Request) {
             const existingOrder = await transaction.order.findUnique({ where: { number }, include: { items: true } });
             if (existingOrder) return { id: existingOrder.id, number: existingOrder.number, total: existingOrder.total, items: existingOrder.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) };
             const products = await transaction.product.findMany({ where: { slug: { in: input.items.map(item => item.slug) }, published: true }, include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 }, customizationFields: { include: { options: true } } } });
+            if (products.some(isDemoCatalogProduct)) throw new Error("PRODUCT_NOT_FOUND");
             if (products.length !== new Set(input.items.map(item => item.slug)).size) throw new Error("PRODUCT_NOT_FOUND");
             const pricedItems = input.items.map(item => {
                 const product = products.find(candidate => candidate.slug === item.slug);

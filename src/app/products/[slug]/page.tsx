@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/commerce";
-import { getPublishedProduct, toStorefrontProduct } from "@/lib/catalog";
+import { getPublishedProduct, isDemoMode, toStorefrontProduct } from "@/lib/catalog";
+import { getDemoProducts } from "@/lib/demo-catalog-data";
 import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
 import { DatabaseUnavailable } from "@/components/database-state";
 
@@ -23,6 +24,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     let reviewCount = 0;
     let reviewAverage = 0;
     try {
+        if (isDemoMode()) {
+            relatedRows = getDemoProducts().filter(item => item.categoryId === product.categoryId && item.id !== product.id).slice(0, 4);
+        } else {
         const [related, reviewStats] = await Promise.all([
             prisma.product.findMany({ where: { published: true, categoryId: product.categoryId, id: { not: product.id } }, include: { images: { orderBy: { position: "asc" }, take: 1 }, category: true }, orderBy: { createdAt: "desc" }, take: 4 }),
             prisma.review.aggregate({ where: { productId: product.id, status: "APPROVED" }, _avg: { rating: true }, _count: { _all: true } }),
@@ -30,6 +34,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         relatedRows = related;
         reviewCount = reviewStats._count._all;
         reviewAverage = reviewStats._avg.rating ?? 0;
+        }
     } catch (error) {
         if (!isDatabaseUnavailable(error)) throw error;
     }

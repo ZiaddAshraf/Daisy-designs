@@ -8,65 +8,69 @@ import { createContext, useContext, useEffect, useRef, useState, type FormEvent,
 import { useSession } from "next-auth/react";
 import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/products";
+import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
 import { normalizeCustomization } from "@/lib/commerce-rules";
 import { adjustCartLine, cartLineId, checkoutLinePayload, mergeCartLine, normalizeStoredCartLine, removeCartLine } from "@/lib/cart-line-state";
 
 type CartVariant = { id: string; name: string; stock: number };
 type CartItem = Product & { lineId: string; quantity: number; customization?: Record<string, string>; variantId?: string; variantName?: string };
-type CartContextType = { items: CartItem[]; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
+type CartContextType = { items: CartItem[]; demoMode: boolean; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
 const CartContext = createContext<CartContextType | null>(null);
 export function useCart() { const context = useContext(CartContext); if (!context) throw new Error("useCart must be used inside StoreShell"); return context; }
-type WishlistContextType = { items: Product[]; toggle: (product: Product) => void; has: (slug: string) => boolean };
+type WishlistContextType = { items: Product[]; demoMode: boolean; toggle: (product: Product) => void; has: (slug: string) => boolean };
 const WishlistContext = createContext<WishlistContextType | null>(null);
 export function useWishlist() { const context = useContext(WishlistContext); if (!context) throw new Error("useWishlist must be used inside StoreShell"); return context; }
 
-export function StoreShell({ children }: { children: ReactNode }) {
+export function StoreShell({ children, demoMode = false }: { children: ReactNode; demoMode?: boolean }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
-  const [cartLoaded, setCartLoaded] = useState(false);
+  const [cartLoaded, setCartLoaded] = useState(demoMode);
   const { status } = useSession();
   const mergedSession = useRef(false);
 
   useEffect(() => {
+    if (demoMode) return;
     const savedCart = localStorage.getItem("stitch-cart");
     const savedWishlist = localStorage.getItem("stitch-wishlist");
     queueMicrotask(() => {
       if (savedCart) {
         const savedItems = JSON.parse(savedCart) as Omit<CartItem, "lineId">[];
-        setItems(savedItems.reduce<CartItem[]>((normalized, item) => mergeCartLine(normalized, normalizeStoredCartLine(item)), []));
+        setItems(savedItems.reduce<CartItem[]>((normalized, item) => mergeCartLine(normalized, normalizeStoredCartLine({ ...item, image: getProductImageUrl(item.image) })), []));
       }
-      if (savedWishlist) setWishlist(JSON.parse(savedWishlist) as Product[]);
+      if (savedWishlist) setWishlist((JSON.parse(savedWishlist) as Product[]).map(product => ({ ...product, image: getProductImageUrl(product.image) })));
       setCartLoaded(true);
     });
-  }, []);
+  }, [demoMode]);
   useEffect(() => {
-    if (!cartLoaded || status !== "authenticated" || mergedSession.current) return;
+    if (demoMode || !cartLoaded || status !== "authenticated" || mergedSession.current) return;
     mergedSession.current = true;
     Promise.all([
       fetch("/api/cart/merge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: items.map(checkoutLinePayload) }) }),
       fetch("/api/wishlist/merge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slugs: wishlist.map(item => item.slug) }) }),
     ]).catch(() => undefined);
-  }, [cartLoaded, status, items, wishlist]);
-  useEffect(() => { localStorage.setItem("stitch-wishlist", JSON.stringify(wishlist)); }, [wishlist]);
-  useEffect(() => { localStorage.setItem("stitch-cart", JSON.stringify(items)); }, [items]);
+  }, [demoMode, cartLoaded, status, items, wishlist]);
+  useEffect(() => { if (!demoMode) localStorage.setItem("stitch-wishlist", JSON.stringify(wishlist)); }, [demoMode, wishlist]);
+  useEffect(() => { if (!demoMode) localStorage.setItem("stitch-cart", JSON.stringify(items)); }, [demoMode, items]);
 
   const add = (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity = 1) => {
+    if (demoMode) return;
     const normalizedCustomization = normalizeCustomization(customization);
     const lineId = cartLineId({ slug: product.slug, variantId: variant?.id, customization: normalizedCustomization });
     setItems(current => {
-      return mergeCartLine(current, { ...product, lineId, quantity, customization: normalizedCustomization, variantId: variant?.id, variantName: variant?.name });
+      return mergeCartLine(current, { ...product, image: getProductImageUrl(product.image), lineId, quantity, customization: normalizedCustomization, variantId: variant?.id, variantName: variant?.name });
     });
     setCartOpen(true);
   };
   const update = (lineId: string, amount: number) => setItems(current => adjustCartLine(current, lineId, amount));
   const remove = (lineId: string) => setItems(current => removeCartLine(current, lineId));
   const clear = () => setItems([]);
-  const toggle = (product: Product) => setWishlist(current => current.some(item => item.slug === product.slug) ? current.filter(item => item.slug !== product.slug) : [...current, product]);
+  const toggle = (product: Product) => { if (demoMode) return; setWishlist(current => current.some(item => item.slug === product.slug) ? current.filter(item => item.slug !== product.slug) : [...current, { ...product, image: getProductImageUrl(product.image) }]); };
 
-  return <WishlistContext.Provider value={{ items: wishlist, toggle, has: slug => wishlist.some(item => item.slug === slug) }}>
-    <CartContext.Provider value={{ items, add, update, remove, clear }}>
+  return <WishlistContext.Provider value={{ items: wishlist, demoMode, toggle, has: slug => wishlist.some(item => item.slug === slug) }}>
+    <CartContext.Provider value={{ items, demoMode, add, update, remove, clear }}>
       <Header count={items.reduce((sum, item) => sum + item.quantity, 0)} onCart={() => setCartOpen(true)} />
+      {demoMode && <div className="daisy-demo-notice" role="status" dir="rtl"><strong>نسخة تجريبية للمعاينة</strong><span>هذه منتجات وأسعار افتراضية وليست كتالوجًا معتمدًا أو متاحة للبيع.</span></div>}
       {children}
       <Footer />
       {cartOpen && <CartDrawer onClose={() => setCartOpen(false)} />}
@@ -110,28 +114,31 @@ function Header({ count, onCart }: { count: number; onCart: () => void }) {
 }
 
 export function ProductCard({ product, editorial = false }: { product: Product; editorial?: boolean }) {
-  const { add } = useCart();
+  const { add, demoMode } = useCart();
+  const image = getProductImageUrl(product.image);
   return <article className={`daisy-product ${editorial ? "daisy-product--editorial" : ""}`}>
     <div className="daisy-product__media">
-      <Link href={`/products/${product.slug}`} aria-label={`عرض ${product.name}`} className="daisy-product__image-link"><Image src={product.image} alt={product.name} fill sizes="(max-width: 760px) 50vw, 25vw" className="daisy-image daisy-product__image" /></Link>
-      <WishlistButton product={product} />
+      <Link href={`/products/${product.slug}`} aria-label={`عرض ${product.name}`} className="daisy-product__image-link"><Image src={image} alt={product.name} fill sizes="(max-width: 760px) 50vw, 25vw" className={`daisy-image daisy-product__image ${image === PRODUCT_IMAGE_PLACEHOLDER ? "daisy-product__image--placeholder" : ""}`} /></Link>
+      {!demoMode && <WishlistButton product={product} />}
       {product.badge && <span className="daisy-product__badge">{product.badge}</span>}
       {editorial && <Link href={`/products/${product.slug}`} className="daisy-product__quick">خصص الآن <ArrowUpLeft size={15} /></Link>}
     </div>
     <div className="daisy-product__meta"><div><p className="daisy-product__category">{product.category}</p><Link href={`/products/${product.slug}`} className="daisy-product__name">{product.name}</Link>{editorial && product.customizable && <span className="daisy-product__personalized">قابل للتخصيص</span>}</div><span className="daisy-product__price">{formatPrice(product.price)}</span></div>
-    {!editorial && (product.customizable || product.hasVariants ? <Link href={`/products/${product.slug}`} className="daisy-product__add">اختاري التفاصيل <ArrowLeft size={14} /></Link> : <button onClick={() => add(product)} className="daisy-product__add">أضف إلى السلة <Plus size={14} /></button>)}
+    {!editorial && (demoMode ? <span className="daisy-product__add daisy-product__demo-label">للمعاينة فقط</span> : product.customizable || product.hasVariants ? <Link href={`/products/${product.slug}`} className="daisy-product__add">اختاري التفاصيل <ArrowLeft size={14} /></Link> : <button onClick={() => add(product)} className="daisy-product__add">أضف إلى السلة <Plus size={14} /></button>)}
   </article>;
 }
 
 export function WishlistButton({ product }: { product: Product }) {
-  const { toggle, has } = useWishlist();
-  return <button onClick={event => { event.preventDefault(); event.stopPropagation(); toggle(product); }} aria-label={has(product.slug) ? "إزالة من المفضلة" : "إضافة للمفضلة"} className="daisy-wishlist-button"><Heart size={17} strokeWidth={1.5} fill={has(product.slug) ? "currentColor" : "none"} /></button>;
+  const { toggle, has, demoMode } = useWishlist();
+  if (demoMode) return null;
+  return <button onClick={event => { event.preventDefault(); event.stopPropagation(); toggle({ ...product, image: getProductImageUrl(product.image) }); }} aria-label={has(product.slug) ? "إزالة من المفضلة" : "إضافة للمفضلة"} className="daisy-wishlist-button"><Heart size={17} strokeWidth={1.5} fill={has(product.slug) ? "currentColor" : "none"} /></button>;
 }
 
 function CartDrawer({ onClose }: { onClose: () => void }) {
   const { items, update, remove } = useCart();
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  return <div className="daisy-drawer-backdrop" onClick={onClose}><aside onClick={event => event.stopPropagation()} className="daisy-cart-drawer" aria-label="سلة التسوق"><div className="daisy-cart-drawer__head"><h2>سلة التسوق <span>({items.length})</span></h2><button className="daisy-icon-button" onClick={onClose} aria-label="إغلاق السلة"><X size={20} /></button></div><div className="daisy-cart-drawer__body">{items.length === 0 ? <div className="daisy-cart-empty"><ShoppingBag size={25} strokeWidth={1.2} /><p>السلة فارغة حاليًا</p></div> : items.map(item => <div key={item.lineId} className="daisy-cart-item"><div className="daisy-cart-item__image"><Image src={item.image} alt={item.name} fill sizes="76px" className="daisy-image" /></div><div className="daisy-cart-item__info"><div><p>{item.name}</p>{item.variantName && <small>{item.variantName}</small>}{item.customization && Object.entries(item.customization).map(([key, value]) => <small key={key}>{key}: {value}</small>)}</div><div className="daisy-cart-item__controls"><div><button onClick={() => update(item.lineId, -1)} aria-label="تقليل الكمية"><Minus size={12} /></button><span>{item.quantity}</span><button onClick={() => update(item.lineId, 1)} aria-label="زيادة الكمية"><Plus size={12} /></button></div><button className="daisy-remove" onClick={() => remove(item.lineId)}>حذف</button><span>{formatPrice(item.price * item.quantity)}</span></div></div></div>)}</div><div className="daisy-cart-drawer__foot"><div><span>الإجمالي</span><strong>{formatPrice(total)}</strong></div><Link href="/checkout" onClick={onClose} className="daisy-button daisy-button--dark">إتمام الطلب <ArrowLeft size={16} /></Link><Link href="/cart" onClick={onClose} className="daisy-cart-view-link">عرض السلة</Link></div></aside></div>;
+  const { demoMode } = useCart();
+  return <div className="daisy-drawer-backdrop" onClick={onClose}><aside onClick={event => event.stopPropagation()} className="daisy-cart-drawer" aria-label="سلة التسوق"><div className="daisy-cart-drawer__head"><h2>سلة التسوق <span>({items.length})</span></h2><button className="daisy-icon-button" onClick={onClose} aria-label="إغلاق السلة"><X size={20} /></button></div><div className="daisy-cart-drawer__body">{items.length === 0 ? <div className="daisy-cart-empty"><ShoppingBag size={25} strokeWidth={1.2} /><p>{demoMode ? "المعاينة لا تدعم الشراء" : "السلة فارغة حاليًا"}</p></div> : items.map(item => <div key={item.lineId} className="daisy-cart-item"><div className="daisy-cart-item__image"><Image src={getProductImageUrl(item.image)} alt={item.name} fill sizes="76px" className="daisy-image" /></div><div className="daisy-cart-item__info"><div><p>{item.name}</p>{item.variantName && <small>{item.variantName}</small>}{item.customization && Object.entries(item.customization).map(([key, value]) => <small key={key}>{key}: {value}</small>)}</div><div className="daisy-cart-item__controls"><div><button onClick={() => update(item.lineId, -1)} aria-label="تقليل الكمية"><Minus size={12} /></button><span>{item.quantity}</span><button onClick={() => update(item.lineId, 1)} aria-label="زيادة الكمية"><Plus size={12} /></button></div><button className="daisy-remove" onClick={() => remove(item.lineId)}>حذف</button><span>{formatPrice(item.price * item.quantity)}</span></div></div></div>)}</div><div className="daisy-cart-drawer__foot">{demoMode ? <p className="daisy-demo-cart-message">هذه نسخة للمعاينة فقط. لا يمكن إنشاء طلبات.</p> : <><div><span>الإجمالي</span><strong>{formatPrice(total)}</strong></div><Link href="/checkout" onClick={onClose} className="daisy-button daisy-button--dark">إتمام الطلب <ArrowLeft size={16} /></Link></>}<Link href="/cart" onClick={onClose} className="daisy-cart-view-link">عرض السلة</Link></div></aside></div>;
 }
 
 function Footer() {

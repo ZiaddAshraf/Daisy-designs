@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { CatalogControls, CatalogPagination } from "@/components/catalog-controls";
 import { ProductCard } from "@/components/storefront";
 import { DatabaseUnavailable } from "@/components/database-state";
-import { getCatalogPage, toStorefrontProduct } from "@/lib/catalog";
-import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
+import { getCatalogCategories, getCatalogCollection, getCatalogPage, toStorefrontProduct } from "@/lib/catalog";
+import { isDatabaseUnavailable } from "@/lib/prisma";
 
 type SearchFilters = { category?: string; min?: string; max?: string; availability?: string; customizable?: string; sort?: string; page?: string };
 function normalizeFilters(params: SearchFilters) {
@@ -20,14 +20,14 @@ export default async function CollectionPage({ params, searchParams }: { params:
   let result: Awaited<ReturnType<typeof getCatalogPage>> | null = null;
   let categories: { slug: string; arabicName: string }[] = [];
   let unavailable = false;
-  try { collection = await prisma.collection.findUnique({ where: { slug, published: true } }); }
+  try { collection = await getCatalogCollection(slug); }
   catch (error) { if (isDatabaseUnavailable(error)) unavailable = true; else throw error; }
   if (unavailable) return <main className="catalog-page"><DatabaseUnavailable message="لا يمكن تحميل هذه المجموعة الآن" /></main>;
   if (!collection) notFound();
   try {
     [result, categories] = await Promise.all([
       getCatalogPage({ ...filters, collection: slug }),
-      prisma.category.findMany({ where: { published: true }, select: { slug: true, arabicName: true }, orderBy: { arabicName: "asc" } }),
+      getCatalogCategories(),
     ]);
   } catch (error) { if (isDatabaseUnavailable(error)) unavailable = true; else throw error; }
   if (unavailable || !result) return <main className="catalog-page"><DatabaseUnavailable message="لا يمكن تحميل منتجات هذه المجموعة الآن" /></main>;

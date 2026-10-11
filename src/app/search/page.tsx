@@ -3,7 +3,8 @@ import { Search } from "lucide-react";
 import { CatalogControls, CatalogPagination } from "@/components/catalog-controls";
 import { DatabaseUnavailable } from "@/components/database-state";
 import { ProductCard } from "@/components/storefront";
-import { toStorefrontProduct } from "@/lib/catalog";
+import { getCatalogCategories, getCatalogCollectionOptions, isDemoMode, toStorefrontProduct } from "@/lib/catalog";
+import { getDemoCatalogPage } from "@/lib/demo-catalog-data";
 import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 
@@ -37,9 +38,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   let unavailable = false;
 
   try {
-    categories = await prisma.category.findMany({ where: { published: true }, select: { slug: true, arabicName: true }, orderBy: { arabicName: "asc" } });
-    collections = await prisma.collection.findMany({ where: { published: true }, select: { slug: true, name: true }, orderBy: { name: "asc" } });
+    categories = await getCatalogCategories();
+    collections = await getCatalogCollectionOptions();
     if (query) {
+      if (isDemoMode()) {
+        const result = getDemoCatalogPage({ ...filters, limit: "12" }, query);
+        products = result.items;
+        total = result.total;
+      } else {
       const where: Prisma.ProductWhereInput = {
         published: true,
         ...(filters.category ? { category: { slug: filters.category } } : {}),
@@ -63,6 +69,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       ]);
       products = rows;
       total = count;
+      }
     }
   } catch (error) {
     if (isDatabaseUnavailable(error)) unavailable = true;

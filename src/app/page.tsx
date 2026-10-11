@@ -1,9 +1,11 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpLeft } from "lucide-react";
-import { ProductCard } from "@/components/storefront";
-import { getCatalogPage, toStorefrontProduct } from "@/lib/catalog";
-import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
+import { PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
+import { getCatalogCategories, getCatalogPage, toStorefrontProduct } from "@/lib/catalog";
+import { isDatabaseUnavailable } from "@/lib/prisma";
+import { HeroTextReveal, SectionReveal } from "@/components/home-motion";
+import { HomeProductCarousel } from "@/components/home-product-carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -17,12 +19,7 @@ export default async function Home() {
   try {
     const [catalog, categoryRows] = await Promise.all([
       getCatalogPage({ limit: "8", sort: "best-selling" }),
-      prisma.category.findMany({
-        where: { published: true },
-        include: { _count: { select: { products: true } } },
-        orderBy: { arabicName: "asc" },
-        take: 4,
-      }),
+      getCatalogCategories(4),
     ]);
     products = catalog.items.map(toStorefrontProduct);
     categories = categoryRows;
@@ -35,7 +32,7 @@ export default async function Home() {
 
   return <main className="daisy-home">
     <section className="daisy-hero" aria-labelledby="hero-title">
-      <div className="daisy-hero__copy">
+      <HeroTextReveal className="daisy-hero__copy">
         <p className="eyebrow">DAISY DESIGNS <span> / </span> MADE PERSONAL</p>
         <h1 id="hero-title">مصنوع باسمهم.<br /><em>ومصمم ليشبههم.</em></h1>
         <p className="daisy-hero__intro">منتجات يومية مخصصة للأطفال، بتفاصيل صنعت خصيصًا لهم.</p>
@@ -44,26 +41,26 @@ export default async function Home() {
           <Link href="/products?customizable=true" className="daisy-text-link">ابدأ التخصيص <ArrowUpLeft size={16} /></Link>
         </div>
         <span className="daisy-hero__index">مجموعة يومهم / ٠١</span>
-      </div>
+      </HeroTextReveal>
       <div className="daisy-hero__image">
         <Image src={editorialImage} alt="طفلة تستعد ليومها بحقيبتها المدرسية" fill priority sizes="(max-width: 760px) 100vw, 60vw" className="daisy-image" />
         <span className="daisy-image-caption">أيامهم الأولى، بتفاصيل تخصهم</span>
       </div>
     </section>
 
-    <section className="daisy-intro" aria-labelledby="intro-title">
+    <SectionReveal className="daisy-intro" labelledBy="intro-title">
       <div className="daisy-intro__heading">
         <p className="eyebrow">مصمم بعناية في مصر</p>
         <h2 id="intro-title">أشياء صغيرة.<br /><em>تفاصيل تخصهم.</em></h2>
       </div>
       <div className="daisy-intro__image">
-        <Image src={personalizedProduct?.image ?? "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=900&q=85"} alt={personalizedProduct ? personalizedProduct.name : "تفاصيل منتج مخصص للأطفال"} fill sizes="(max-width: 760px) 100vw, 24vw" className="daisy-image" />
+        <Image src={personalizedProduct?.image ?? PRODUCT_IMAGE_PLACEHOLDER} alt={personalizedProduct ? personalizedProduct.name : "تفاصيل منتج مخصص للأطفال"} fill sizes="(max-width: 760px) 100vw, 24vw" className="daisy-image" />
       </div>
       <div className="daisy-intro__body">
         <p>نصمم منتجات يومية تحمل أسماءهم، وترافقهم في المدرسة، والبيت، وكل تفاصيل يومهم.</p>
         <Link href="/about" className="daisy-text-link">تعرفي على دايزي <ArrowUpLeft size={16} /></Link>
       </div>
-    </section>
+    </SectionReveal>
 
     <section className="daisy-categories" aria-labelledby="categories-title">
       <header className="daisy-section-heading">
@@ -80,7 +77,7 @@ export default async function Home() {
 
     <section className="daisy-personalization" aria-labelledby="personal-title">
       <div className="daisy-personalization__visual">
-        {personalizedProduct?.image ? <Image src={personalizedProduct.image} alt={`منتج مخصص: ${personalizedProduct.name}`} fill sizes="(max-width: 760px) 100vw, 50vw" className="daisy-image" /> : <Image src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1200&q=85" alt="تفاصيل منتجات مصممة للأطفال" fill sizes="(max-width: 760px) 100vw, 50vw" className="daisy-image" />}
+        {personalizedProduct?.image ? <Image src={personalizedProduct.image} alt={`منتج مخصص: ${personalizedProduct.name}`} fill sizes="(max-width: 760px) 100vw, 50vw" className="daisy-image" /> : <Image src={PRODUCT_IMAGE_PLACEHOLDER} alt="تفاصيل منتجات مصممة للأطفال" fill sizes="(max-width: 760px) 100vw, 50vw" className="daisy-image" />}
         <span className="daisy-personalization__stamp">MADE<br />FOR THEM</span>
       </div>
       <div className="daisy-personalization__copy">
@@ -96,18 +93,18 @@ export default async function Home() {
       </div>
     </section>
 
-    <section className="daisy-featured" aria-labelledby="featured-title">
+    <SectionReveal className="daisy-featured" labelledBy="featured-title">
       <header className="daisy-section-heading">
         <div><p className="eyebrow">اختيرت ليومهم</p><h2 id="featured-title">مختاراتنا</h2></div>
         <Link href="/products" className="daisy-text-link">اكتشفي كل المنتجات <ArrowLeft size={16} /></Link>
       </header>
-      {!databaseAvailable ? <p className="daisy-empty">المنتجات غير متاحة الآن. حاولي مرة أخرى بعد قليل.</p> : products.length ? <div className="daisy-product-grid">{products.slice(0, 4).map(product => <ProductCard key={product.slug} product={product} editorial />)}</div> : <p className="daisy-empty">لا توجد منتجات منشورة حاليًا.</p>}
-    </section>
+      {!databaseAvailable ? <p className="daisy-empty">المنتجات غير متاحة الآن. حاولي مرة أخرى بعد قليل.</p> : products.length ? <HomeProductCarousel products={products.slice(0, 8)} /> : <p className="daisy-empty">لا توجد منتجات منشورة حاليًا.</p>}
+    </SectionReveal>
 
-    <section className="daisy-story" aria-labelledby="story-title">
+    <SectionReveal className="daisy-story" labelledBy="story-title">
       <div className="daisy-story__image"><Image src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1400&q=90" alt="طفل يبتسم في لحظة من يومه" fill sizes="(max-width: 760px) 100vw, 56vw" className="daisy-image" /></div>
       <div className="daisy-story__copy"><p className="eyebrow">حكاية دايزي</p><h2 id="story-title">أكثر من<br />مجرد منتج.</h2><p>الأشياء الصغيرة التي تحمل أسماءهم، تصبح جزءًا من حكايتهم.</p><Link href="/about" className="daisy-text-link">اعرف قصتنا <ArrowLeft size={16} /></Link></div>
-    </section>
+    </SectionReveal>
 
     <section className="daisy-cta">
       <p className="eyebrow">DAISY DESIGNS <span> / </span> PERSONALIZED FOR THEM</p>
