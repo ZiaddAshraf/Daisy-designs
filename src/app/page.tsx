@@ -43,7 +43,7 @@ export default async function Home() {
         <span className="daisy-hero__index">مجموعة يومهم / ٠١</span>
       </HeroTextReveal>
       <div className="daisy-hero__image">
-        <Image src={editorialImage} alt="طفلة تستعد ليومها بحقيبتها المدرسية" fill priority sizes="(max-width: 760px) 100vw, 60vw" className="daisy-image" />
+        <Image src={editorialImage} alt="طفلة تستعد ليومها بحقيبتها المدرسية" fill priority sizes="(max-width: 760px) 100vw, 60vw" className="daisy-image daisy-editorial-photo" />
         <span className="daisy-image-caption">أيامهم الأولى، بتفاصيل تخصهم</span>
       </div>
     </section>
@@ -69,7 +69,7 @@ export default async function Home() {
       </header>
       {!databaseAvailable ? <p className="daisy-empty">الأقسام غير متاحة الآن. حاولي مرة أخرى بعد قليل.</p> : categories.length ? <div className="daisy-category-grid">
         {categories.map((category, index) => <Link href={`/categories/${category.slug}`} key={category.id} className={`daisy-category daisy-category--${index + 1}`}>
-          <div className="daisy-category__image"><Image src={category.image ?? "/daisy-designs.png"} alt="Daisy Designs" fill sizes={index === 0 ? "(max-width: 760px) 100vw, 52vw" : "(max-width: 760px) 48vw, 24vw"} className="daisy-image" /></div>
+          <div className="daisy-category__image"><Image src={category.image ?? PRODUCT_IMAGE_PLACEHOLDER} alt="Daisy Designs" fill sizes={index === 0 ? "(max-width: 760px) 100vw, 52vw" : "(max-width: 760px) 48vw, 24vw"} className="daisy-image" /></div>
           <div className="daisy-category__label"><span>{category.arabicName}</span><span className="daisy-category__count">{String(category._count.products).padStart(2, "0")}</span></div>
         </Link>)}
       </div> : <p className="daisy-empty">ستظهر الأقسام هنا قريبًا.</p>}
@@ -102,7 +102,7 @@ export default async function Home() {
     </SectionReveal>
 
     <SectionReveal className="daisy-story" labelledBy="story-title">
-      <div className="daisy-story__image"><Image src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1400&q=90" alt="طفل يبتسم في لحظة من يومه" fill sizes="(max-width: 760px) 100vw, 56vw" className="daisy-image" /></div>
+      <div className="daisy-story__image"><Image src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1400&q=90" alt="طفل يبتسم في لحظة من يومه" fill sizes="(max-width: 760px) 100vw, 56vw" className="daisy-image daisy-editorial-photo" /></div>
       <div className="daisy-story__copy"><p className="eyebrow">حكاية دايزي</p><h2 id="story-title">أكثر من<br />مجرد منتج.</h2><p>الأشياء الصغيرة التي تحمل أسماءهم، تصبح جزءًا من حكايتهم.</p><Link href="/about" className="daisy-text-link">اعرف قصتنا <ArrowLeft size={16} /></Link></div>
     </SectionReveal>
 

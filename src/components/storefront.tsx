@@ -2,7 +2,7 @@
 
 import Image from "@/components/site-image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowUpLeft, Heart, Menu, Minus, Plus, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
@@ -10,6 +10,7 @@ import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/products";
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
 import { normalizeCustomization } from "@/lib/commerce-rules";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { adjustCartLine, cartLineId, checkoutLinePayload, mergeCartLine, normalizeStoredCartLine, removeCartLine } from "@/lib/cart-line-state";
 
 type CartVariant = { id: string; name: string; stock: number };
@@ -83,6 +84,7 @@ function Header({ count, onCart }: { count: number; onCart: () => void }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const pathname = usePathname();
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const normalized = query.trim();
@@ -96,12 +98,13 @@ function Header({ count, onCart }: { count: number; onCart: () => void }) {
     <header className="daisy-header">
       <div className="daisy-header__inner">
         <button className="daisy-icon-button daisy-menu-toggle" aria-label="فتح القائمة" onClick={() => setMobileOpen(true)}><Menu size={19} strokeWidth={1.5} /></button>
-        <Link href="/" className="daisy-wordmark" aria-label="Daisy Designs، الرئيسية">DAISY <span>DESIGNS</span></Link>
+          <Link href="/" className="daisy-wordmark" aria-label="Daisy Designs، الرئيسية">DAISY <span>DESIGNS</span></Link>
         <nav className="daisy-nav" aria-label="التنقل الرئيسي">
-          <Link href="/">الرئيسية</Link><Link href="/products">المنتجات</Link><Link href="/collections">المجموعات</Link><Link href="/about">قصتنا</Link><Link href="/faq">المساعدة</Link>
+          <Link href="/" aria-current={pathname === "/" ? "page" : undefined}>الرئيسية</Link><Link href="/products" aria-current={pathname.startsWith("/products") || pathname.startsWith("/categories") ? "page" : undefined}>المنتجات</Link><Link href="/collections" aria-current={pathname.startsWith("/collections") ? "page" : undefined}>المجموعات</Link><Link href="/about" aria-current={pathname === "/about" ? "page" : undefined}>قصتنا</Link><Link href="/faq" aria-current={pathname === "/faq" ? "page" : undefined}>المساعدة</Link>
         </nav>
         <div className="daisy-tools">
           <button className="daisy-icon-button" aria-label="البحث" onClick={() => setSearchOpen(value => !value)}><Search size={18} strokeWidth={1.5} /></button>
+          <ThemeToggle />
           <Link className="daisy-icon-button daisy-desktop-tool" href="/account" aria-label="الحساب"><UserRound size={18} strokeWidth={1.5} /></Link>
           <Link className="daisy-icon-button daisy-desktop-tool" href="/wishlist" aria-label="المفضلة"><Heart size={18} strokeWidth={1.5} /></Link>
           <button className="daisy-icon-button daisy-cart-button" onClick={onCart} aria-label={`السلة، ${count} منتجات`}><ShoppingBag size={18} strokeWidth={1.5} />{count > 0 && <span className="daisy-cart-count">{count}</span>}</button>

@@ -8,6 +8,12 @@ test("server fixture serves all unpublished demo catalog records without databas
   assert.equal(page.items.length, 30);
   assert.equal(getDemoCategories().length, 7);
   assert.equal(getDemoCollections().length, 4);
+  assert.deepEqual(getDemoCollections().map((collection) => collection.name), [
+    "جاهزون للمدرسة",
+    "تفاصيل يومية شخصية",
+    "هدايا بلمسة شخصية",
+    "اختيارات دايزي",
+  ]);
   assert.ok(page.items.every((product) => product.published === false));
   assert.ok(getDemoCategories().every((category) => category.published === false));
   assert.ok(getDemoCollections().every((collection) => collection.published === false));

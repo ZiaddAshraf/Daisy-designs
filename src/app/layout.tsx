@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans_Arabic, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { StoreShell } from "@/components/storefront";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import { AuthProvider } from "@/components/auth-provider";
 import { isDemoModeEnabled } from "@/lib/demo-mode";
 const arabic = IBM_Plex_Sans_Arabic({ variable: "--font-arabic", subsets: ["arabic"], weight: ["400", "500", "600", "700"] });
@@ -23,4 +24,4 @@ export const metadata: Metadata = {
         description: "منتجات مخصصة للأطفال، صُممت خصيصًا لهم.",
     },
 };
-export default function RootLayout({ children }: LayoutProps<"/">) { return <html lang="ar" dir="rtl" data-scroll-behavior="smooth" className={`${arabic.variable} ${display.variable}`}><body suppressHydrationWarning><AuthProvider><StoreShell demoMode={isDemoModeEnabled()}>{children}</StoreShell></AuthProvider></body></html>; }
+export default function RootLayout({ children }: LayoutProps<"/">) { return <html lang="ar" dir="rtl" data-scroll-behavior="smooth" className={`${arabic.variable} ${display.variable}`} suppressHydrationWarning><head><script id="daisy-theme-init" dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} /></head><body><AuthProvider><StoreShell demoMode={isDemoModeEnabled()}>{children}</StoreShell></AuthProvider></body></html>; }

@@ -14,6 +14,12 @@ type ProductRecord = Prisma.ProductGetPayload<{ include: {
 
 const createdAt = new Date("2026-01-01T00:00:00.000Z");
 const visibleName = (name: string) => name.replace(/^DEMO — /, "");
+const demoCollectionDisplayNames: Record<string, string> = {
+  "demo-school-ready": "جاهزون للمدرسة",
+  "demo-everyday-personal": "تفاصيل يومية شخصية",
+  "demo-thoughtful-gifts": "هدايا بلمسة شخصية",
+  "demo-favorites": "اختيارات دايزي",
+};
 
 const categories: CategoryRecord[] = demoCatalog.categories.map((category) => ({
   id: category.slug,
@@ -31,7 +37,7 @@ const categories: CategoryRecord[] = demoCatalog.categories.map((category) => ({
 
 const collections: CollectionRecord[] = demoCatalog.collections.map((collection) => ({
   id: collection.slug,
-  name: visibleName(collection.name),
+  name: demoCollectionDisplayNames[collection.slug] ?? visibleName(collection.name),
   slug: collection.slug,
   description: collection.description,
   image: collection.image,
