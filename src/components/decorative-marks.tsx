@@ -105,3 +105,28 @@ export function StorybookIcon({ size = 28, className = "", ...props }: MarkProps
   );
 }
 
+/**
+ * A delicate, restrained monoline daisy doodle (16px) for subtle title accents.
+ */
+export function TinyDaisyDoodle({ size = 16, className = "", ...props }: MarkProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`daisy-mark daisy-mark--doodle ${className}`}
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="8" cy="8" r="1.5" fill="var(--accent-daisy)" stroke="none" />
+      <path d="M8 2.5V4.5M8 11.5V13.5M2.5 8H4.5M11.5 8H13.5M4.1 4.1L5.5 5.5M10.5 10.5L11.9 11.9M11.9 4.1L10.5 5.5M5.5 10.5L4.1 11.9" />
+    </svg>
+  );
+}
+
+

@@ -25,6 +25,9 @@
   --accent-sage: #e9eee6;
   --accent-blush: #f5ebe6;
   --accent-sky: #e6eef2;
+  --accent-daisy: #f5ce58;
+  --accent-daisy-soft: #fdf8e8;
+  --accent-daisy-glow: rgba(245, 206, 88, 0.18);
   --radius: 0;
   --transition: 180ms ease;
   --page-gutter: 32px;
@@ -4084,6 +4087,9 @@ img[src*="daisy-designs-placeholder"] {
   --accent-sage: #232c25;
   --accent-blush: #342823;
   --accent-sky: #222b31;
+  --accent-daisy: #e5b842;
+  --accent-daisy-soft: #252217;
+  --accent-daisy-glow: rgba(229, 184, 66, 0.15);
   scrollbar-color: #626660 #202220;
 }
 
@@ -5279,21 +5285,14 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal]:not([data-scroll-reve
   border-color: var(--foreground);
 }
 
-.daisy-intro__brand-mark span {
-  font-family: var(--font-display), serif;
-  font-size: clamp(72px, 12vw, 135px);
-  font-weight: 400;
-  line-height: 0.88;
-  letter-spacing: -0.05em;
-  color: var(--foreground);
+.daisy-intro__monogram .daisy-brand-logo__img {
+  width: clamp(120px, 18vw, 190px);
+  height: auto;
+  transition: transform 500ms cubic-bezier(.16, 1, .3, 1);
 }
 
-.daisy-intro__brand-mark small {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-  font-weight: 600;
+.daisy-intro__brand-mark:hover .daisy-intro__monogram .daisy-brand-logo__img {
+  transform: scale(1.06);
 }
 
 .daisy-personalization__brand-card {
@@ -5304,26 +5303,26 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal]:not([data-scroll-reve
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
   background: var(--surface-image);
   border: 1px solid var(--border);
+  padding: 48px 32px;
+  text-align: center;
   user-select: none;
+  transition: border-color var(--transition);
 }
 
-.daisy-personalization__letter {
-  font-family: var(--font-display), serif;
-  font-size: clamp(100px, 16vw, 200px);
-  font-weight: 400;
-  line-height: 0.85;
-  color: var(--foreground);
+.daisy-personalization__brand-card:hover {
+  border-color: var(--foreground);
 }
 
-.daisy-personalization__brand-name {
-  font-size: 11px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-  font-weight: 600;
+.daisy-personalization__brand-card .daisy-brand-logo__img {
+  width: clamp(180px, 24vw, 290px);
+  height: auto;
+  transition: transform 500ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.daisy-personalization__brand-card:hover .daisy-brand-logo__img {
+  transform: scale(1.04);
 }
 
 .daisy-personalization__stamp {
@@ -5440,13 +5439,13 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal]:not([data-scroll-reve
 .store-category-card__flower-badge {
   display: inline-flex;
   align-items: center;
-  color: var(--muted-foreground);
+  color: var(--accent-daisy);
   transition: transform 300ms ease, color 300ms ease;
 }
 
 .store-category-card:hover .store-category-card__flower-badge {
   transform: rotate(45deg);
-  color: var(--foreground);
+  color: var(--accent-daisy);
 }
 
 .store-category-card__letter-wrap {
@@ -5462,26 +5461,27 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal]:not([data-scroll-reve
   inset-inline-end: -16px;
   color: var(--foreground);
   opacity: 0.6;
-  transition: transform 300ms cubic-bezier(.16, 1, .3, 1), opacity 300ms ease;
+  transition: transform 300ms cubic-bezier(.16, 1, .3, 1), opacity 300ms ease, color 300ms ease;
   pointer-events: none;
 }
 
 .store-category-card:hover .store-category-card__floating-icon {
   transform: scale(1.22) rotate(12deg);
   opacity: 1;
+  color: var(--accent-daisy);
 }
 
 .daisy-intro__flower-orbit {
   position: absolute;
   top: 16px;
   inset-inline-end: 18px;
-  color: var(--muted-foreground);
+  color: var(--accent-daisy);
   transition: transform 600ms cubic-bezier(.16, 1, .3, 1), color 300ms ease;
 }
 
 .daisy-intro__brand-mark:hover .daisy-intro__flower-orbit {
   transform: rotate(90deg) scale(1.15);
-  color: var(--foreground);
+  color: var(--accent-daisy);
 }
 
 .daisy-personalization__stamp {
@@ -5585,5 +5585,205 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal]:not([data-scroll-reve
 .store-category-card:active {
   transform: translateY(-1px) scale(0.995);
 }
+
+/* ==========================================================================
+   Daisy Designs Official Brand Logo & Branded Loading System
+   ========================================================================== */
+
+/* Zero-JS Theme-Aware Brand Logo */
+.daisy-brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  position: relative;
+}
+
+.daisy-brand-logo__img {
+  height: auto;
+  width: auto;
+  object-fit: contain;
+  transition: opacity var(--transition);
+}
+
+.daisy-brand-logo__img--dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .daisy-brand-logo__img--dark,
+.dark .daisy-brand-logo__img--dark {
+  display: block;
+}
+
+:root[data-theme="dark"] .daisy-brand-logo__img--light,
+.dark .daisy-brand-logo__img--light {
+  display: none;
+}
+
+/* Header & Mobile Wordmark integration */
+.daisy-header .daisy-wordmark,
+.daisy-mobile-menu .daisy-wordmark {
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.daisy-header .daisy-brand-logo--lockup .daisy-brand-logo__img {
+  height: 38px;
+  width: auto;
+}
+
+.daisy-mobile-menu .daisy-brand-logo--lockup .daisy-brand-logo__img {
+  height: 32px;
+  width: auto;
+}
+
+.daisy-footer .daisy-brand-logo--full .daisy-brand-logo__img {
+  height: 68px;
+  width: auto;
+}
+
+/* Brand Loading Experience */
+.daisy-loader-screen {
+  min-height: 72vh;
+  display: grid;
+  place-items: center;
+  padding: 60px 24px;
+  background: transparent;
+}
+
+.daisy-loader-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+}
+
+.daisy-loader-orbit {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--accent-daisy) 40%, transparent);
+  animation: daisySpin 16s linear infinite;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.daisy-loader-orbit-flower {
+  position: absolute;
+  top: -9px;
+  color: var(--accent-daisy);
+  filter: drop-shadow(0 2px 6px var(--accent-daisy-glow));
+}
+
+.daisy-loader-center {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 24px;
+}
+
+.daisy-loader-center .daisy-brand-logo--lockup .daisy-brand-logo__img {
+  height: 64px;
+  width: auto;
+}
+
+.daisy-loader-progress-track {
+  position: relative;
+  z-index: 10;
+  width: 160px;
+  height: 2px;
+  background: color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.daisy-loader-progress-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(90deg, transparent, var(--accent-daisy), transparent);
+  border-radius: 9999px;
+  animation: shimmerMove 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.daisy-loader-taglines {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.daisy-loader-tagline-en {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+}
+
+.daisy-loader-tagline-ar {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--foreground);
+  opacity: 0.75;
+}
+
+/* Watermark in Closing CTA */
+.daisy-cta__monogram-watermark {
+  position: absolute;
+  top: -100px;
+  inset-inline-end: 2vw;
+  width: 480px;
+  height: 480px;
+  opacity: 0.04;
+  pointer-events: none;
+  object-fit: contain;
+}
+
+@keyframes daisySpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes shimmerMove {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(240%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daisy-loader-orbit,
+  .daisy-loader-progress-bar {
+    animation: none !important;
+  }
+}
+
+/* Playful Luxury Title Flourish & Doodle Accents */
+.daisy-hero__title-wiggle {
+  display: block;
+  width: clamp(80px, 12vw, 130px);
+  height: auto;
+  color: var(--accent-daisy);
+  margin-top: 6px;
+  opacity: 0.85;
+}
+
+.daisy-mark--doodle {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline-start: 8px;
+  color: var(--foreground);
+}
+
+
 
 

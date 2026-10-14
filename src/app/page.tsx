@@ -1,7 +1,7 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight } from "lucide-react";
-import { HeroTextReveal, SectionReveal, StorybookReveal, InteractiveMark } from "@/components/home-motion";
+import { HeroTextReveal, SectionReveal, StorybookReveal, InteractiveMark, StaggerCategoryGrid } from "@/components/home-motion";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import { formatLocaleNumber } from "@/lib/locale";
@@ -9,7 +9,8 @@ import {
   getStoreCategories,
 } from "@/lib/store-categories";
 import { CategoryCard } from "@/components/category-card";
-import { DaisyFlower, SparkleStar, StorybookIcon } from "@/components/decorative-marks";
+import { DaisyFlower, SparkleStar, StorybookIcon, TinyDaisyDoodle, PlayfulWiggle } from "@/components/decorative-marks";
+import { BrandLogo } from "@/components/brand-logo";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,11 @@ export default async function Home() {
               <DaisyFlower size={15} />
             </InteractiveMark>
           </p>
-          <h1 id="hero-title">{t("homeHeroTitle")}<br /><em>{t("homeHeroTitleSecond")}</em></h1>
+          <h1 id="hero-title">
+            {t("homeHeroTitle")}<br />
+            <em>{t("homeHeroTitleSecond")}</em>
+            <PlayfulWiggle className="daisy-hero__title-wiggle" />
+          </h1>
           <p className="daisy-hero__intro">{t("homeHeroIntro")}</p>
           <div className="daisy-hero__actions">
             <Link href="/categories" className="daisy-button daisy-button--dark">
@@ -61,15 +66,17 @@ export default async function Home() {
 
       <SectionReveal className="daisy-intro" labelledBy="intro-title">
         <div className="daisy-intro__heading">
-          <p className="eyebrow">{t("homeIntroEyebrow")}</p>
+          <p className="eyebrow">
+            {t("homeIntroEyebrow")}
+            <TinyDaisyDoodle size={15} />
+          </p>
           <h2 id="intro-title">{t("homeIntroTitle")}<br /><em>{t("homeIntroTitleSecond")}</em></h2>
         </div>
         <div className="daisy-intro__brand-mark" aria-hidden="true">
           <span className="daisy-intro__flower-orbit">
             <DaisyFlower size={20} />
           </span>
-          <span dir="ltr">D.</span>
-          <small>DAISY DESIGNS</small>
+          <BrandLogo variant="monogram" className="daisy-intro__monogram" altText="Daisy Designs" />
         </div>
         <div className="daisy-intro__body">
           <p>{t("homeIntroBody")}</p>
@@ -93,7 +100,7 @@ export default async function Home() {
           </div>
         </header>
 
-        <div className="store-category-grid" data-scroll-reveal-stagger>
+        <StaggerCategoryGrid className="store-category-grid" data-scroll-reveal-stagger>
           {storeCategories.map((category, index) => (
             <CategoryCard
               key={category.id}
@@ -104,14 +111,13 @@ export default async function Home() {
               headingTag="h3"
             />
           ))}
-        </div>
+        </StaggerCategoryGrid>
       </section>
 
       <section className="daisy-personalization" aria-labelledby="personal-title" data-scroll-reveal suppressHydrationWarning>
         <div className="daisy-personalization__visual">
           <div className="daisy-personalization__brand-card" aria-hidden="true">
-            <span className="daisy-personalization__letter" dir="ltr">D.</span>
-            <span className="daisy-personalization__brand-name">DAISY DESIGNS</span>
+            <BrandLogo variant="lockup" altText="Daisy Designs" />
           </div>
           <span className="daisy-personalization__stamp">
             <DaisyFlower size={14} className="daisy-personalization__stamp-flower" />
@@ -179,11 +185,11 @@ export default async function Home() {
             {t("exploreCategories")} <Arrow size={16} />
           </Link>
         </div>
-        <span className="daisy-cta__mark" aria-hidden="true" dir="ltr">
-          D.
+        <div className="daisy-cta__monogram-watermark" aria-hidden="true">
+          <BrandLogo variant="monogram" altText="" />
           <SparkleStar size={32} className="daisy-cta__sparkle daisy-cta__sparkle--1" />
           <SparkleStar size={20} className="daisy-cta__sparkle daisy-cta__sparkle--2" />
-        </span>
+        </div>
       </section>
     </main>
   );

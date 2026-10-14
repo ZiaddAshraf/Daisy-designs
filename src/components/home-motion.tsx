@@ -106,3 +106,41 @@ export function InteractiveMark({
     </motion.span>
   );
 }
+
+/**
+ * Subtle staggered entrance for the 3 category cards on scroll.
+ * When reduced motion is preferred, renders a standard div immediately.
+ */
+export function StaggerCategoryGrid({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
+  return (
+    <motion.div
+      className={className}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.15 }}
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: 0.09,
+          },
+        },
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+

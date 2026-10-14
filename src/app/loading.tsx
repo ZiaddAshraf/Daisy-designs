@@ -1,5 +1,48 @@
 "use client";
 
-import { useTranslation } from "@/components/storefront";
+import { useTranslation, useLocale } from "@/components/storefront";
+import { BrandLogo } from "@/components/brand-logo";
+import { DaisyFlower } from "@/components/decorative-marks";
 
-export default function Loading() { const t = useTranslation(); return <main role="status" aria-busy="true" aria-label={t("loading")} className="mx-auto max-w-[1400px] px-6 py-24 lg:px-16"><div aria-hidden="true" className="h-4 w-24 animate-pulse bg-neutral-200" /><div aria-hidden="true" className="mt-6 h-12 w-72 animate-pulse bg-neutral-200" /><div aria-hidden="true" className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-4">{Array.from({ length: 8 }, (_, index) => <div key={index} className="aspect-[4/5] animate-pulse bg-neutral-100" />)}</div></main>; }
+export default function Loading() {
+  const t = useTranslation();
+  const locale = useLocale();
+  const isRtl = locale === "ar";
+
+  return (
+    <main
+      role="status"
+      aria-busy="true"
+      aria-live="polite"
+      aria-label={t("loading")}
+      className="daisy-loader-screen"
+    >
+      <div className="daisy-loader-container">
+        {/* Subtle floral orbit ring */}
+        <div className="daisy-loader-orbit" aria-hidden="true">
+          <span className="daisy-loader-orbit-flower">
+            <DaisyFlower size={18} />
+          </span>
+        </div>
+
+        {/* Centerpiece official brand monogram lockup */}
+        <div className="daisy-loader-center">
+          <BrandLogo variant="lockup" priority />
+        </div>
+
+        {/* Hairline progress shimmer */}
+        <div className="daisy-loader-progress-track" aria-hidden="true">
+          <div className="daisy-loader-progress-bar" />
+        </div>
+
+        {/* Taglines */}
+        <div className="daisy-loader-taglines">
+          <span className="daisy-loader-tagline-en">WHERE IDEAS BLOOM</span>
+          <span className="daisy-loader-tagline-ar">
+            {isRtl ? "تفاصيل صغيرة، ذكريات كبيرة" : "Where ideas bloom for little ones"}
+          </span>
+        </div>
+      </div>
+    </main>
+  );
+}
