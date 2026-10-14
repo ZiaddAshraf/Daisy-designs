@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useLocale } from "@/components/storefront";
+import { directionForLocale } from "@/lib/locale";
 
 type Confirmation = {
     number: string;
@@ -10,6 +12,7 @@ type Confirmation = {
 };
 
 export default function CheckoutSuccessPage() {
+    const locale = useLocale();
     const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
     useEffect(() => {
         const saved = sessionStorage.getItem("daisy-order-confirmation");
@@ -22,7 +25,7 @@ export default function CheckoutSuccessPage() {
         }
     }, []);
 
-    return <main dir="rtl" className="mx-auto max-w-[760px] px-6 py-16 sm:py-24">
+    return <main dir={directionForLocale(locale)} className="mx-auto max-w-[760px] px-6 py-16 sm:py-24">
         <p className="text-xs tracking-[.2em] text-neutral-500">DAISY DESIGNS / تأكيد الطلب</p>
         <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">{confirmation ? "تم استلام طلبك بنجاح" : "تأكيد الطلب"}</h1>
         {confirmation ? <>

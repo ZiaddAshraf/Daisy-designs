@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { useCart } from "@/components/storefront";
+import { useCart, useLocale } from "@/components/storefront";
 import { checkoutLinePayload } from "@/lib/cart-line-state";
+import { directionForLocale } from "@/lib/locale";
 
 type OrderConfirmation = {
     number: string;
@@ -14,6 +15,8 @@ type OrderConfirmation = {
 
 export default function CheckoutPage() {
     const { items, clear, demoMode } = useCart();
+    const locale = useLocale();
+    const direction = directionForLocale(locale);
     const router = useRouter();
     const submitting = useRef(false);
     const requestId = useRef<string | null>(null);
@@ -71,9 +74,9 @@ export default function CheckoutPage() {
         }
     }
 
-    if (demoMode) return <main dir="rtl" className="mx-auto max-w-[900px] px-6 py-16"><h1 className="text-3xl font-semibold">إتمام الطلب غير متاح</h1><p className="mt-5 text-neutral-600">هذه معاينة لمنتجات وأسعار افتراضية. لا يتم استقبال طلبات أو عمليات شراء في وضع العرض.</p><Link href="/products" className="mt-8 inline-flex bg-neutral-950 px-6 py-3 text-sm text-white">العودة للمعاينة</Link></main>;
+    if (demoMode) return <main dir={direction} className="mx-auto max-w-[900px] px-6 py-16"><h1 className="text-3xl font-semibold">إتمام الطلب غير متاح</h1><p className="mt-5 text-neutral-600">هذه معاينة لمنتجات وأسعار افتراضية. لا يتم استقبال طلبات أو عمليات شراء في وضع العرض.</p><Link href="/products" className="mt-8 inline-flex bg-neutral-950 px-6 py-3 text-sm text-white">العودة للمعاينة</Link></main>;
 
-    return <main dir="rtl" className="mx-auto max-w-[900px] px-6 py-12 sm:py-16">
+    return <main dir={direction} className="mx-auto max-w-[900px] px-6 py-12 sm:py-16">
         <Link href="/cart" className="text-sm underline underline-offset-4">العودة إلى السلة</Link>
         <h1 className="mt-6 text-3xl font-semibold sm:text-4xl">إتمام الطلب</h1>
         {!items.length ? <div className="mt-10 border-y border-neutral-200 py-16 text-center">

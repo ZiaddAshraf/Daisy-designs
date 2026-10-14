@@ -3,6 +3,8 @@
 import { Moon, Sun } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { getNextTheme, resolveTheme, THEME_STORAGE_KEY } from "@/lib/theme";
+import { getTranslation } from "@/lib/i18n/messages";
+import type { Locale } from "@/lib/locale";
 
 function subscribeToTheme(onChange: () => void) {
   const root = document.documentElement;
@@ -26,7 +28,7 @@ function getIsDark() {
   return document.documentElement.dataset.theme === "dark";
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ locale }: { locale: Locale }) {
   const isDark = useSyncExternalStore(subscribeToTheme, getIsDark, () => false);
 
   const toggleTheme = () => {
@@ -44,8 +46,8 @@ export function ThemeToggle() {
     className="daisy-icon-button daisy-theme-toggle"
     onClick={toggleTheme}
     aria-pressed={isDark}
-    aria-label="تبديل الوضع الفاتح والداكن"
-    title="تبديل الوضع الفاتح والداكن"
+    aria-label={getTranslation(locale, "toggleTheme")}
+    title={getTranslation(locale, "toggleTheme")}
   >
     <Sun className="daisy-theme-toggle__sun" size={18} strokeWidth={1.5} aria-hidden="true" />
     <Moon className="daisy-theme-toggle__moon" size={18} strokeWidth={1.5} aria-hidden="true" />
