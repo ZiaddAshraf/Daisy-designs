@@ -1,16 +1,15 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight } from "lucide-react";
-import { HeroTextReveal, SectionReveal } from "@/components/home-motion";
+import { HeroTextReveal, SectionReveal, StorybookReveal, InteractiveMark } from "@/components/home-motion";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import { formatLocaleNumber } from "@/lib/locale";
 import {
   getStoreCategories,
-  categoryNameForLocale,
-  categoryTaglineForLocale,
-  categoryDescriptionForLocale,
 } from "@/lib/store-categories";
+import { CategoryCard } from "@/components/category-card";
+import { DaisyFlower, SparkleStar, StorybookIcon } from "@/components/decorative-marks";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +28,12 @@ export default async function Home() {
     <main className="daisy-home">
       <section className="daisy-hero" aria-labelledby="hero-title">
         <HeroTextReveal className="daisy-hero__copy">
-          <p className="eyebrow">DAISY DESIGNS <span> / </span> {t("homeBrandMadePersonal")}</p>
+          <p className="eyebrow">
+            DAISY DESIGNS <span> / </span> {t("homeBrandMadePersonal")}
+            <InteractiveMark className="daisy-hero__flower-mark">
+              <DaisyFlower size={15} />
+            </InteractiveMark>
+          </p>
           <h1 id="hero-title">{t("homeHeroTitle")}<br /><em>{t("homeHeroTitleSecond")}</em></h1>
           <p className="daisy-hero__intro">{t("homeHeroIntro")}</p>
           <div className="daisy-hero__actions">
@@ -61,7 +65,10 @@ export default async function Home() {
           <h2 id="intro-title">{t("homeIntroTitle")}<br /><em>{t("homeIntroTitleSecond")}</em></h2>
         </div>
         <div className="daisy-intro__brand-mark" aria-hidden="true">
-          <span>D.</span>
+          <span className="daisy-intro__flower-orbit">
+            <DaisyFlower size={20} />
+          </span>
+          <span dir="ltr">D.</span>
           <small>DAISY DESIGNS</small>
         </div>
         <div className="daisy-intro__body">
@@ -87,50 +94,28 @@ export default async function Home() {
         </header>
 
         <div className="store-category-grid" data-scroll-reveal-stagger>
-          {storeCategories.map((category) => {
-            const name = categoryNameForLocale(category, locale);
-            const tagline = categoryTaglineForLocale(category, locale);
-            const description = categoryDescriptionForLocale(category, locale);
-
-            return (
-              <Link
-                key={category.id}
-                href={`/categories/${category.slug}`}
-                className="store-category-card"
-                data-scroll-reveal
-                suppressHydrationWarning
-              >
-                <div className="store-category-card__cover">
-                  <span className="store-category-card__mark" aria-hidden="true">
-                    <span>{category.letter}</span>
-                    <small>DAISY DESIGNS / {t("categoryLabel")}</small>
-                  </span>
-                </div>
-                <div className="store-category-card__content">
-                  <div className="store-category-card__title">
-                    <h3>{name}</h3>
-                    <span className="store-category-card__arrow" aria-hidden="true">↗</span>
-                  </div>
-                  <p className="store-category-card__tagline">{tagline}</p>
-                  <p className="store-category-card__description">{description}</p>
-                  <div className="store-category-card__action">
-                    <span>{t("exploreCategory")}</span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {storeCategories.map((category, index) => (
+            <CategoryCard
+              key={category.id}
+              category={category}
+              locale={locale}
+              index={index}
+              showDescription={true}
+              headingTag="h3"
+            />
+          ))}
         </div>
       </section>
 
       <section className="daisy-personalization" aria-labelledby="personal-title" data-scroll-reveal suppressHydrationWarning>
         <div className="daisy-personalization__visual">
           <div className="daisy-personalization__brand-card" aria-hidden="true">
-            <span className="daisy-personalization__letter">D.</span>
+            <span className="daisy-personalization__letter" dir="ltr">D.</span>
             <span className="daisy-personalization__brand-name">DAISY DESIGNS</span>
           </div>
           <span className="daisy-personalization__stamp">
-            {t("homePersonalStampFirst")}<br />{t("homePersonalStampSecond")}
+            <DaisyFlower size={14} className="daisy-personalization__stamp-flower" />
+            <span>{t("homePersonalStampFirst")}<br />{t("homePersonalStampSecond")}</span>
           </span>
         </div>
         <div className="daisy-personalization__copy">
@@ -157,7 +142,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <SectionReveal className="daisy-story" labelledBy="story-title">
+      <StorybookReveal className="daisy-story" labelledBy="story-title">
         <div className="daisy-story__image">
           <Image
             src={editorialStoryImage}
@@ -166,26 +151,39 @@ export default async function Home() {
             sizes="(max-width: 760px) 100vw, 56vw"
             className="daisy-image daisy-editorial-photo"
           />
+          <span className="daisy-story__badge" aria-hidden="true">
+            <StorybookIcon size={18} />
+          </span>
         </div>
         <div className="daisy-story__copy">
-          <p className="eyebrow">{t("homeStoryEyebrow")}</p>
+          <p className="eyebrow daisy-story__eyebrow">
+            <StorybookIcon size={14} className="daisy-story__eyebrow-icon" />
+            <span>{t("homeStoryEyebrow")}</span>
+          </p>
           <h2 id="story-title">{t("homeStoryTitle")}<br />{t("homeStoryTitleSecond")}</h2>
           <p>{t("homeStoryBody")}</p>
           <Link href="/about" className="daisy-text-link">
             {t("homeStoryAboutCta")} <Arrow size={16} />
           </Link>
         </div>
-      </SectionReveal>
+      </StorybookReveal>
 
       <section className="daisy-cta" data-scroll-reveal suppressHydrationWarning>
-        <p className="eyebrow">DAISY DESIGNS <span> / </span> {t("homeBrandPersonalized")}</p>
+        <p className="eyebrow">
+          DAISY DESIGNS <span> / </span> {t("homeBrandPersonalized")}
+          <SparkleStar size={12} className="daisy-cta__inline-sparkle" />
+        </p>
         <div className="daisy-cta__row">
           <h2>{t("homeFinalTitle")}<br /><em>{t("homeFinalTitleSecond")}</em></h2>
           <Link href="/categories" className="daisy-button daisy-button--light">
             {t("exploreCategories")} <Arrow size={16} />
           </Link>
         </div>
-        <span className="daisy-cta__mark" aria-hidden="true">D.</span>
+        <span className="daisy-cta__mark" aria-hidden="true" dir="ltr">
+          D.
+          <SparkleStar size={32} className="daisy-cta__sparkle daisy-cta__sparkle--1" />
+          <SparkleStar size={20} className="daisy-cta__sparkle daisy-cta__sparkle--2" />
+        </span>
       </section>
     </main>
   );

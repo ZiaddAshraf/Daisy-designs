@@ -17,6 +17,7 @@ import {
   categoryDescriptionForLocale,
   categoryNoticeForLocale,
 } from "@/lib/store-categories";
+import { SparkleStar } from "@/components/decorative-marks";
 
 type SearchFilters = { collection?: string; min?: string; max?: string; availability?: string; customizable?: string; sort?: string; page?: string };
 function normalizeFilters(params: SearchFilters) { const numeric = (value?: string) => value && /^\d{1,8}$/.test(value) ? value : undefined; return { collection: params.collection?.slice(0, 80), min: numeric(params.min), max: numeric(params.max), availability: params.availability === "in-stock" ? params.availability : undefined, customizable: params.customizable === "true" ? params.customizable : undefined, sort: ["price-asc", "price-desc", "best-selling", "newest"].includes(params.sort ?? "") ? params.sort : "newest", page: numeric(params.page), limit: "12" }; }
@@ -108,7 +109,12 @@ export default async function CategoryPage({ params, searchParams }: { params: P
           <h1>{categoryName}</h1>
           {categoryTagline && <p className="category-detail-tagline">{categoryTagline}</p>}
           {categoryDescription && <p>{categoryDescription}</p>}
-          {categoryNotice && <div className="category-surface-notice"><span>ℹ️</span> {categoryNotice}</div>}
+          {categoryNotice && (
+            <div className="category-surface-notice">
+              <SparkleStar size={13} className="category-surface-notice__star" />
+              <span>{categoryNotice}</span>
+            </div>
+          )}
         </div>
       </header>
 
@@ -125,9 +131,11 @@ export default async function CategoryPage({ params, searchParams }: { params: P
         </>
       ) : (
         <section className="catalog-empty catalog-empty--coming-soon" data-scroll-reveal suppressHydrationWarning>
-          <span className="daisy-brand-badge">DAISY DESIGNS</span>
+          <div className="catalog-empty__insignia" aria-hidden="true">
+            <span className="daisy-brand-badge">DAISY DESIGNS</span>
+          </div>
           <h2>{t("categoryComingSoonTitle")}</h2>
-          <p>{t("categoryComingSoonDescription")}</p>
+          <p className="catalog-empty__lead">{t("categoryComingSoonDescription")}</p>
           <Link href="/categories" className="daisy-button daisy-button--dark">
             {t("allCategoriesLink")} <Arrow size={16} />
           </Link>

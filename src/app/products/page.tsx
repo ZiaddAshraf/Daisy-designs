@@ -5,9 +5,8 @@ import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import {
   getStoreCategories,
-  categoryNameForLocale,
-  categoryTaglineForLocale,
 } from "@/lib/store-categories";
+import { CategoryCard } from "@/components/category-card";
 
 export const dynamic = "force-dynamic";
 
@@ -43,9 +42,25 @@ export default async function ProductsPage() {
       </header>
 
       <section className="catalog-empty catalog-empty--coming-soon" data-scroll-reveal suppressHydrationWarning>
-        <span className="daisy-brand-badge">DAISY DESIGNS</span>
+        <div className="catalog-empty__insignia" aria-hidden="true">
+          <span className="daisy-brand-badge">DAISY DESIGNS</span>
+        </div>
         <h2>{t("productsComingSoonTitle")}</h2>
-        <p>{t("productsComingSoonDescription")}</p>
+        <p className="catalog-empty__lead">{t("productsComingSoonDescription")}</p>
+        <div className="catalog-empty__pillars" aria-hidden="true">
+          <div className="catalog-empty__pillar">
+            <span className="catalog-empty__pillar-num">01</span>
+            <span className="catalog-empty__pillar-label">{locale === "ar" ? "تخصيص كامل بالاسم والتفاصيل" : "Personalized with name & details"}</span>
+          </div>
+          <div className="catalog-empty__pillar">
+            <span className="catalog-empty__pillar-num">02</span>
+            <span className="catalog-empty__pillar-label">{locale === "ar" ? "خامات متينة ومقاومة للماء" : "Durable waterproof materials"}</span>
+          </div>
+          <div className="catalog-empty__pillar">
+            <span className="catalog-empty__pillar-num">03</span>
+            <span className="catalog-empty__pillar-label">{locale === "ar" ? "صُنع وشُحن بكل حب في مصر" : "Handcrafted with love in Egypt"}</span>
+          </div>
+        </div>
         <Link href="/categories" className="daisy-button daisy-button--dark">
           {t("exploreCategories")} <Arrow size={16} />
         </Link>
@@ -61,36 +76,16 @@ export default async function ProductsPage() {
         </div>
 
         <div className="store-category-grid" data-scroll-reveal-stagger>
-          {storeCategories.map((category) => {
-            const name = categoryNameForLocale(category, locale);
-            const tagline = categoryTaglineForLocale(category, locale);
-            return (
-              <Link
-                key={category.id}
-                href={`/categories/${category.slug}`}
-                className="store-category-card"
-                data-scroll-reveal
-                suppressHydrationWarning
-              >
-                <div className="store-category-card__cover">
-                  <span className="store-category-card__mark" aria-hidden="true">
-                    <span>{category.letter}</span>
-                    <small>DAISY DESIGNS / {t("categoryLabel")}</small>
-                  </span>
-                </div>
-                <div className="store-category-card__content">
-                  <div className="store-category-card__title">
-                    <h3>{name}</h3>
-                    <span className="store-category-card__arrow" aria-hidden="true">↗</span>
-                  </div>
-                  <p className="store-category-card__tagline">{tagline}</p>
-                  <div className="store-category-card__action">
-                    <span>{t("exploreCategory")}</span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {storeCategories.map((category, index) => (
+            <CategoryCard
+              key={category.id}
+              category={category}
+              locale={locale}
+              index={index}
+              showDescription={false}
+              headingTag="h3"
+            />
+          ))}
         </div>
       </section>
     </main>

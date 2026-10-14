@@ -4,11 +4,8 @@ import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import {
   getStoreCategories,
-  categoryNameForLocale,
-  categoryTaglineForLocale,
-  categoryDescriptionForLocale,
-  categoryNoticeForLocale,
 } from "@/lib/store-categories";
+import { CategoryCard } from "@/components/category-card";
 
 export const dynamic = "force-dynamic";
 
@@ -42,41 +39,17 @@ export default async function CategoriesPage() {
       </header>
 
       <div className="store-category-grid" data-scroll-reveal-stagger>
-        {categories.map((category) => {
-          const name = categoryNameForLocale(category, locale);
-          const tagline = categoryTaglineForLocale(category, locale);
-          const description = categoryDescriptionForLocale(category, locale);
-          const notice = categoryNoticeForLocale(category, locale);
-
-          return (
-            <Link
-              key={category.id}
-              href={`/categories/${category.slug}`}
-              className="store-category-card"
-              data-scroll-reveal
-              suppressHydrationWarning
-            >
-              <div className="store-category-card__cover">
-                <span className="store-category-card__mark" aria-hidden="true">
-                  <span>{category.letter}</span>
-                  <small>DAISY DESIGNS / {t("categoryLabel")}</small>
-                </span>
-              </div>
-              <div className="store-category-card__content">
-                <div className="store-category-card__title">
-                  <h2>{name}</h2>
-                  <span className="store-category-card__arrow" aria-hidden="true">↗</span>
-                </div>
-                <p className="store-category-card__tagline">{tagline}</p>
-                <p className="store-category-card__description">{description}</p>
-                {notice && <span className="store-category-card__notice">{notice}</span>}
-                <div className="store-category-card__action">
-                  <span>{t("exploreCategory")}</span>
-                </div>
-              </div>
-            </Link>
-          );
-        })}
+        {categories.map((category, index) => (
+          <CategoryCard
+            key={category.id}
+            category={category}
+            locale={locale}
+            index={index}
+            showNotice={true}
+            showDescription={true}
+            headingTag="h2"
+          />
+        ))}
       </div>
     </main>
   );

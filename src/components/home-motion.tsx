@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { motion, useReducedMotion } from "motion/react";
 
 type HeroTextRevealProps = {
   children: ReactNode;
@@ -12,9 +13,96 @@ type SectionRevealProps = HeroTextRevealProps & {
 };
 
 export function HeroTextReveal({ children, className }: HeroTextRevealProps) {
-  return <div className={className} data-scroll-reveal suppressHydrationWarning>{children}</div>;
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return (
+      <div className={className} suppressHydrationWarning>
+        {children}
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      suppressHydrationWarning
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 export function SectionReveal({ children, className, labelledBy }: SectionRevealProps) {
-  return <section className={className} aria-labelledby={labelledBy} data-scroll-reveal suppressHydrationWarning>{children}</section>;
+  return (
+    <section className={className} aria-labelledby={labelledBy} data-scroll-reveal suppressHydrationWarning>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Storybook-inspired section reveal for the Customized Stories section.
+ * When reduced motion is preferred, renders a standard section immediately.
+ */
+export function StorybookReveal({ children, className, labelledBy }: SectionRevealProps) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return (
+      <section className={className} aria-labelledby={labelledBy} suppressHydrationWarning>
+        {children}
+      </section>
+    );
+  }
+
+  return (
+    <motion.section
+      className={className}
+      aria-labelledby={labelledBy}
+      initial={{ opacity: 0, y: 24, scale: 0.99 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+      suppressHydrationWarning
+    >
+      {children}
+    </motion.section>
+  );
+}
+
+/**
+ * Gentle interactive floating/rotating mark for Daisy floral accents.
+ * Marked aria-hidden="true" to keep decorative elements out of the accessibility tree.
+ */
+export function InteractiveMark({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return (
+      <span className={className} aria-hidden="true">
+        {children}
+      </span>
+    );
+  }
+
+  return (
+    <motion.span
+      className={className}
+      aria-hidden="true"
+      whileHover={{ scale: 1.15, rotate: 18 }}
+      transition={{ type: "spring", stiffness: 360, damping: 22 }}
+    >
+      {children}
+    </motion.span>
+  );
 }
