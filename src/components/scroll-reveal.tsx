@@ -25,29 +25,39 @@ export function ScrollReveal() {
     let stopped = false;
     const revealed = new WeakSet<Element>();
     const animations = new Set<Animation>();
+    const revealTarget = (element: HTMLElement, isInstant: boolean) => {
+      if (revealed.has(element)) return;
+      revealed.add(element);
+      observer.unobserve(element);
+      element.setAttribute("data-scroll-revealed", "true");
+
+      if (isInstant) return;
+
+      try {
+        const animation = element.animate(
+          [{ opacity: 0, transform: "translate3d(0, 12px, 0)" }, { opacity: 1, transform: "translate3d(0, 0, 0)" }],
+          { duration: 520, delay: revealDelay(element), easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "both" },
+        );
+        animations.add(animation);
+        animation.onfinish = () => {
+          animations.delete(animation);
+          animation.cancel();
+        };
+      } catch {
+        element.setAttribute("data-scroll-revealed", "true");
+      }
+    };
+
     const observer = new IntersectionObserver(entries => {
       for (const entry of entries) {
-        if (!entry.isIntersecting || revealed.has(entry.target)) continue;
-        revealed.add(entry.target);
-        observer.unobserve(entry.target);
-        const element = entry.target as HTMLElement;
-        element.setAttribute("data-scroll-revealed", "true");
-        try {
-          const animation = element.animate(
-            [{ opacity: 0, transform: "translate3d(0, 12px, 0)" }, { opacity: 1, transform: "translate3d(0, 0, 0)" }],
-            { duration: 520, delay: revealDelay(element), easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "both" },
-          );
-          animations.add(animation);
-          animation.onfinish = () => {
-            animations.delete(animation);
-            animation.cancel();
-          };
-        } catch {
-          // Leave the target marked visible if the platform rejects the animation.
-          element.setAttribute("data-scroll-revealed", "true");
-        }
+        if (revealed.has(entry.target)) continue;
+        const rect = entry.boundingClientRect;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const isAtOrAboveViewport = rect.top <= viewportHeight;
+        if (!entry.isIntersecting && !isAtOrAboveViewport) continue;
+        revealTarget(entry.target as HTMLElement, rect.bottom < 0);
       }
-    }, { rootMargin: "0px 0px -4% 0px", threshold: 0.04 });
+    }, { rootMargin: "0px 0px 50px 0px", threshold: 0.01 });
 
     const observe = (root: ParentNode) => {
       root.querySelectorAll(TARGET_SELECTOR).forEach(element => {
@@ -59,25 +69,36 @@ export function ScrollReveal() {
     const revealFocusedTarget = (event: FocusEvent) => {
       if (!(event.target instanceof Element)) return;
       const element = event.target.closest(TARGET_SELECTOR);
-      if (!element || revealed.has(element)) return;
-      revealed.add(element);
-      element.setAttribute("data-scroll-revealed", "true");
-      observer.unobserve(element);
+      if (!element || !(element instanceof HTMLElement)) return;
+      revealTarget(element, false);
     };
     document.addEventListener("focusin", revealFocusedTarget);
 
-    // Keep server-rendered content visible until the observer is ready. Elements
-    // at or above the current viewport are marked first to avoid a flash when enhancement starts.
-    const viewportHeight = window.innerHeight;
-    document.querySelectorAll(TARGET_SELECTOR).forEach(element => {
-      const rect = element.getBoundingClientRect();
-      if (rect.top < viewportHeight) {
-        revealed.add(element);
-        element.setAttribute("data-scroll-revealed", "true");
-        observer.unobserve(element);
-      }
-    });
+    const checkVisibleElements = () => {
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      document.querySelectorAll(`${TARGET_SELECTOR}:not([data-scroll-revealed="true"])`).forEach(el => {
+        if (!(el instanceof HTMLElement) || revealed.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= viewportHeight + 80) {
+          revealTarget(el, rect.bottom < 0);
+        }
+      });
+    };
+
+    // Mark viewport and near-fold elements before enabling the hidden styles
+    checkVisibleElements();
     document.documentElement.setAttribute("data-scroll-reveal-ready", "true");
+
+    let scrollScheduled = false;
+    const onScroll = () => {
+      if (scrollScheduled) return;
+      scrollScheduled = true;
+      requestAnimationFrame(() => {
+        scrollScheduled = false;
+        checkVisibleElements();
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     const mutationObserver = new MutationObserver(records => {
       for (const record of records) record.addedNodes.forEach(node => {
@@ -94,6 +115,7 @@ export function ScrollReveal() {
       stopped = true;
       animations.forEach(animation => animation.cancel());
       animations.clear();
+      window.removeEventListener("scroll", onScroll);
       mutationObserver.disconnect();
       observer.disconnect();
       document.removeEventListener("focusin", revealFocusedTarget);
@@ -106,6 +128,7 @@ export function ScrollReveal() {
       stopped = true;
       animations.forEach(animation => animation.cancel());
       animations.clear();
+      window.removeEventListener("scroll", onScroll);
       motionPreference.removeEventListener("change", handleMotionChange);
       document.removeEventListener("focusin", revealFocusedTarget);
       mutationObserver.disconnect();

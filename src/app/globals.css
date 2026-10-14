@@ -4914,6 +4914,11 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal]:not([data-scroll-reve
   transform: translate3d(0, 12px, 0);
 }
 
+html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed="true"] {
+  opacity: 1;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html[data-scroll-reveal-ready="true"] [data-scroll-reveal] {
     opacity: 1 !important;
@@ -5770,11 +5775,12 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal]:not([data-scroll-reve
 /* Playful Luxury Title Flourish & Doodle Accents */
 .daisy-hero__title-wiggle {
   display: block;
-  width: clamp(80px, 12vw, 130px);
+  width: clamp(70px, 9vw, 108px);
   height: auto;
+  max-height: 8px;
   color: var(--accent-daisy);
-  margin-top: 6px;
-  opacity: 0.85;
+  margin-top: 5px;
+  opacity: 0.78;
 }
 
 .daisy-mark--doodle {

@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight } from "lucide-react";
 import { HeroTextReveal, SectionReveal, StorybookReveal, InteractiveMark, StaggerCategoryGrid } from "@/components/home-motion";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
-import { formatLocaleNumber } from "@/lib/locale";
 import {
   getStoreCategories,
 } from "@/lib/store-categories";
@@ -86,8 +85,8 @@ export default async function Home() {
         </div>
       </SectionReveal>
 
-      <section className="daisy-categories" aria-labelledby="categories-title" data-scroll-reveal suppressHydrationWarning>
-        <header className="daisy-section-heading">
+      <section className="daisy-categories" aria-labelledby="categories-title">
+        <header className="daisy-section-heading" data-scroll-reveal suppressHydrationWarning>
           <div>
             <p className="eyebrow">{t("homeCategoriesEyebrow")}</p>
             <h2 id="categories-title">{t("homeCategoriesTitle")}</h2>
@@ -130,15 +129,15 @@ export default async function Home() {
           <p className="daisy-personalization__description">{t("homePersonalDescription")}</p>
           <ol className="daisy-steps">
             <li>
-              <span>{formatLocaleNumber(locale, 1).padStart(2, "0")}</span>
+              <span>1</span>
               <span>{t("homePersonalStepOne")}</span>
             </li>
             <li>
-              <span>{formatLocaleNumber(locale, 2).padStart(2, "0")}</span>
+              <span>2</span>
               <span>{t("homePersonalStepTwo")}</span>
             </li>
             <li>
-              <span>{formatLocaleNumber(locale, 3).padStart(2, "0")}</span>
+              <span>3</span>
               <span>{t("homePersonalStepThree")}</span>
             </li>
           </ol>

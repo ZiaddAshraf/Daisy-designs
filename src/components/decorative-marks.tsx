@@ -64,16 +64,16 @@ export function SparkleStar({ size = 16, className = "", ...props }: MarkProps) 
 export function PlayfulWiggle({ className = "", ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      viewBox="0 0 120 12"
+      viewBox="0 0 120 8"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="1.15"
       strokeLinecap="round"
       className={`daisy-mark daisy-mark--wiggle ${className}`}
       aria-hidden="true"
       {...props}
     >
-      <path d="M2 7C14 2 24 11 36 6C48 1 58 11 70 6C82 1 92 11 104 6C110 3.5 115 5 118 7" />
+      <path d="M2 4.5C14 2 24 6.5 36 4C48 1.5 58 6.5 70 4C82 1.5 92 6.5 104 4C110 2.8 115 3.6 118 4.5" />
     </svg>
   );
 }

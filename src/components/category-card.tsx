@@ -32,7 +32,7 @@ export function CategoryCard({
   const description = categoryDescriptionForLocale(category, locale);
   const notice = categoryNoticeForLocale(category, locale);
   const t = (key: TranslationKey) => getTranslation(locale, key);
-  const indexStr = String(index + 1).padStart(2, "0");
+  const indexStr = String(index + 1);
   const Heading = headingTag;
 
   return (

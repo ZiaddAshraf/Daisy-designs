@@ -49,15 +49,15 @@ export default async function ProductsPage() {
         <p className="catalog-empty__lead">{t("productsComingSoonDescription")}</p>
         <div className="catalog-empty__pillars" aria-hidden="true">
           <div className="catalog-empty__pillar">
-            <span className="catalog-empty__pillar-num">01</span>
+            <span className="catalog-empty__pillar-num">1</span>
             <span className="catalog-empty__pillar-label">{locale === "ar" ? "تخصيص كامل بالاسم والتفاصيل" : "Personalized with name & details"}</span>
           </div>
           <div className="catalog-empty__pillar">
-            <span className="catalog-empty__pillar-num">02</span>
+            <span className="catalog-empty__pillar-num">2</span>
             <span className="catalog-empty__pillar-label">{locale === "ar" ? "خامات متينة ومقاومة للماء" : "Durable waterproof materials"}</span>
           </div>
           <div className="catalog-empty__pillar">
-            <span className="catalog-empty__pillar-num">03</span>
+            <span className="catalog-empty__pillar-num">3</span>
             <span className="catalog-empty__pillar-label">{locale === "ar" ? "صُنع وشُحن بكل حب في مصر" : "Handcrafted with love in Egypt"}</span>
           </div>
         </div>

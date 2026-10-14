@@ -49,28 +49,10 @@ export function SectionReveal({ children, className, labelledBy }: SectionReveal
  * When reduced motion is preferred, renders a standard section immediately.
  */
 export function StorybookReveal({ children, className, labelledBy }: SectionRevealProps) {
-  const shouldReduceMotion = useReducedMotion();
-
-  if (shouldReduceMotion) {
-    return (
-      <section className={className} aria-labelledby={labelledBy} suppressHydrationWarning>
-        {children}
-      </section>
-    );
-  }
-
   return (
-    <motion.section
-      className={className}
-      aria-labelledby={labelledBy}
-      initial={{ opacity: 0, y: 24, scale: 0.99 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-      suppressHydrationWarning
-    >
+    <section className={className} aria-labelledby={labelledBy} data-scroll-reveal suppressHydrationWarning>
       {children}
-    </motion.section>
+    </section>
   );
 }
 
