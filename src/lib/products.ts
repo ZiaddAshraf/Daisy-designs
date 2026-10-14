@@ -1,4 +1,5 @@
 import { PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
+import { formatLocaleNumber, type Locale } from "@/lib/locale";
 
 export type Product = { slug: string; name: string; category: string; price: number; compareAtPrice?: number; image: string; description: string; customizable?: boolean; hasVariants?: boolean; badge?: string };
 export const products: Product[] = [
@@ -9,4 +10,7 @@ export const products: Product[] = [
     { slug: "pencil-case", name: "مقلمة | Essential", category: "شنط ومقلمات", price: 320, image: PRODUCT_IMAGE_PLACEHOLDER, description: "مقلمة مرتبة لكل الأدوات الصغيرة.", customizable: true },
     { slug: "sticker-pack-mini", name: "ملصقات صغيرة | Mini", category: "استيكرات مدرسية", price: 99, image: PRODUCT_IMAGE_PLACEHOLDER, description: "تفاصيل صغيرة تضيف شخصية لكل شيء." },
 ];
-export function formatPrice(price: number) { return `${price.toLocaleString("ar-EG")} ج.م`; }
+export function formatPrice(price: number, locale: Locale = "ar") {
+    const amount = formatLocaleNumber(locale, price);
+    return locale === "ar" ? `${amount} ج.م` : `${amount} EGP`;
+}

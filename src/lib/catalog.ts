@@ -3,6 +3,8 @@ import type { Prisma } from "@prisma/client";
 import type { Product as StorefrontProduct } from "@/lib/products";
 import { getProductImageUrl } from "@/lib/product-image";
 import { isDemoModeEnabled } from "@/lib/demo-mode";
+import type { Locale } from "@/lib/locale";
+import { getTranslation } from "@/lib/i18n/messages";
 import { getDemoCatalogPage, getDemoCategories, getDemoCategory, getDemoCollection, getDemoCollections, getDemoProduct, getDemoProducts } from "@/lib/demo-catalog-data";
 
 export function isDemoMode() { return isDemoModeEnabled(); }
@@ -53,10 +55,23 @@ export async function getCatalogPage(filters: { category?: string; collection?: 
     return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
 }
 
-export function toStorefrontProduct(product: { slug: string; name: string; arabicName?: string; tags?: string[]; price: number; compareAtPrice: number | null; description: string; arabicDescription?: string; customizable: boolean; images: { url: string }[]; variants?: { id: string }[]; category?: { arabicName: string } | null; badge?: string; featured?: boolean; bestSeller?: boolean; newArrival?: boolean }): StorefrontProduct {
+export function selectLocalizedText(locale: Locale, english?: string | null, arabic?: string | null): string {
+    const selected = locale === "ar" ? arabic : english;
+    const fallback = locale === "ar" ? english : arabic;
+    return selected?.trim() ? selected : fallback?.trim() ? fallback : "";
+}
+
+/** Collections have one merchant-authored name/description field and no locale pair. Keep it verbatim in either locale rather than inventing a translation. */
+export function collectionTextForLocale(value: string | null, _locale: Locale): string | null {
+    void _locale;
+    return value;
+}
+
+export function toStorefrontProduct(product: { slug: string; name: string; arabicName?: string; tags?: string[]; price: number; compareAtPrice: number | null; description: string; arabicDescription?: string; customizable: boolean; images: { url: string }[]; variants?: { id: string }[]; category?: { name?: string; arabicName?: string } | null; badge?: string; featured?: boolean; bestSeller?: boolean; newArrival?: boolean }, locale: Locale = "ar"): StorefrontProduct {
     const demo = product.tags?.includes("DEMO_CATALOG_V1") ?? false;
-    const visibleName = demo ? (product.arabicName ?? product.name).replace(/^DEMO — /, "") : product.name;
-    const visibleCategory = demo ? product.category?.arabicName?.replace(/^DEMO — /, "") : product.category?.arabicName;
-    const badge = product.badge ?? (demo && product.bestSeller ? "اختيار تجريبي" : undefined);
-    return { slug: product.slug, name: visibleName, category: visibleCategory ?? "منتجات مخصصة", price: product.price, compareAtPrice: product.compareAtPrice ?? undefined, image: getProductImageUrl(product.images[0]?.url), description: demo ? product.arabicDescription ?? product.description : product.description, customizable: product.customizable, hasVariants: Boolean(product.variants?.length), badge };
+    const visibleName = selectLocalizedText(locale, product.name, product.arabicName).replace(/^DEMO — /, "");
+    const categoryName = product.category ? selectLocalizedText(locale, product.category.name, product.category.arabicName) : "";
+    const visibleCategory = categoryName.replace(/^DEMO — /, "");
+    const badge = product.badge ?? (demo && product.bestSeller ? getTranslation(locale, "demoPick") : undefined);
+    return { slug: product.slug, name: visibleName, category: visibleCategory || getTranslation(locale, "customProducts"), price: product.price, compareAtPrice: product.compareAtPrice ?? undefined, image: getProductImageUrl(product.images[0]?.url), description: selectLocalizedText(locale, product.description, product.arabicDescription), customizable: product.customizable, hasVariants: Boolean(product.variants?.length), badge };
 }

@@ -12,7 +12,7 @@ import {
   readLocaleFromCookieHeader,
   resolveLocale,
 } from "../src/lib/locale";
-import { getTranslation, messages } from "../src/lib/i18n/messages";
+import { formatMessage, getTranslation, messages } from "../src/lib/i18n/messages";
 
 test("Arabic is the default when the locale cookie is absent or invalid", () => {
   assert.equal(resolveLocale(null), "ar");
@@ -64,6 +64,17 @@ test("locale switch destination preserves a same-site path and query only", () =
 
 test("Arabic and English dictionaries have matching keys", () => {
   assert.deepEqual(Object.keys(messages.ar).sort(), Object.keys(messages.en).sort());
+});
+
+test("English interface translations do not contain Arabic text", () => {
+  for (const [key, value] of Object.entries(messages.en)) {
+    assert.doesNotMatch(value, /[\u0600-\u06FF]/, `English translation contains Arabic text at ${key}`);
+  }
+});
+
+test("interpolated interface messages preserve merchant-provided product names", () => {
+  assert.equal(formatMessage(getTranslation("en", "viewProduct"), { name: "Merchant Original Name" }), "View Merchant Original Name");
+  assert.equal(formatMessage(getTranslation("ar", "viewProduct"), { name: "Merchant Original Name" }), "عرض Merchant Original Name");
 });
 
 test("translation helper returns the requested message and exposes missing keys", () => {

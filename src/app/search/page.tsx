@@ -1,8 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Search } from "lucide-react";
 import { CatalogControls, CatalogPagination } from "@/components/catalog-controls";
 import { DatabaseUnavailable } from "@/components/database-state";
 import { ProductCard } from "@/components/storefront";
+import { formatMessage, getTranslation, type TranslationKey } from "@/lib/i18n/messages";
+import { selectLocalizedText } from "@/lib/catalog";
+import { getRequestLocale } from "@/lib/locale-server";
+import { formatLocaleNumber } from "@/lib/locale";
 import { getCatalogCategories, getCatalogCollectionOptions, isDemoMode, toStorefrontProduct } from "@/lib/catalog";
 import { getDemoCatalogPage } from "@/lib/demo-catalog-data";
 import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
@@ -13,7 +18,14 @@ type SearchProduct = Parameters<typeof toStorefrontProduct>[0] & { id: string };
 const allowedSorts = new Set(["newest", "price-asc", "price-desc", "best-selling"]);
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return { title: getTranslation(locale, "searchPageTitle"), description: getTranslation(locale, "searchPageIntro") };
+}
+
 export default async function SearchPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const locale = await getRequestLocale();
+  const t = (key: TranslationKey) => getTranslation(locale, key);
   const params = await searchParams;
   const query = (params.q ?? "").trim().slice(0, 80);
   const page = params.page && /^\d{1,5}$/.test(params.page) ? Math.max(1, Number(params.page)) : 1;
@@ -31,7 +43,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     page: String(page),
   };
 
-  let categories: { slug: string; arabicName: string }[] = [];
+  let categories: { slug: string; name: string; arabicName: string }[] = [];
   let collections: { slug: string; name: string }[] = [];
   let products: SearchProduct[] = [];
   let total = 0;
@@ -76,16 +88,16 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     else throw error;
   }
 
-  if (unavailable) return <main className="catalog-page"><DatabaseUnavailable message="لا يمكن تنفيذ البحث الآن" /></main>;
+  if (unavailable) return <main className="catalog-page"><DatabaseUnavailable messageKey="searchUnavailable" /></main>;
   const totalPages = Math.ceil(total / 12);
-  const productViews = products.map(product => toStorefrontProduct(product));
+  const productViews = products.map(product => toStorefrontProduct(product, locale));
 
   return <main className="catalog-page">
-    <header className="catalog-page__heading"><div><p className="eyebrow">DAISY DESIGNS / البحث</p><h1>ابحثي عمّا يشبههم</h1><p>منتجات وتفاصيل صنعت خصيصًا لهم.</p></div></header>
-    <form action="/search" className="catalog-search-form" role="search"><input name="q" type="search" defaultValue={query} maxLength={80} placeholder="اسم المنتج أو القسم" aria-label="ابحثي عن منتج" /><button aria-label="تنفيذ البحث"><Search size={18} /></button></form>
-    {query && <div className="catalog-result-line"><span>نتائج البحث عن: {query}</span><span>{total} نتيجة</span></div>}
-    {query && <CatalogControls action="/search" filters={filters} categories={categories.map(item => ({ slug: item.slug, label: item.arabicName }))} collections={collections.map(item => ({ slug: item.slug, label: item.name }))} />}
-    {!query ? <section className="catalog-empty"><h2>ابدئي بكلمة تبحثين عنها</h2><Link href="/products" className="daisy-button daisy-button--dark">تصفح المنتجات</Link></section> : productViews.length ? <div className="catalog-product-grid">{productViews.map(product => <ProductCard key={product.slug} product={product} />)}</div> : <section className="catalog-empty"><h2>لم نجد ما تبحثين عنه</h2><p>جربي كلمة أخرى أو تصفحي جميع المنتجات.</p><Link href="/products" className="daisy-button daisy-button--dark">تصفح جميع المنتجات</Link></section>}
-    <CatalogPagination path="/search" filters={filters} page={page} totalPages={totalPages} />
+    <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning><div><p className="eyebrow">DAISY DESIGNS / {t("search")}</p><h1>{t("searchPageTitle")}</h1><p>{t("searchPageIntro")}</p></div></header>
+    <form action="/search" className="catalog-search-form" role="search"><input name="q" type="search" defaultValue={query} maxLength={80} placeholder={t("searchPlaceholder")} aria-label={t("searchProduct")} /><button aria-label={t("submitSearch")}><Search size={18} /></button></form>
+    {query && <div className="catalog-result-line" data-scroll-reveal suppressHydrationWarning><span>{formatMessage(t("searchResultQuery"), { query })}</span><span>{formatMessage(t("searchResultCount"), { count: formatLocaleNumber(locale, total) })}</span></div>}
+    {query && <CatalogControls action="/search" filters={filters} locale={locale} categories={categories.map(item => ({ slug: item.slug, label: selectLocalizedText(locale, item.name, item.arabicName) }))} collections={collections.map(item => ({ slug: item.slug, label: item.name }))} />}
+    {!query ? <section className="catalog-empty" data-scroll-reveal suppressHydrationWarning><h2>{t("startSearchTitle")}</h2><Link href="/products" className="daisy-button daisy-button--dark">{t("browseProducts")}</Link></section> : productViews.length ? <div className="catalog-product-grid" data-scroll-reveal-stagger>{productViews.map(product => <ProductCard key={product.slug} product={product} />)}</div> : <section className="catalog-empty" data-scroll-reveal suppressHydrationWarning><h2>{t("noSearchResultsTitle")}</h2><p>{t("noSearchResultsDescription")}</p><Link href="/products" className="daisy-button daisy-button--dark">{t("browseAllProducts")}</Link></section>}
+    <CatalogPagination path="/search" filters={filters} page={page} totalPages={totalPages} locale={locale} />
   </main>;
 }

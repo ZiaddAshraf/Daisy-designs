@@ -1,2 +1,4 @@
 import Link from "next/link";
-export default function CollectionNotFound() { return <main className="catalog-page"><section className="catalog-empty"><h1>المجموعة غير موجودة</h1><p>قد يكون الرابط تغيّر أو لم تعد المجموعة منشورة.</p><Link href="/collections" className="daisy-button daisy-button--dark">العودة إلى المجموعات</Link></section></main>; }
+import { getTranslation } from "@/lib/i18n/messages";
+import { getRequestLocale } from "@/lib/locale-server";
+export default async function CollectionNotFound() { const locale = await getRequestLocale(); const t = (key: "collectionNotFound" | "collectionNotFoundHelp" | "returnToCollections") => getTranslation(locale, key); return <main className="catalog-page"><section className="catalog-empty"><h1>{t("collectionNotFound")}</h1><p>{t("collectionNotFoundHelp")}</p><Link href="/collections" className="daisy-button daisy-button--dark">{t("returnToCollections")}</Link></section></main>; }

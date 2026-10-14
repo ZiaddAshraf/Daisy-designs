@@ -20,6 +20,10 @@ export function directionForLocale(locale: Locale): TextDirection {
   return locale === "ar" ? "rtl" : "ltr";
 }
 
+export function formatLocaleNumber(locale: Locale, value: number): string {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG").format(value);
+}
+
 export function getLocaleDocumentAttributes(locale: Locale) {
   return { lang: locale, dir: directionForLocale(locale) } as const;
 }
