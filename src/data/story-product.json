@@ -1,0 +1,125 @@
+{
+  "draft": false,
+  "status": "ACTIVE_PUBLISHED",
+  "category": {
+    "id": "customized-stories",
+    "slug": "customized-stories",
+    "name": "Customized Stories",
+    "arabicName": "قصص مخصصة"
+  },
+  "product": {
+    "slug": "first-year-at-school",
+    "name": "First Year at School",
+    "arabicName": "أول سنة في المدرسة",
+    "format": "Physical Printed Paper Storybook",
+    "arabicFormat": "كتاب ورقي مطبوع فاخر",
+    "customizable": true,
+    "available": true,
+    "price": 200,
+    "compareAtPrice": null,
+    "sku": "DD-ST-001",
+    "stock": 50,
+    "lowStockThreshold": 5,
+    "published": true,
+    "description": "An inspiring personalized children's storybook crafted with care by Daisy Designs. Starring your child with their uploaded photograph integrated into a beautifully printed keepsake paper book. Fixed narrative celebrating friendship, confidence, and courage on their first year at school.",
+    "arabicDescription": "قصة أطفال ملهمة ومصممة بحب من Daisy Designs. تضع طفلك بطلاً للقصة من خلال رفع صورته لتُطبع داخل كتاب ورقي فاخر يبقى ذكرى لا تُنسى. نصوص ورسومات ثابتة ومحفزة تروي تفاصيل أول سنة في المدرسة بمشاعر الحماس والثقة بالنفس والصداقة.",
+    "primaryImage": {
+      "url": "/products/customized-stories/first-year-at-school/cover.jpeg",
+      "alt": "Daisy Designs First Year at School Storybook Cover",
+      "arabicAlt": "غلاف قصة أول سنة في المدرسة من Daisy Designs",
+      "dimensions": { "width": 902, "height": 1280 },
+      "role": "front_cover"
+    },
+    "gallery": [
+      {
+        "position": 1,
+        "pageNumber": 1,
+        "url": "/products/customized-stories/first-year-at-school/page-01.jpeg",
+        "title": "Page 1: Good Morning! / صباح الخير!",
+        "arabicTitle": "الصفحة ١: الاستيقاظ والحماس لليوم الدراسي الأول",
+        "text": "صباح الخير! أنا عز. اليوم أول يوم ليا في المدرسة! أنا متحمس جداً ومبسوط، وعايز أتعلم حاجات جديدة وأكون أصدقاء جداد.",
+        "dimensions": { "width": 902, "height": 1280 }
+      },
+      {
+        "position": 2,
+        "pageNumber": 2,
+        "url": "/products/customized-stories/first-year-at-school/page-02.jpeg",
+        "title": "Page 2: The School Bus / باص المدرسة",
+        "arabicTitle": "الصفحة ٢: توديع الوالدين وركوب باص المدرسة",
+        "text": "ودعت بابا وماما وركبت باص المدرسة كنت متحمس جداً",
+        "dimensions": { "width": 902, "height": 1280 }
+      },
+      {
+        "position": 3,
+        "pageNumber": 3,
+        "url": "/products/customized-stories/first-year-at-school/page-03.jpeg",
+        "title": "Page 3: Warm Welcome / الترحيب في المدرسة",
+        "arabicTitle": "الصفحة ٣: وصول المدرسة وابتسامة المعلمة الدافئة",
+        "text": "في المدرسة استقبلتني الميس بكل ابتسامة! قالتلي: 'أهلاً يا عز' ومن اليوم الأول حسيت إن المكان ممتع، والكل هنا طيب وهيساعدني.",
+        "dimensions": { "width": 902, "height": 1280 }
+      },
+      {
+        "position": 4,
+        "pageNumber": 4,
+        "url": "/products/customized-stories/first-year-at-school/page-04.jpeg",
+        "title": "Page 4: Classroom Activities / أنشطة الفصل",
+        "arabicTitle": "الصفحة ٤: الرسم والتلوين والأنشطة الممتعة",
+        "text": "في الفصل عملت أنشطة ممتعة جداً! رسمت ولونت، وتعلمت كلمات جديدة، واكتشفت إن التعلم ممتع لما أكون مع أصحابي.",
+        "dimensions": { "width": 902, "height": 1280 }
+      },
+      {
+        "position": 5,
+        "pageNumber": 5,
+        "url": "/products/customized-stories/first-year-at-school/page-05.jpeg",
+        "title": "Page 5: Recess & Friends / وقت البريك واللعب",
+        "arabicTitle": "الصفحة ٥: اللعب بالكرة والمرح مع الأصدقاء",
+        "text": "وقت البريك خرجت ألعب مع صحابي، جرينا ولعبنا بالكرة وضحكنا كتير، وكنت مبسوط أوي معاهم ♡",
+        "dimensions": { "width": 902, "height": 1280 }
+      },
+      {
+        "position": 6,
+        "pageNumber": 6,
+        "url": "/products/customized-stories/first-year-at-school/page-06.jpeg",
+        "title": "Page 6: Lunchbox Surprise / وجبة اللانش بوكس",
+        "arabicTitle": "الصفحة ٦: فتح اللانش بوكس والوجبة الخاصة من ماما",
+        "text": "في البريك فتحت اللانش بوكس، وأكلت الوجبة اللي حضرتها ماما مخصوص عشاني. ♡",
+        "dimensions": { "width": 902, "height": 1280 }
+      },
+      {
+        "position": 7,
+        "pageNumber": 7,
+        "url": "/products/customized-stories/first-year-at-school/page-07.jpeg",
+        "title": "Page 7: Back Home / العودة للمنزل",
+        "arabicTitle": "الصفحة ٧: العودة السعيدة ومشاركة اليوم مع ماما",
+        "text": "وفي آخر اليوم رجعت من المدرسة مبسوط وحكيت لماما عن كل اللي عملته. ♡",
+        "dimensions": { "width": 902, "height": 1280 }
+      },
+      {
+        "position": 8,
+        "pageNumber": 8,
+        "url": "/products/customized-stories/first-year-at-school/page-08.jpeg",
+        "title": "Page 8: Self-Belief Affirmations / توكيدات الثقة بالنفس",
+        "arabicTitle": "الصفحة ٨: توكيدات نفسية وبناء الثقة بالنفس والختام",
+        "text": "أنا عز وأتعلم كل يوم. أنا شجاع. أنا قادر. أنا أكتسب أصدقاء. أنا أستمتع بالمدرسة. وأنا دائمًا أستطيع أن أتعلم شيئًا جديدًا! البداية فقط... والمزيد من المغامرات في الطريق! ♡",
+        "dimensions": { "width": 902, "height": 1280 }
+      },
+      {
+        "position": 9,
+        "pageNumber": 9,
+        "url": "/products/customized-stories/first-year-at-school/back-cover.jpeg",
+        "title": "Back Cover: Daisy Designs Branding / الغلاف الخلفي",
+        "arabicTitle": "الغلاف الخلفي: شعار Daisy Designs ورسالة القصة الرسمية",
+        "text": "Daisy Designs — WHERE IDEAS BLOOM. كل طفل بطل حكاية... قصة معمولة بحب من Daisy Designs علشان تفضل ذكرى حلوة يكبر معاها.",
+        "dimensions": { "width": 902, "height": 1280 }
+      }
+    ],
+    "specifications": {
+      "format": "Physical Printed Paper Book (كتاب ورقي مطبوع)",
+      "provisionalSize": "A4 (Pending print-shop confirmation / قيد تأكيد المطبعة)",
+      "provisionalCover": "Softcover (Pending print-shop confirmation / قيد تأكيد المطبعة)",
+      "targetPrepTime": "1 business day before shipping (يوم عمل واحد للتجهيز قبل الشحن)",
+      "totalStoryPages": 10
+    }
+  }
+}
+

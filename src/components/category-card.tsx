@@ -1,3 +1,4 @@
+import Image from "@/components/site-image";
 import Link from "next/link";
 import type { StoreCategory } from "@/lib/store-categories";
 import {
@@ -19,6 +20,15 @@ type CategoryCardProps = {
   headingTag?: "h2" | "h3";
 };
 
+const CATEGORY_IMAGES: Record<string, string> = {
+  "stickers": "/products/stickers/sticker-01-kpop-demon-hunters.jpeg",
+  "reward-cards": "/products/reward-cards/reward-cards-box-set.jpeg",
+  "customized-stories": "/products/customized-stories/first-year-at-school/cover.jpeg",
+  "printed-t-shirts": "/products/t-shirts/white-tshirt.svg",
+};
+
+const LIVE_CATEGORY_SLUGS = new Set(["stickers", "reward-cards", "customized-stories", "printed-t-shirts"]);
+
 export function CategoryCard({
   category,
   locale,
@@ -34,48 +44,65 @@ export function CategoryCard({
   const t = (key: TranslationKey) => getTranslation(locale, key);
   const indexStr = String(index + 1);
   const Heading = headingTag;
+  const isLive = LIVE_CATEGORY_SLUGS.has(category.slug);
+  const categoryImage = CATEGORY_IMAGES[category.slug];
 
   return (
     <Link
       href={`/categories/${category.slug}`}
-      className="store-category-card"
+      className="store-category-card group"
       data-scroll-reveal
       suppressHydrationWarning
     >
       <div className="store-category-card__cover">
-        <div className="store-category-card__index" aria-hidden="true">
+        {categoryImage ? (
+          <>
+            <Image
+              src={categoryImage}
+              alt={name}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="store-category-card__cover-image"
+            />
+            <div className="store-category-card__cover-overlay" aria-hidden="true" />
+          </>
+        ) : (
+          <div className="store-category-card__mark" aria-hidden="true">
+            <div className="store-category-card__letter-wrap">
+              <span className="store-category-card__letter">{category.letter}</span>
+              {category.slug === "customized-stories" && (
+                <span className="store-category-card__floating-icon">
+                  <StorybookIcon size={18} />
+                </span>
+              )}
+              {category.slug === "printed-t-shirts" && (
+                <span className="store-category-card__floating-icon">
+                  <SparkleStar size={15} />
+                </span>
+              )}
+            </div>
+            <small>DAISY DESIGNS / {t("categoryLabel")}</small>
+          </div>
+        )}
+
+        <div className={`store-category-card__index ${categoryImage ? "store-category-card__index--on-image" : ""}`} aria-hidden="true">
           <span>{indexStr}</span>
           <span className="store-category-card__index-rule" />
           <span className="store-category-card__flower-badge">
             <DaisyFlower size={13} />
           </span>
         </div>
-        <div className="store-category-card__mark" aria-hidden="true">
-          <div className="store-category-card__letter-wrap">
-            <span className="store-category-card__letter">{category.letter}</span>
-            {category.slug === "stickers" && (
-              <span className="store-category-card__floating-icon">
-                <SparkleStar size={14} />
-              </span>
-            )}
-            {category.slug === "reward-cards" && (
-              <span className="store-category-card__floating-icon">
-                <SparkleStar size={16} />
-              </span>
-            )}
-            {category.slug === "customized-stories" && (
-              <span className="store-category-card__floating-icon">
-                <StorybookIcon size={18} />
-              </span>
-            )}
-          </div>
-          <small>DAISY DESIGNS / {t("categoryLabel")}</small>
-        </div>
+
+        <span className={`store-category-card__badge ${isLive ? "store-category-card__badge--live" : "store-category-card__badge--soon"}`}>
+          {isLive ? (locale === "ar" ? "متاح للطلب" : "Available Now") : t("comingSoonBadge")}
+        </span>
+
         <div className="store-category-card__corner store-category-card__corner--tl" aria-hidden="true" />
         <div className="store-category-card__corner store-category-card__corner--tr" aria-hidden="true" />
         <div className="store-category-card__corner store-category-card__corner--bl" aria-hidden="true" />
         <div className="store-category-card__corner store-category-card__corner--br" aria-hidden="true" />
       </div>
+
       <div className="store-category-card__content">
         <div className="store-category-card__title">
           <Heading>{name}</Heading>

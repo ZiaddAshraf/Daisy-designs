@@ -13,8 +13,7 @@ import { BrandLogo } from "@/components/brand-logo";
 
 export const dynamic = "force-dynamic";
 
-const editorialHeroImage = "https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=1800&q=90";
-const editorialStoryImage = "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1400&q=90";
+const editorialStoryImage = "/products/customized-stories/first-year-at-school/cover.jpeg";
 
 export default async function Home() {
   const locale = await getRequestLocale();
@@ -50,14 +49,13 @@ export default async function Home() {
           </div>
           <span className="daisy-hero__index">{t("homeHeroIndex")}</span>
         </HeroTextReveal>
-        <div className="daisy-hero__image" data-scroll-reveal suppressHydrationWarning>
-          <Image
-            src={editorialHeroImage}
-            alt={t("homeHeroImageAlt")}
-            fill
+        <div className="daisy-hero__image daisy-hero__brand-showcase" data-scroll-reveal suppressHydrationWarning>
+          <div className="daisy-hero__brand-backdrop" aria-hidden="true" />
+          <BrandLogo
+            variant="hero"
             priority
-            sizes="(max-width: 760px) 100vw, 60vw"
-            className="daisy-image daisy-editorial-photo"
+            className="daisy-hero__brand-logo"
+            altText="Daisy Designs | Where Ideas Bloom"
           />
           <span className="daisy-image-caption">{t("homeHeroCaption")}</span>
         </div>

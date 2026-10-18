@@ -14,9 +14,10 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { adjustCartLine, cartLineId, checkoutLinePayload, mergeCartLine, normalizeStoredCartLine, removeCartLine } from "@/lib/cart-line-state";
-import { directionForLocale, type Locale } from "@/lib/locale";
+import { directionForLocale, formatLocaleNumber, type Locale } from "@/lib/locale";
 import { formatMessage, getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { BrandLogo } from "@/components/brand-logo";
+import { formatCustomizationEntries } from "@/lib/customization-formatter";
 
 type CartVariant = { id: string; name: string; stock: number };
 type CartItem = Product & { lineId: string; quantity: number; customization?: Record<string, string>; variantId?: string; variantName?: string };
@@ -62,8 +63,8 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
       fetch("/api/wishlist/merge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slugs: wishlist.map(item => item.slug) }) }),
     ]).catch(() => undefined);
   }, [demoMode, cartLoaded, status, items, wishlist]);
-  useEffect(() => { if (!demoMode) localStorage.setItem("stitch-wishlist", JSON.stringify(wishlist)); }, [demoMode, wishlist]);
-  useEffect(() => { if (!demoMode) localStorage.setItem("stitch-cart", JSON.stringify(items)); }, [demoMode, items]);
+  useEffect(() => { if (!demoMode && cartLoaded) localStorage.setItem("stitch-wishlist", JSON.stringify(wishlist)); }, [demoMode, cartLoaded, wishlist]);
+  useEffect(() => { if (!demoMode && cartLoaded) localStorage.setItem("stitch-cart", JSON.stringify(items)); }, [demoMode, cartLoaded, items]);
 
   const add = (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity = 1) => {
     if (demoMode) return;
@@ -95,6 +96,8 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
 
 function Header({ count, wishlistCount, onCart, locale }: { count: number; wishlistCount: number; onCart: () => void; locale: Locale }) {
   const t = (key: TranslationKey) => getTranslation(locale, key);
+  const isAr = locale === "ar";
+  const SearchArrow = isAr ? ArrowLeft : ArrowRight;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -169,7 +172,7 @@ function Header({ count, wishlistCount, onCart, locale }: { count: number; wishl
           <button className="daisy-icon-button daisy-cart-button" onClick={onCart} aria-label={formatMessage(t("cartCount"), { count })}><ShoppingBag size={18} strokeWidth={1.5} />{count > 0 && <span className="daisy-cart-count">{count}</span>}</button>
         </div>
       </div>
-      {searchOpen && <div id="daisy-search-panel" className="daisy-search-panel"><form onSubmit={submitSearch} role="search"><label htmlFor="daisy-search">{t("searchPrompt")}</label><div><input id="daisy-search" autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder={t("searchPlaceholder")} /><button type="submit" aria-label={t("submitSearch")}><ArrowLeft size={18} /></button></div></form><button className="daisy-search-close" onClick={() => setSearchOpen(false)} aria-label={t("searchClose")}><X size={18} /></button></div>}
+      {searchOpen && <div id="daisy-search-panel" className="daisy-search-panel"><form onSubmit={submitSearch} role="search"><label htmlFor="daisy-search">{t("searchPrompt")}</label><div><input id="daisy-search" autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder={t("searchPlaceholder")} /><button type="submit" aria-label={t("submitSearch")}><SearchArrow size={18} /></button></div></form><button className="daisy-search-close" onClick={() => setSearchOpen(false)} aria-label={t("searchClose")}><X size={18} /></button></div>}
     </header>
     {mobileOpen && <div ref={mobileMenuRef} id="daisy-mobile-menu" className="daisy-mobile-menu" role="dialog" aria-modal="true" aria-label={t("siteMenu")}><div className="daisy-mobile-menu__top"><Link href="/" className="daisy-wordmark" aria-label={t("brandHome")} onClick={() => setMobileOpen(false)}><BrandLogo variant="lockup" /></Link><button className="daisy-icon-button" onClick={() => setMobileOpen(false)} aria-label={t("menuClose")}><X size={20} /></button></div><nav aria-label={t("mainNavigation")}><Link href="/" aria-current={pathname === "/" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("home")}</Link><Link href="/products" aria-current={pathname.startsWith("/products") ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("products")}</Link><Link href="/categories" aria-current={pathname.startsWith("/categories") ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("categories")}</Link><Link href="/about" aria-current={pathname === "/about" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("ourStory")}</Link><Link href="/faq" aria-current={pathname === "/faq" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("help")}</Link></nav><div className="daisy-mobile-menu__utilities"><Link href="/account">{t("myAccount")}</Link><Link href="/wishlist">{t("wishlist")}{wishlistCount > 0 && <span className="daisy-mobile-wishlist-count" aria-label={`${wishlistCount}`}> ({wishlistCount})</span>}</Link><button onClick={() => { setMobileOpen(false); setSearchOpen(true); }}>{t("searchProduct")}</button><div className="daisy-mobile-menu__preferences"><ThemeToggle locale={locale} /><LocaleSwitcher locale={locale} compact /></div></div></div>}
   </>;
@@ -199,13 +202,109 @@ export function WishlistButton({ product }: { product: Product }) {
   return <button onClick={event => { event.preventDefault(); event.stopPropagation(); toggle({ ...product, image: getProductImageUrl(product.image) }); }} aria-label={has(product.slug) ? t("removeFromWishlist") : t("addToWishlist")} className="daisy-wishlist-button"><Heart size={17} strokeWidth={1.5} fill={has(product.slug) ? "currentColor" : "none"} /></button>;
 }
 
+const FREE_SHIPPING_THRESHOLD = 2500;
+
 function CartDrawer({ onClose }: { onClose: () => void }) {
   const { items, update, remove, demoMode } = useCart();
   const t = useTranslation();
   const locale = useLocale();
   const Arrow = locale === "ar" ? ArrowLeft : ArrowRight;
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  return <div className="daisy-drawer-backdrop" onClick={onClose}><aside onClick={event => event.stopPropagation()} className="daisy-cart-drawer" aria-label={t("cartDrawer")}><div className="daisy-cart-drawer__head"><h2>{t("cartDrawer")} <span>({items.length})</span></h2><button className="daisy-icon-button" onClick={onClose} aria-label={t("cartClose")}><X size={20} /></button></div><div className="daisy-cart-drawer__body">{items.length === 0 ? <div className="daisy-cart-empty"><ShoppingBag size={25} strokeWidth={1.2} /><p>{demoMode ? t("previewNoPurchase") : t("emptyCart")}</p></div> : items.map(item => <div key={item.lineId} className="daisy-cart-item"><div className="daisy-cart-item__image"><Image src={getProductImageUrl(item.image)} alt={item.name} fill sizes="76px" className="daisy-image" /></div><div className="daisy-cart-item__info"><div><p>{item.name}</p>{item.variantName && <small>{item.variantName}</small>}{item.customization && Object.entries(item.customization).map(([key, value]) => <small key={key}>{key}: {value}</small>)}</div><div className="daisy-cart-item__controls"><div><button onClick={() => update(item.lineId, -1)} aria-label={t("decreaseQuantity")}><Minus size={12} /></button><span>{item.quantity}</span><button onClick={() => update(item.lineId, 1)} aria-label={t("increaseQuantity")}><Plus size={12} /></button></div><button className="daisy-remove" onClick={() => remove(item.lineId)}>{t("remove")}</button><span>{formatPrice(item.price * item.quantity, locale)}</span></div></div></div>)}</div><div className="daisy-cart-drawer__foot">{demoMode ? <p className="daisy-demo-cart-message">{t("previewCartMessage")}</p> : <><div><span>{t("total")}</span><strong>{formatPrice(total, locale)}</strong></div><Link href="/checkout" onClick={onClose} className="daisy-button daisy-button--dark">{t("checkout")} <Arrow size={16} /></Link></>}<Link href="/cart" onClick={onClose} className="daisy-cart-view-link">{t("viewCart")}</Link></div></aside></div>;
+  const freeShippingProgress = Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
+  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - total);
+
+  return (
+    <div className="daisy-drawer-backdrop" onClick={onClose}>
+      <aside onClick={event => event.stopPropagation()} className="daisy-cart-drawer" aria-label={t("cartDrawer")}>
+        <div className="daisy-cart-drawer__head">
+          <h2>{t("cartDrawer")} <span>({items.length})</span></h2>
+          <button className="daisy-icon-button cursor-pointer active:scale-90 transition-transform" onClick={onClose} aria-label={t("cartClose")}>
+            <X size={20} />
+          </button>
+        </div>
+
+        {items.length > 0 && !demoMode && (
+          <div className="daisy-cart-drawer__shipping-bar px-4 py-3 bg-[var(--surface-soft)] border-b border-[var(--border)] text-xs">
+            <div className="flex items-center justify-between font-medium mb-1.5 text-[var(--foreground)]">
+              <span>
+                {amountToFreeShipping === 0
+                  ? t("freeShippingProgressAchieved")
+                  : formatMessage(t("freeShippingProgress"), { amount: formatLocaleNumber(locale, amountToFreeShipping) })}
+              </span>
+              <span className="font-bold text-amber-600 dark:text-amber-400">{freeShippingProgress}%</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-amber-500 transition-all duration-300"
+                style={{ width: `${freeShippingProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="daisy-cart-drawer__body">
+          {items.length === 0 ? (
+            <div className="daisy-cart-empty">
+              <ShoppingBag size={25} strokeWidth={1.2} />
+              <p>{demoMode ? t("previewNoPurchase") : t("emptyCart")}</p>
+            </div>
+          ) : (
+            items.map(item => (
+              <div key={item.lineId} className="daisy-cart-item">
+                <div className="daisy-cart-item__image">
+                  <Image src={getProductImageUrl(item.image)} alt={item.name} fill sizes="76px" className="daisy-image" />
+                </div>
+                <div className="daisy-cart-item__info">
+                  <div>
+                    <p>{item.name}</p>
+                    {item.variantName && <small>{item.variantName}</small>}
+                    {item.customization && (
+                      <div className="daisy-cart-custom-list mt-1.5 flex flex-wrap gap-1">
+                        {formatCustomizationEntries(item.customization, locale).map(entry => (
+                          <span key={entry.key} className="daisy-cart-custom-chip inline-flex items-center gap-1 rounded bg-neutral-100 dark:bg-neutral-800/80 px-2 py-0.5 text-[11px] text-[var(--muted-foreground)]">
+                            <strong className="font-semibold text-[var(--foreground)]">{entry.label}:</strong>
+                            <span>{entry.displayValue}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="daisy-cart-item__controls">
+                    <div className="rounded-lg border border-[var(--border)] overflow-hidden">
+                      <button onClick={() => update(item.lineId, -1)} aria-label={t("decreaseQuantity")} className="p-2 min-w-[36px] min-h-[36px] inline-flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 transition-all cursor-pointer"><Minus size={13} /></button>
+                      <span className="px-1 text-xs font-bold text-[var(--foreground)]">{item.quantity}</span>
+                      <button onClick={() => update(item.lineId, 1)} aria-label={t("increaseQuantity")} className="p-2 min-w-[36px] min-h-[36px] inline-flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 transition-all cursor-pointer"><Plus size={13} /></button>
+                    </div>
+                    <button className="daisy-remove p-2 min-h-[36px] hover:text-red-500 active:scale-95 transition-all cursor-pointer" onClick={() => remove(item.lineId)}>{t("remove")}</button>
+                    <span className="font-bold text-xs">{formatPrice(item.price * item.quantity, locale)}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="daisy-cart-drawer__foot">
+          {demoMode ? (
+            <p className="daisy-demo-cart-message">{t("previewCartMessage")}</p>
+          ) : (
+            <>
+              <div>
+                <span>{t("total")}</span>
+                <strong>{formatPrice(total, locale)}</strong>
+              </div>
+              <Link href="/checkout" onClick={onClose} className="daisy-button daisy-button--dark">
+                {t("checkout")} <Arrow size={16} />
+              </Link>
+            </>
+          )}
+          <Link href="/cart" onClick={onClose} className="daisy-cart-view-link">
+            {t("viewCart")}
+          </Link>
+        </div>
+      </aside>
+    </div>
+  );
 }
 
 function Footer({ locale }: { locale: Locale }) {

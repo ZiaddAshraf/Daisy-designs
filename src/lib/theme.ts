@@ -17,6 +17,8 @@ export const THEME_INIT_SCRIPT = `(() => {
   try { savedTheme = window.localStorage.getItem("${THEME_STORAGE_KEY}"); } catch {}
   const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const hasSavedTheme = savedTheme === "light" || savedTheme === "dark";
-  root.dataset.theme = hasSavedTheme ? savedTheme : (systemPrefersDark ? "dark" : "light");
+  const theme = hasSavedTheme ? savedTheme : (systemPrefersDark ? "dark" : "light");
+  root.dataset.theme = theme;
   root.dataset.themePreference = hasSavedTheme ? "user" : "system";
+  root.classList.toggle("dark", theme === "dark");
 })();`;

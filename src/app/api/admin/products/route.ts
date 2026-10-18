@@ -2,9 +2,87 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin-auth";
+import { handleApiError, parseJsonBody } from "@/lib/api-request";
 
-const fieldSchema = z.object({ label: z.string().min(1), key: z.string().min(1), type: z.enum(["TEXT", "SELECT", "COLOR", "SIZE", "IMAGE"]), required: z.boolean().default(false), placeholder: z.string().optional(), options: z.array(z.object({ label: z.string(), value: z.string() })).default([]) });
-const productSchema = z.object({ name: z.string().min(2), arabicName: z.string().min(2), slug: z.string().regex(/^[a-z0-9-]+$/), description: z.string().min(10), arabicDescription: z.string().min(10), price: z.number().int().positive(), compareAtPrice: z.number().int().positive().nullable().optional(), sku: z.string().min(2), stock: z.number().int().nonnegative(), categoryId: z.string().min(1), collectionId: z.string().nullable().optional(), tags: z.array(z.string()).default([]), featured: z.boolean().default(false), bestSeller: z.boolean().default(false), newArrival: z.boolean().default(false), customizable: z.boolean().default(false), published: z.boolean().default(false), seoTitle: z.string().optional(), seoDescription: z.string().optional(), images: z.array(z.object({ url: z.string().url(), alt: z.string().optional() })).default([]), customizationFields: z.array(fieldSchema).default([]) });
+const fieldSchema = z.object({
+  label: z.string().min(1),
+  key: z.string().min(1),
+  type: z.enum(["TEXT", "SELECT", "COLOR", "SIZE", "IMAGE"]),
+  required: z.boolean().default(false),
+  placeholder: z.string().optional(),
+  options: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
+});
 
-export async function GET() { if (!(await isAdmin())) return NextResponse.json({ error: "غير مصرح" }, { status: 403 }); return NextResponse.json(await prisma.product.findMany({ include: { images: true, customizationFields: { include: { options: true } } }, orderBy: { createdAt: "desc" } })); }
-export async function POST(request: Request) { if (!(await isAdmin())) return NextResponse.json({ error: "غير مصرح" }, { status: 403 }); const parsed = productSchema.safeParse(await request.json()); if (!parsed.success) return NextResponse.json({ error: "بيانات المنتج غير صالحة", issues: parsed.error.flatten() }, { status: 400 }); const data = parsed.data; const product = await prisma.product.create({ data: { ...data, images: { create: data.images.map((image, position) => ({ ...image, position })) }, customizationFields: { create: data.customizationFields.map((field, position) => ({ label: field.label, key: field.key, type: field.type, required: field.required, placeholder: field.placeholder, position, options: { create: field.options } })) } } }); return NextResponse.json(product, { status: 201 }); }
+const productSchema = z.object({
+  name: z.string().min(2),
+  arabicName: z.string().min(2),
+  slug: z.string().regex(/^[a-z0-9-]+$/),
+  description: z.string().min(10),
+  arabicDescription: z.string().min(10),
+  price: z.number().int().positive(),
+  compareAtPrice: z.number().int().positive().nullable().optional(),
+  sku: z.string().min(2),
+  stock: z.number().int().nonnegative(),
+  categoryId: z.string().min(1),
+  collectionId: z.string().nullable().optional(),
+  tags: z.array(z.string()).default([]),
+  featured: z.boolean().default(false),
+  bestSeller: z.boolean().default(false),
+  newArrival: z.boolean().default(false),
+  customizable: z.boolean().default(false),
+  published: z.boolean().default(false),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  images: z.array(z.object({ url: z.string().url(), alt: z.string().optional() })).default([]),
+  customizationFields: z.array(fieldSchema).default([]),
+});
+
+export async function GET() {
+  if (!(await isAdmin())) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+  try {
+    const products = await prisma.product.findMany({
+      include: { images: true, customizationFields: { include: { options: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json(products);
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+export async function POST(request: Request) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+
+  const body = await parseJsonBody(request);
+  if (!body.ok) return body.response;
+
+  const parsed = productSchema.safeParse(body.data);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "بيانات المنتج غير صالحة", issues: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const data = parsed.data;
+  try {
+    const product = await prisma.product.create({
+      data: {
+        ...data,
+        images: { create: data.images.map((image, position) => ({ ...image, position })) },
+        customizationFields: {
+          create: data.customizationFields.map((field, position) => ({
+            label: field.label,
+            key: field.key,
+            type: field.type,
+            required: field.required,
+            placeholder: field.placeholder,
+            position,
+            options: { create: field.options },
+          })),
+        },
+      },
+    });
+    return NextResponse.json(product, { status: 201 });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+

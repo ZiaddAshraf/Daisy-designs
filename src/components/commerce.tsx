@@ -3,7 +3,7 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, Minus, Plus, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Minus, Plus, ShieldCheck, ShoppingBag, Sparkles, Trash2, Truck } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/products";
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
@@ -11,19 +11,19 @@ import { ProductCard, WishlistButton, useCart, useLocale, useTranslation } from 
 import { formatMessage } from "@/lib/i18n/messages";
 import { formatLocaleNumber } from "@/lib/locale";
 import { getProductGalleryImage, type ProductGalleryImage } from "@/lib/product-gallery";
+import { formatCustomizationEntries } from "@/lib/customization-formatter";
 
 type CustomizationField = { label: string; key: string; type: string; required: boolean; placeholder: string | null; maxLength: number | null; options: { label: string; value: string }[] };
 type ReviewSummary = { rating: number; title: string; comment: string };
 type ProductVariant = { id: string; name: string; price: number | null; stock: number; options: unknown };
 
-export function ProductDetail({ product, images = [], variants = [], customizationFields = [], stock = 0, lowStockThreshold = 5, sku, categorySlug, reviews = [], reviewCount = 0, reviewAverage = 0, relatedProducts = [] }: {
+export function ProductDetail({ product, images = [], variants = [], customizationFields = [], stock = 0, lowStockThreshold = 5, categorySlug, reviews = [], reviewCount = 0, reviewAverage = 0, relatedProducts = [] }: {
   product: Product;
   images?: ProductGalleryImage[];
   variants?: ProductVariant[];
   customizationFields?: CustomizationField[];
   stock?: number;
   lowStockThreshold?: number;
-  sku?: string;
   categorySlug?: string;
   reviews?: ReviewSummary[];
   reviewCount?: number;
@@ -76,7 +76,6 @@ export function ProductDetail({ product, images = [], variants = [], customizati
         <div className="product-detail-price"><strong>{formatPrice(currentPrice, locale)}</strong>{currentPrice === product.price && product.compareAtPrice && <del>{formatPrice(product.compareAtPrice, locale)}</del>}</div>
         <p className={`product-availability ${demoMode ? "" : outOfStock ? "status-error" : stock <= lowStockThreshold ? "status-warning" : "status-success"}`} role="status">{displayAvailability}</p>
         <p className="product-detail-description">{product.description}</p>
-        {sku && <p className="product-sku">{t("productSku")} <span dir="ltr">{sku}</span></p>}
 
         {demoMode ? <div className="product-demo-purchase" role="note">{t("demoProductNotice")}</div> : <form className="product-purchase-form" onSubmit={handleSubmit}>
           {needsVariant && <fieldset className="product-variants"><legend>{t("selectVariant")}</legend><div className="product-variant-list">{variants.map(variant => <label key={variant.id} className={`product-variant-option ${selectedVariantId === variant.id ? "is-selected" : ""} ${variant.stock <= 0 ? "is-unavailable" : ""}`}><input type="radio" name="product-variant" value={variant.id} checked={selectedVariantId === variant.id} disabled={variant.stock <= 0} onChange={() => { setSelectedVariantId(variant.id); setQuantity(1); setAdded(false); }} /><span>{variant.name}</span><small>{variant.stock <= 0 ? t("outOfStock") : variant.price !== null && variant.price !== product.price ? formatPrice(variant.price, locale) : t("available")}</small></label>)}</div></fieldset>}
@@ -99,11 +98,233 @@ export function ProductDetail({ product, images = [], variants = [], customizati
   </main>;
 }
 
+const FREE_SHIPPING_THRESHOLD = 2500;
+
 export function CartView() {
   const { items, update, remove, demoMode } = useCart();
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const locale = useLocale();
   const t = useTranslation();
-  if (demoMode) return <main className="commerce-page commerce-page--preview-empty mx-auto max-w-[1000px] px-6 py-16 lg:px-0" data-scroll-reveal suppressHydrationWarning><p className="text-xs tracking-[.2em] text-neutral-400">DAISY DESIGNS / {t("cart")}</p><h1 className="mt-3 text-4xl font-semibold">{t("previewNoPurchase")}</h1><p className="mt-6 max-w-2xl text-neutral-600">{t("previewCartMessage")}</p><Link href="/products" className="mt-8 inline-flex bg-neutral-950 px-6 py-3 text-sm text-white">{t("exploreProducts")}</Link></main>;
-  return <main className="commerce-page mx-auto max-w-[1000px] px-6 py-16 lg:px-0" data-scroll-reveal suppressHydrationWarning><p className="text-xs tracking-[.2em] text-neutral-400">DAISY DESIGNS / {t("cart")}</p><h1 className="mt-3 text-4xl font-semibold">{t("cartDrawer")}</h1>{items.length === 0 ? <div className="commerce-empty-state border-y border-neutral-200 py-24 text-center" data-scroll-reveal suppressHydrationWarning><p className="text-neutral-500">{t("emptyCart")}</p><Link href="/products" className="mt-6 inline-flex bg-neutral-950 px-6 py-3 text-sm text-white">{t("exploreProducts")}</Link></div> : <div className="mt-12 grid gap-12 md:grid-cols-[1fr_320px]"><div>{items.map(item => <div key={item.lineId} className="commerce-cart-item flex gap-4 border-t border-neutral-200 py-5"><div className="daisy-cart-item__image relative h-28 w-24 bg-neutral-100"><Image src={getProductImageUrl(item.image)} alt={item.name} fill sizes="96px" className="daisy-image" /></div><div className="flex flex-1 flex-col justify-between"><div><p>{item.name}</p>{item.variantName && <p className="mt-1 text-xs text-neutral-400">{item.variantName}</p>}{item.customization && Object.entries(item.customization).map(([key, value]) => <p key={key} className="mt-1 text-xs text-neutral-400">{key}: {value}</p>)}</div><div className="flex items-center justify-between"><div className="flex items-center gap-3 border border-neutral-200 px-3 py-1"><button onClick={() => update(item.lineId, -1)} aria-label={t("decreaseQuantity")}><Minus size={13} /></button>{item.quantity}<button onClick={() => update(item.lineId, 1)} aria-label={t("increaseQuantity")}><Plus size={13} /></button></div><button onClick={() => remove(item.lineId)} className="text-xs text-neutral-400 underline">{t("remove")}</button><span>{formatPrice(item.price * item.quantity, locale)}</span></div></div></div>)}</div><div className="h-fit border-t border-neutral-950 pt-5"><div className="flex justify-between"><span>{t("total")}</span><strong>{formatPrice(total, locale)}</strong></div><Link href="/checkout" className="mt-6 flex justify-center bg-neutral-950 py-4 text-sm text-white">{t("checkout")}</Link></div></div>}</main>;
+  const totalItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const freeShippingProgress = Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
+  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - total);
+
+  if (demoMode) {
+    return (
+      <main className="commerce-page commerce-page--preview-empty mx-auto max-w-[1000px] px-6 py-16 lg:px-0" data-scroll-reveal suppressHydrationWarning>
+        <p className="text-xs tracking-[.2em] text-[var(--muted-foreground)]">DAISY DESIGNS / {t("cart")}</p>
+        <h1 className="mt-3 text-3xl sm:text-4xl font-bold text-[var(--foreground)]">{t("previewNoPurchase")}</h1>
+        <p className="mt-6 max-w-2xl text-[var(--muted-foreground)]">{t("previewCartMessage")}</p>
+        <Link href="/products" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-neutral-950 dark:bg-white px-6 py-3 text-sm font-semibold text-white dark:text-neutral-950 transition-all hover:opacity-95 hover:-translate-y-0.5 hover:shadow-md active:scale-95 cursor-pointer">
+          {t("exploreProducts")}
+        </Link>
+      </main>
+    );
+  }
+
+  return (
+    <main className="commerce-page mx-auto max-w-[1100px] px-4 py-12 sm:px-6 sm:py-16 lg:px-8" data-scroll-reveal suppressHydrationWarning>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold tracking-wider text-[var(--muted-foreground)] uppercase">
+          DAISY DESIGNS / {t("cart")}
+        </p>
+        {items.length > 0 && (
+          <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--muted-foreground)]">
+            {formatMessage(t("orderItemsCount"), { count: totalItemCount })}
+          </span>
+        )}
+      </div>
+
+      <h1 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--foreground)]">
+        {t("cartDrawer")}
+      </h1>
+
+      {items.length === 0 ? (
+        <div className="mt-10 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-10 sm:p-16 text-center shadow-xs" data-scroll-reveal suppressHydrationWarning>
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[var(--surface-soft)] text-amber-500">
+            <ShoppingBag size={36} />
+          </div>
+          <h2 className="mt-5 text-2xl font-bold text-[var(--foreground)]">{t("emptyCart")}</h2>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)] max-w-md mx-auto">{t("emptyCartMessage")}</p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/products/stickers"
+              className="inline-flex items-center gap-2 rounded-xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 px-5 py-3 text-sm font-semibold hover:opacity-95 hover:-translate-y-0.5 hover:shadow-md transition-all shadow-sm active:scale-95 cursor-pointer"
+            >
+              {t("emptyCartExploreStickers")}
+            </Link>
+            <Link
+              href="/products/reward-cards"
+              className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] px-5 py-3 text-sm font-semibold hover:bg-[var(--surface-hover)] hover:-translate-y-0.5 hover:shadow-md transition-all shadow-xs active:scale-95 cursor-pointer"
+            >
+              {t("emptyCartExploreRewardCards")}
+            </Link>
+            <Link
+              href="/products/first-year-at-school"
+              className="inline-flex items-center gap-2 rounded-xl border border-amber-300 dark:border-amber-700/60 bg-amber-50 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 px-5 py-3 text-sm font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/40 hover:-translate-y-0.5 hover:shadow-md transition-all shadow-xs active:scale-95 cursor-pointer"
+            >
+              {t("emptyCartExploreStorybooks")}
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
+          {/* Cart Items List */}
+          <div className="space-y-4">
+            {items.map(item => (
+              <div
+                key={item.lineId}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-5 shadow-xs transition hover:border-[var(--foreground)]/20 flex flex-col sm:flex-row gap-4 sm:items-center"
+              >
+                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background)]">
+                  <Image
+                    src={getProductImageUrl(item.image) || PRODUCT_IMAGE_PLACEHOLDER}
+                    alt={item.name}
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                  />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-base text-[var(--foreground)]">{item.name}</p>
+                      {item.variantName && (
+                        <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">{item.variantName}</p>
+                      )}
+                    </div>
+                    <span className="font-bold text-base text-[var(--foreground)] shrink-0">
+                      {formatPrice(item.price * item.quantity, locale)}
+                    </span>
+                  </div>
+
+                  {item.customization && (
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {formatCustomizationEntries(item.customization, locale).map(entry => (
+                        <span
+                          key={entry.key}
+                          className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-soft)] px-2 py-0.5 text-xs text-[var(--muted-foreground)] border border-[var(--border)]/70"
+                        >
+                          <strong className="font-semibold text-[var(--foreground)]">{entry.label}:</strong>
+                          <span className="truncate max-w-[150px]">{entry.displayValue}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex items-center justify-between border-t border-[var(--border)]/60 pt-3">
+                    <div className="flex items-center rounded-xl border border-[var(--border)] bg-[var(--background)] overflow-hidden">
+                      <button
+                        onClick={() => update(item.lineId, -1)}
+                        aria-label={t("decreaseQuantity")}
+                        className="w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 transition-all cursor-pointer"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="font-bold text-sm min-w-8 text-center text-[var(--foreground)]">{item.quantity}</span>
+                      <button
+                        onClick={() => update(item.lineId, 1)}
+                        aria-label={t("increaseQuantity")}
+                        className="w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 transition-all cursor-pointer"
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => remove(item.lineId)}
+                      className="inline-flex items-center gap-1.5 py-2 px-2.5 rounded-lg text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30 active:scale-95 font-medium transition cursor-pointer min-h-[38px]"
+                    >
+                      <Trash2 size={14} />
+                      <span>{t("remove")}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Cart Summary Card */}
+          <aside className="space-y-6 lg:sticky lg:top-24">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xs space-y-5">
+              <h2 className="text-lg font-bold text-[var(--foreground)] border-b border-[var(--border)] pb-4">
+                {t("cartSummary")}
+              </h2>
+
+              {/* Free shipping progress bar */}
+              <div className="rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
+                <div className="text-xs font-semibold text-[var(--foreground)] flex items-center gap-1.5">
+                  <Sparkles size={14} className="text-amber-500 shrink-0" />
+                  {total >= FREE_SHIPPING_THRESHOLD ? (
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                      {t("freeShippingUnlocked")}
+                    </span>
+                  ) : (
+                    <span>
+                      {formatMessage(t("freeShippingProgress"), {
+                        amount: amountToFreeShipping.toLocaleString(locale === "ar" ? "ar-EG" : "en-US"),
+                      })}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--border)]">
+                  <div
+                    className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300"
+                    style={{ width: `${freeShippingProgress}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Pricing lines */}
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between text-[var(--muted-foreground)]">
+                  <span>{t("subtotal")}</span>
+                  <span className="font-medium text-[var(--foreground)]">{formatPrice(total, locale)}</span>
+                </div>
+                <div className="flex justify-between text-[var(--muted-foreground)]">
+                  <span>{t("shippingFee")}</span>
+                  <span>
+                    {total >= FREE_SHIPPING_THRESHOLD ? (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+                        <CheckCircle2 size={12} />
+                        {t("freeShipping")}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-[var(--muted-foreground)]">{locale === "ar" ? "يُحسب عند الدفع" : "Calculated at checkout"}</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-[var(--border)] pt-3 text-base font-bold text-[var(--foreground)]">
+                  <span>{t("total")}</span>
+                  <span className="text-xl text-[var(--foreground)]">{formatPrice(total, locale)}</span>
+                </div>
+              </div>
+
+              {/* Checkout CTA */}
+              <Link
+                href="/checkout"
+                className="min-h-13 w-full rounded-xl bg-neutral-950 dark:bg-white px-6 py-3.5 text-center text-sm font-bold text-white dark:text-neutral-950 shadow-md transition-all hover:opacity-95 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>{t("checkout")}</span>
+                {locale === "ar" ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+              </Link>
+            </div>
+
+            {/* Trust Points */}
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-xs space-y-3">
+              <div className="flex items-center gap-3 text-xs font-medium text-[var(--muted-foreground)]">
+                <ShieldCheck size={18} className="text-amber-500 shrink-0" />
+                <span>{t("trustCashOnDelivery")}</span>
+              </div>
+              <div className="flex items-center gap-3 text-xs font-medium text-[var(--muted-foreground)]">
+                <Truck size={18} className="text-amber-500 shrink-0" />
+                <span>{t("trustNationwideDelivery")}</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+    </main>
+  );
 }

@@ -2,7 +2,84 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { AdminOrderStatus } from "@/components/admin-order-status";
+import { AdminOrdersTable, type AdminOrder, type ShippingAddressData } from "@/components/admin-orders-table";
 
 export const dynamic = "force-dynamic";
-export default async function AdminOrdersPage() { const session = await getServerSession(authOptions); if (session?.user?.role !== "ADMIN") redirect("/login"); const orders = await prisma.order.findMany({ include: { user: true }, orderBy: { createdAt: "desc" } }); return <main className="mx-auto max-w-[1400px] px-6 py-12 lg:px-16"><p className="text-xs tracking-[.2em] text-neutral-400">ADMIN / ORDERS</p><h1 className="mt-3 text-4xl font-semibold">الطلبات</h1><div className="mt-12 overflow-x-auto"><table className="w-full min-w-[800px] text-right text-sm"><thead><tr className="border-b border-neutral-950"><th className="py-4">الطلب</th><th>العميل</th><th>التاريخ</th><th>الدفع</th><th>الإجمالي</th><th>الحالة</th></tr></thead><tbody>{orders.map(order => <tr key={order.id} className="border-b border-neutral-200"><td className="py-5">{order.number}</td><td>{order.user?.name ?? "زائر"}</td><td>{order.createdAt.toLocaleDateString("ar-EG")}</td><td>{order.paymentMethod}</td><td>{order.total.toLocaleString("ar-EG")} ج.م</td><td><AdminOrderStatus id={order.id} value={order.status} /></td></tr>)}</tbody></table></div></main>; }
+
+export default async function AdminOrdersPage() {
+  const session = await getServerSession(authOptions);
+  if (session?.user?.role !== "ADMIN") redirect("/login");
+
+  const rawOrders = await prisma.order.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
+      address: true,
+      items: {
+        select: {
+          id: true,
+          productName: true,
+          productSku: true,
+          quantity: true,
+          unitPrice: true,
+          customization: true,
+          selectedVariant: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const orders: AdminOrder[] = rawOrders.map((o) => ({
+    id: o.id,
+    number: o.number,
+    status: o.status,
+    paymentStatus: o.paymentStatus,
+    paymentMethod: o.paymentMethod,
+    subtotal: o.subtotal,
+    shipping: o.shipping,
+    discount: o.discount,
+    total: o.total,
+    couponCode: o.couponCode,
+    notes: o.notes,
+    createdAt: o.createdAt.toISOString(),
+    shippingAddress: (o.shippingAddress as unknown as ShippingAddressData | null) ?? null,
+    user: o.user,
+    address: o.address,
+    items: o.items.map((it) => ({
+      id: it.id,
+      productName: it.productName,
+      productSku: it.productSku,
+      quantity: it.quantity,
+      unitPrice: it.unitPrice,
+      customization: (it.customization as Record<string, string>) || null,
+      selectedVariant: it.selectedVariant,
+    })),
+  }));
+
+  return (
+    <main className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6 lg:px-12" dir="rtl">
+      <header className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold tracking-widest text-[var(--muted-foreground)] uppercase">
+            ADMIN / ORDERS MANAGEMENT
+          </p>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--foreground)]">
+            إدارة الطلبات والتخصيص
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)]">
+            مراجعة طلبات التيشيرت المطبوع، معاينة التصاميم المرفقة، والتواصل المباشر مع العملاء عبر واتساب قبل بدء الطباعة.
+          </p>
+        </div>
+      </header>
+
+      <AdminOrdersTable orders={orders} />
+    </main>
+  );
+}

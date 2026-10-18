@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { createHash, randomBytes } from "node:crypto";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
 import { CashOnDeliveryProvider } from "@/lib/payments";
 import { checkoutSchema } from "@/lib/order-validation";
 import { calculateDiscount, calculateShipping } from "@/lib/commerce-rules";
-import { validateCustomization } from "@/lib/customization-validation";
+import { validateCustomization, validateTshirtCustomization } from "@/lib/customization-validation";
 import { isDemoCatalogProduct } from "@/lib/demo-preview-safety";
 import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
 
@@ -40,13 +40,41 @@ export async function POST(request: Request) {
                     : product.variants.length === 1 ? product.variants[0] : undefined;
                 if (item.variantId && !variant) throw new Error("INVALID_VARIANT");
                 if (product.variants.length > 1 && !variant) throw new Error("VARIANT_REQUIRED");
-                const customization = validateCustomization(product.customizationFields, item.customization);
-                if (!customization.success) throw new Error(customization.reason);
+                const customization = product.slug === "custom-printed-tshirt"
+                    ? validateTshirtCustomization(item.customization)
+                    : validateCustomization(product.customizationFields, item.customization);
+                if (!customization.success) throw new Error(customization.reason ?? "INVALID_CUSTOMIZATION");
                 const unitPrice = variant?.price ?? product.price;
-                const available = variant?.stock ?? product.stock;
-                if (available < item.quantity) throw new Error(`OUT_OF_STOCK:${product.name}`);
                 return { item: { ...item, customization: customization.data }, product, variant, unitPrice };
             });
+
+            // Aggregate quantities by inventory target to prevent multi-line race conditions and stock exhaustion bugs
+            type InventoryTarget = { id: string; isVariant: boolean; productName: string; requiredQty: number; availableStock: number };
+            const inventoryTargets = new Map<string, InventoryTarget>();
+
+            for (const entry of pricedItems) {
+                const key = entry.variant ? `variant:${entry.variant.id}` : `product:${entry.product.id}`;
+                const existing = inventoryTargets.get(key);
+                if (existing) {
+                    existing.requiredQty += entry.item.quantity;
+                } else {
+                    inventoryTargets.set(key, {
+                        id: entry.variant ? entry.variant.id : entry.product.id,
+                        isVariant: Boolean(entry.variant),
+                        productName: entry.product.name,
+                        requiredQty: entry.item.quantity,
+                        availableStock: entry.variant ? entry.variant.stock : entry.product.stock,
+                    });
+                }
+            }
+
+            // Verify total aggregated quantity against available stock before processing
+            for (const target of inventoryTargets.values()) {
+                if (target.availableStock < target.requiredQty) {
+                    throw new Error(`OUT_OF_STOCK:${target.productName}`);
+                }
+            }
+
             const subtotal = pricedItems.reduce((sum, entry) => sum + entry.unitPrice * entry.item.quantity, 0);
             let discount = 0;
             let couponCode: string | undefined;
@@ -61,10 +89,15 @@ export async function POST(request: Request) {
             const setting = (key: string, fallback: number) => Number(settings.find(item => item.key === key)?.value ?? fallback);
             const shipping = calculateShipping(subtotal - discount, setting("shippingFee", 60), setting("freeShippingThreshold", 2500));
             const total = Math.max(0, subtotal - discount + shipping);
-            for (const entry of pricedItems) {
-                const update = entry.variant ? await transaction.productVariant.updateMany({ where: { id: entry.variant.id, stock: { gte: entry.item.quantity } }, data: { stock: { decrement: entry.item.quantity } } }) : await transaction.product.updateMany({ where: { id: entry.product.id, stock: { gte: entry.item.quantity } }, data: { stock: { decrement: entry.item.quantity } } });
-                if (update.count !== 1) throw new Error(`OUT_OF_STOCK:${entry.product.name}`);
+
+            // Execute single atomic decrement per unique inventory target
+            for (const target of inventoryTargets.values()) {
+                const update = target.isVariant
+                    ? await transaction.productVariant.updateMany({ where: { id: target.id, stock: { gte: target.requiredQty } }, data: { stock: { decrement: target.requiredQty } } })
+                    : await transaction.product.updateMany({ where: { id: target.id, stock: { gte: target.requiredQty } }, data: { stock: { decrement: target.requiredQty } } });
+                if (update.count !== 1) throw new Error(`OUT_OF_STOCK:${target.productName}`);
             }
+
             const paymentResult = await payment.createPayment({ orderNumber: number, amount: total, customerEmail: input.email || undefined });
             const order = await transaction.order.create({
                 data: {
@@ -94,8 +127,27 @@ export async function POST(request: Request) {
             const existingOrder = await prisma.order.findUnique({ where: { number }, include: { items: true } });
             if (existingOrder) return NextResponse.json({ id: existingOrder.id, number: existingOrder.number, total: existingOrder.total, items: existingOrder.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) }, { status: 201 });
         }
+        if (isDatabaseUnavailable(error)) {
+            return NextResponse.json({ error: "DATABASE_UNAVAILABLE" }, { status: 503 });
+        }
         const message = error instanceof Error ? error.message : "ORDER_FAILED";
-        const status = message.startsWith("OUT_OF_STOCK") ? 409 : ["INVALID_COUPON", "INVALID_VARIANT", "VARIANT_REQUIRED", "INVALID_CUSTOMIZATION", "UNSUPPORTED_CUSTOMIZATION"].includes(message) ? 422 : message === "PRODUCT_NOT_FOUND" ? 404 : 500;
+        const status = message.startsWith("OUT_OF_STOCK")
+            ? 409
+            : [
+                "INVALID_COUPON",
+                "INVALID_VARIANT",
+                "VARIANT_REQUIRED",
+                "INVALID_CUSTOMIZATION",
+                "UNSUPPORTED_CUSTOMIZATION",
+                "MISSING_CUSTOMIZATION",
+                "INVALID_GARMENT_COLOR",
+                "INVALID_GARMENT_SIZE",
+              ].includes(message)
+            ? 422
+            : message === "PRODUCT_NOT_FOUND"
+            ? 404
+            : 500;
         return NextResponse.json({ error: message }, { status });
     }
 }
+

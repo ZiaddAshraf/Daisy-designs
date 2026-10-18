@@ -1,0 +1,115 @@
+{
+  "draft": false,
+  "status": "ACTIVE_PUBLISHED",
+  "category": {
+    "id": "reward-cards",
+    "slug": "reward-cards",
+    "name": "Reward Cards",
+    "arabicName": "كروت التشجيع"
+  },
+  "product": {
+    "slug": "reward-cards-box-set",
+    "name": "Daisy Designs Reward Cards Box Set",
+    "arabicName": "علبة كروت التشجيع",
+    "sellingModel": "One complete box containing all 10 cards",
+    "customizable": false,
+    "available": true,
+    "price": 200,
+    "compareAtPrice": null,
+    "sku": "DD-RC-010",
+    "stock": 50,
+    "lowStockThreshold": 5,
+    "published": true,
+    "description": "An exclusive collection of 10 inspiring, heartwarming affirmation and reward cards in a beautifully branded Daisy Designs keepsake box. Thoughtfully created as daily uplifting surprises for lunchboxes, study desks, or a delightful gift for little ones.",
+    "arabicDescription": "مجموعة حصرية من كروت التحفيز الملهمة تضم 10 كروت متنوعة ورسائل إيجابية دافئة داخل علبة هدايا أنيقة بشعار Daisy Designs. صُممت لتكون لمسة جميلة للمكتب، أو مفاجأة يومية مبهجة داخل اللانش بوكس والحقيبة المدرسية، أو هدية تُسعد من تحب.",
+    "primaryImage": {
+      "url": "/products/reward-cards/reward-cards-box-set.jpeg",
+      "alt": "Daisy Designs Reward Cards Keepsake Box",
+      "arabicAlt": "علبة كروت التشجيع والتحفيز من Daisy Designs",
+      "dimensions": { "width": 1600, "height": 800 },
+      "role": "main_packaging_cover"
+    },
+    "gallery": [
+      {
+        "position": 1,
+        "url": "/products/reward-cards/card-01-you-can-do-it.jpeg",
+        "title": "You can do it!",
+        "arabicTitle": "أنت تستطيع!",
+        "subject": "Cheerleader character with pom-poms",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 2,
+        "url": "/products/reward-cards/card-02-bee-happy.jpeg",
+        "title": "BEE HAPPY",
+        "arabicTitle": "كن سعيداً (BEE HAPPY)",
+        "subject": "Smiling bumblebee on yellow backdrop",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 3,
+        "url": "/products/reward-cards/card-03-youre-a-superstar.jpeg",
+        "title": "YOU'RE A SUPERSTAR",
+        "arabicTitle": "أنت نجم ساطع",
+        "subject": "Smiling pink starfish on cyan backdrop",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 4,
+        "url": "/products/reward-cards/card-04-sprinkles-ice-cream.jpeg",
+        "title": "You're the Sprinkles to my ice cream!",
+        "arabicTitle": "أنت حلوى الآيس كريم الخاصة بي!",
+        "subject": "Pink ice cream cone and sprinkles jar",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 5,
+        "url": "/products/reward-cards/card-05-berry-berry-much.jpeg",
+        "title": "I love you Soooooo... BERRY BERRY MUCH!",
+        "arabicTitle": "أحبك كثيراً جداً!",
+        "subject": "Hand-holding raspberries with hearts",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 6,
+        "url": "/products/reward-cards/card-06-have-a-good-day.jpeg",
+        "title": "Have a good day!",
+        "arabicTitle": "أتمنى لك يوماً جميلاً!",
+        "subject": "Playful 3D letters with sun, flower, and mug",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 7,
+        "url": "/products/reward-cards/card-07-happy-as-a-hippo.jpeg",
+        "title": "HAPPY AS A HIPPO",
+        "arabicTitle": "سعيد ومبتهج كفرس النهر",
+        "subject": "Joyful baby hippo on blue backdrop",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 8,
+        "url": "/products/reward-cards/card-08-you-are-affirmations.jpeg",
+        "title": "YOU ARE Kind, Brave, Smart, Helpful, Grateful, Enough, Strong, Unique, Loved",
+        "arabicTitle": "توكيدات إيجابية: طيب، شجاع، ذكي، معوان، ممتن، قوي، مميز، محبوب",
+        "subject": "Positive affirmation typography with flower and apple",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 9,
+        "url": "/products/reward-cards/card-09-never-give-up.jpeg",
+        "title": "Never give up",
+        "arabicTitle": "لا تستسلم أبداً",
+        "subject": "Bubble letters with cheerful stars",
+        "dimensions": { "width": 1600, "height": 1600 }
+      },
+      {
+        "position": 10,
+        "url": "/products/reward-cards/card-10-i-love-you.jpeg",
+        "title": "I LOVE YOU",
+        "arabicTitle": "أنا أحبك (I LOVE YOU)",
+        "subject": "Pastel typography with smiling clouds and hearts",
+        "dimensions": { "width": 1600, "height": 1600 }
+      }
+    ]
+  }
+}

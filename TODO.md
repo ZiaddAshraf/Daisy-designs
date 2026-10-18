@@ -1,0 +1,122 @@
+# TODO: First Year at School Customized Storybook Implementation
+
+- [x] Phase 1: Assets & Data Fixture Setup
+  - [x] Copy the 10 story images from `D:\esssam\Customized story` to `public/products/customized-stories/first-year-at-school/`
+  - [x] Create `src/data/story-product.json` fixture
+  - [x] Create `scripts/import-story-product.ts` (local dev DB safety check)
+  - [x] Run `import-story-product.ts` to sync local database
+- [x] Phase 2: Private Photo Storage & Secure Upload Endpoints
+  - [x] Implement `src/lib/child-photo-storage.ts` (private storage, magic bytes, EXIF stripping, retention rules)
+  - [x] Implement `src/app/api/uploads/story-child-photo/route.ts`
+  - [x] Implement `src/app/api/admin/orders/[id]/child-photo/route.ts`
+- [x] Phase 3: Storybook UI Previewer & Customization Component
+  - [x] Create `src/components/story-book-preview.tsx` (10-page flipbook, floating arrows, thumbnail strip, counter, swipe/keyboard, upload zone)
+  - [x] Add CSS styling in `src/app/globals.css` (editorial styling, badges, upload states, dark/light themes)
+- [x] Phase 4: Storefront Routing & Cart/Checkout Integration
+  - [x] Update `src/app/categories/[slug]/page.tsx` for `customized-stories`
+  - [x] Update `src/app/products/[slug]/page.tsx` for `first-year-at-school`
+  - [x] Update `src/lib/customization-formatter.ts` and `src/lib/customization-validation.ts`
+- [x] Phase 5: Verification & Testing Suite (Ralph Loop)
+  - [x] Create `tests/story-product.test.ts`
+  - [x] Verify `npx tsc --noEmit` (0 errors)
+  - [x] Verify `npm run lint` (0 errors)
+  - [x] Verify `npm test` (100% pass - 74/74)
+  - [x] Verify `npm run build` (clean compilation - 40/40 routes)
+  - [x] Conduct browser verification on desktop & mobile with Playwright (RTL/LTR, Light/Dark, Upload, Cart/Checkout)
+- [x] Phase 6: Site-Wide UI/UX Enhancement & Performance Optimization (ui-ux-pro-max)
+  - [x] Add bilingual translation keys for empty cart storybook exploration and CTA in `src/lib/i18n/messages.ts`
+  - [x] Update `src/lib/store-categories.ts` for `customized-stories` physical printed storybook accuracy
+  - [x] Add `customized-stories` to `CATEGORY_IMAGES` and `LIVE_CATEGORY_SLUGS` in `src/components/category-card.tsx`
+  - [x] Integrate `first-year-at-school` storybook into `liveProducts` in `src/app/products/page.tsx` with 3-column layout & `priority={idx === 0}`
+  - [x] Replace external Unsplash URLs in `src/app/page.tsx` with authentic local Daisy Designs assets
+  - [x] Add `priority={displayIndex < 4}` to sticker grid images in `src/components/stickers-preview.tsx`
+  - [x] Add storybook explore CTA in empty cart state in `src/components/commerce.tsx`
+  - [x] Add free shipping threshold progress bar in `CartDrawer` in `src/components/storefront.tsx`
+  - [x] Execute continuous verification loop (tsc 0 errors, lint 0 errors, test 74/74 pass, build 40/40 routes clean, Playwright browser audit)
+- [x] Phase 7: Full Randomized Storefront Catalog & Categories Cleanup (User Request)
+  - [x] Add `?design=ID` auto-selection support in `src/components/stickers-preview.tsx`
+  - [x] Aggregate all 26 store products (24 sticker designs + storybook + reward cards box set) with rich details
+  - [x] Randomize/interleave products dynamically across categories for a vibrant storefront experience
+  - [x] Remove the bottom upcoming categories section from `src/app/products/page.tsx`
+  - [x] Add interactive category filter pills (الكل · استيكرات · قصص · كروت) with product count badges
+  - [x] Execute Ralph Loop verification (tsc 0 errors, lint 0 errors, test 74/74 pass, build 40/40 routes clean, Playwright screenshot verification)
+- [x] Phase 8: Compact Product Grid & Streamlined Cards (ui-ux-pro-max)
+  - [x] Update `src/components/products-catalog-client.tsx` to 4-column desktop / 2-column mobile grid
+  - [x] Streamline card layout: square aspect ratio, overlay badge, clean typography, concise price/CTA
+  - [x] Remove bulky descriptions and bullet lists from the catalog card view
+  - [x] Verify responsiveness and zero horizontal overflow on mobile
+  - [x] Execute continuous verification loop (tsc, lint, test, build, Playwright screenshot)
+- [x] Phase 9: Reference Design Matching (User Reference Image)
+  - [x] Update `src/components/products-catalog-client.tsx` to 3-column desktop layout (`lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8`)
+  - [x] Implement soft pastel container with `aspect-[4/3]` for product image
+  - [x] Add top-start circular wishlist heart button (`w-9 h-9 rounded-full bg-white shadow-sm`) with `useWishlist` integration
+  - [x] Add bottom arched cutout tab pill on image container displaying design/variant name
+  - [x] Implement right-aligned editorial hierarchy: teal category subtitle, bold dark title, truncated description
+  - [x] Display prominent bold price formatted as `${price}.00 ج.م` in teal
+  - [x] Verify clean card click-through to customizer without bulky buttons
+- [x] Phase 10: Dark & Light Mode Color Harmonization (ui-ux-pro-max)
+  - [x] Sync `dark` class on root alongside `data-theme="dark"` in `src/lib/theme.ts` & `src/components/theme-toggle.tsx`
+  - [x] Configure `@custom-variant dark` in `src/app/globals.css` for full Tailwind v4 data-theme support
+  - [x] Create scoped `.catalog-card` styles guaranteeing high contrast in both themes
+  - [x] Perfect dark mode: twilight image frame (`#1a2024`), crisp off-white titles (`#f1f0eb`), glowing teal accents (`#2dd4bf`), elevated dark wishlist heart button
+  - [x] Perfect light mode: soft sky pastel image frame (`#edf6fa`), rich teal category & price (`#0f766e`), warm off-white card body, subtle borders
+  - [x] Verify Ralph Loop (tsc 0 errors, lint 0 errors, test 74/74 pass, build 40/40 clean, Playwright light & dark screenshots)
+- [x] Phase 11: Hero Brand Logo Showcase (User Request)
+  - [x] Extend `BrandLogo` in `src/components/brand-logo.tsx` with `variant="hero"` & custom dimensions
+  - [x] Replace cropped box photo in `src/app/page.tsx` with `<BrandLogo variant="hero" />`
+  - [x] Style `.daisy-hero__brand-showcase` with ambient radial glow, centered alignment, and hover zoom
+  - [x] Implement responsive mobile sizing (`max-width: 250px`, `min-height: 0`) preventing mobile text overlap
+  - [x] Verify Ralph Loop (tsc 0 errors, lint 0 errors, test 74/74 pass, build 40/40 clean, Playwright desktop/mobile screenshots in light & dark modes)
+- [x] Phase 12: Stickers Category Catalog Redesign (Reference Design Matching)
+  - [x] Create `src/components/stickers-catalog-client.tsx` matching `media_1792256601127_ff2bfb58.png`:
+    - Top search bar (`...ابحث عن منتج`) with magnifying glass icon on far right
+    - Sort dropdown (`الأحدث`, `الأقل سعراً`, `الأعلى سعراً`, `الاسم: أ - ي`) with chevron on far left
+    - 3-column responsive grid layout (`lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 sm:gap-7 lg:gap-8`)
+    - Circular wishlist heart button at top-left with `useWishlist` integration
+    - Bottom-left arched cutout tab displaying design tag (e.g., K-Pop, Dino, Kuromi, Superman)
+    - Right-aligned hierarchy: category subtitle in teal, bold title, truncated description
+    - Bold teal price formatted as `يبدأ من 50.00 ج.م` ("Starts from 50.00 EGP")
+    - Direct link to `/products/custom-waterproof-stickers?design=${design.id}`
+  - [x] Update `src/app/categories/[slug]/page.tsx` to render `StickersCatalogClient` for stickers category
+  - [x] Verify light & dark mode appearance with WCAG AAA contrast
+  - [x] Execute continuous verification loop (tsc, lint, tests, build)
+  - [x] Take browser verification screenshots with Playwright in both light and dark modes (desktop & mobile)
+- [x] Phase 13: Storefront Mobile Experience Enhancement (ui-ux-pro-max)
+  - [x] Upgrade mobile touch targets to WCAG 2.5.5 minimum 44x44px in header icons, drawer language switcher, and search overlay
+  - [x] Convert multi-line category filter chips on `/products` to a modern horizontal swipeable strip
+  - [x] Add horizontal theme quick-filter pills on `/categories/stickers` for one-tap mobile browsing
+  - [x] Optimize mobile card typography, padding, and spacing for thumb-friendly browsing
+  - [x] Fix CTA monogram watermark overflow clipping (`overflow: hidden; max-width: 100vw;`)
+  - [x] Refine mobile purchase controls and touch targets for storybook and customizer modal
+  - [x] Execute Ralph Loop verification (tsc 0 errors, lint 0 errors, test 74/74 pass, build 40/40 clean, Playwright mobile audit)
+- [x] Phase 14: Storewide Frontend Button & Hover UX Enhancement (ui-ux-pro-max)
+  - [x] Task 14.1: Fix global CSS design tokens, focus rings, and button interaction foundations in `src/app/globals.css`
+  - [x] Task 14.2: Fix Stickers Customizer modal submit button contrast & quantity stepper icons in `src/components/stickers-preview.tsx`
+  - [x] Task 14.3: Fix Storybook lightbox modal BEM classes and disabled state handling in `src/components/story-book-preview.tsx`
+  - [x] Task 14.4: Enhance catalog filter tabs, wishlist hearts, and cart CTA buttons with tactile micro-interactions in `products-catalog-client.tsx`, `stickers-catalog-client.tsx`, and `commerce.tsx`
+  - [x] Task 14.5: Ralph Loop verification (tsc 0 errors, lint 0 errors, test 74/74 pass, build 40/40 clean, Playwright visual inspection)
+- [x] Phase 15: Storefront Polish, Checkout & Wishlist Experience Enhancement (ui-ux-pro-max)
+  - [x] Task 15.1: Enhance Checkout Page form controls & place-order button contrast in `src/app/checkout/page.tsx`
+  - [x] Task 15.2: Enhance Wishlist Page empty state links and dark mode CTAs in `src/app/wishlist/page.tsx`
+  - [x] Task 15.3: Enhance Cart Drawer stepper micro-interactions and close button in `src/components/storefront.tsx`
+  - [x] Task 15.4: Enhance Homepage round link dark mode hover & text link transitions in `src/app/globals.css`
+  - [x] Task 15.5: Ralph Loop verification (tsc 0 errors, lint 0 errors, test 74/74 pass, build 40/40 clean, Playwright verification)
+- [x] Phase 16: Comprehensive Storefront Polish, Auth & Account Redesign, and Wishlist Unification
+  - [x] Task 16.1: Connect StoryBook & Reward Cards preview components to storewide `useWishlist` hook
+  - [x] Task 16.2: Tactile polish for Header search direction & Quick Search panel buttons
+  - [x] Task 16.3: Auth & Account modernization (`/login`, `/register`, `/forgot-password`, `/reset-password`, `/account`)
+  - [x] Task 16.4: Static & catalog buttons polish (`/about`, `/faq`, `/contact`, `.catalog-apply`, `.catalog-filter-chip`, remove collection card grayscale)
+  - [x] Task 16.5: Ralph Loop verification & visual audit
+- [x] Phase 17: Custom Printed Children's T-Shirts Implementation
+  - [x] Task 17.1: Setup size chart & garment mockup assets and product fixture (`public/size-charts/`, `src/data/tshirt-product.json`, local database sync script)
+  - [x] Task 17.2: Implement private artwork storage engine & upload endpoints (`src/lib/tshirt-artwork-storage.ts`, `POST /api/uploads/tshirt-artwork`, `GET /api/admin/orders/[id]/tshirt-artwork`)
+  - [x] Task 17.3: Extend customization validation, formatter, and bilingual i18n (`customization-validation.ts`, `customization-formatter.ts`, `messages.ts`)
+  - [x] Task 17.4: Create brand-standard Size Guide modal component (`src/components/tshirt-size-guide-modal.tsx`)
+  - [x] Task 17.5: Create interactive Children's T-Shirt Studio component (`src/components/tshirt-preview.tsx`)
+  - [x] Task 17.6: Storefront routing and catalog integration (`products/[slug]`, `categories/[slug]`, `products-catalog-client.tsx`, category cards)
+  - [x] Task 17.7: Admin order review & WhatsApp customer contact button (`src/app/admin/orders/page.tsx`)
+  - [x] Task 17.8: Automated test suite & Ralph Loop verification (`tests/tshirt-product.test.ts`, tsc, lint, tests, build, Playwright browser inspection in desktop/mobile & light/dark)
+  - [x] Task 17.9: Redesign children's T-shirt vector mockups (photorealistic silhouette, natural shoulder drape, ribbed neckline, subtle UI print-area guide in `tshirt-preview.tsx`, verified in light & dark modes)
+
+
+

@@ -11,7 +11,9 @@ function subscribeToTheme(onChange: () => void) {
   const media = window.matchMedia("(prefers-color-scheme: dark)");
   const syncSystemTheme = (event: MediaQueryListEvent) => {
     if (root.dataset.themePreference === "system") {
-      root.dataset.theme = resolveTheme(null, event.matches);
+      const nextTheme = resolveTheme(null, event.matches);
+      root.dataset.theme = nextTheme;
+      root.classList.toggle("dark", nextTheme === "dark");
       onChange();
     }
   };
@@ -37,6 +39,7 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
     const nextTheme = getNextTheme(currentTheme);
     root.dataset.theme = nextTheme;
     root.dataset.themePreference = "user";
+    root.classList.toggle("dark", nextTheme === "dark");
     try { window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme); } catch {}
     window.dispatchEvent(new Event("daisy-theme-change"));
   };

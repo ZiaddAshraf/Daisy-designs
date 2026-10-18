@@ -18,6 +18,10 @@ import {
   categoryNoticeForLocale,
 } from "@/lib/store-categories";
 import { SparkleStar } from "@/components/decorative-marks";
+import { RewardCardsPreview } from "@/components/reward-cards-preview";
+import { StickersCatalogClient } from "@/components/stickers-catalog-client";
+import { StoryBookPreview } from "@/components/story-book-preview";
+import { TShirtPreview } from "@/components/tshirt-preview";
 
 type SearchFilters = { collection?: string; min?: string; max?: string; availability?: string; customizable?: string; sort?: string; page?: string };
 function normalizeFilters(params: SearchFilters) { const numeric = (value?: string) => value && /^\d{1,8}$/.test(value) ? value : undefined; return { collection: params.collection?.slice(0, 80), min: numeric(params.min), max: numeric(params.max), availability: params.availability === "in-stock" ? params.availability : undefined, customizable: params.customizable === "true" ? params.customizable : undefined, sort: ["price-asc", "price-desc", "best-selling", "newest"].includes(params.sort ?? "") ? params.sort : "newest", page: numeric(params.page), limit: "12" }; }
@@ -103,22 +107,32 @@ export default async function CategoryPage({ params, searchParams }: { params: P
         <span>{categoryName}</span>
       </nav>
 
-      <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning>
-        <div>
-          <p className="eyebrow">DAISY DESIGNS / {t("categoryLabel")}</p>
-          <h1>{categoryName}</h1>
-          {categoryTagline && <p className="category-detail-tagline">{categoryTagline}</p>}
-          {categoryDescription && <p>{categoryDescription}</p>}
-          {categoryNotice && (
-            <div className="category-surface-notice">
-              <SparkleStar size={13} className="category-surface-notice__star" />
-              <span>{categoryNotice}</span>
-            </div>
-          )}
-        </div>
-      </header>
+      {slug !== "reward-cards" && slug !== "stickers" && slug !== "school-stickers" && slug !== "customized-stories" && slug !== "stories" && slug !== "printed-t-shirts" && slug !== "t-shirts" && slug !== "tshirts" && (
+        <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning>
+          <div>
+            <p className="eyebrow">DAISY DESIGNS / {t("categoryLabel")}</p>
+            <h1>{categoryName}</h1>
+            {categoryTagline && <p className="category-detail-tagline">{categoryTagline}</p>}
+            {categoryDescription && <p>{categoryDescription}</p>}
+            {categoryNotice && (
+              <div className="category-surface-notice">
+                <SparkleStar size={13} className="category-surface-notice__star" />
+                <span>{categoryNotice}</span>
+              </div>
+            )}
+          </div>
+        </header>
+      )}
 
-      {hasProducts ? (
+      {slug === "reward-cards" ? (
+        <RewardCardsPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
+      ) : slug === "stickers" || slug === "school-stickers" ? (
+        <StickersCatalogClient locale={locale} />
+      ) : slug === "customized-stories" || slug === "stories" ? (
+        <StoryBookPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
+      ) : slug === "printed-t-shirts" || slug === "t-shirts" || slug === "tshirts" ? (
+        <TShirtPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
+      ) : hasProducts ? (
         <>
           <div className="catalog-result-line" data-scroll-reveal suppressHydrationWarning>
             <span>{formatMessage(t("productCount"), { count: formatLocaleNumber(locale, result!.total) })}</span>

@@ -2,11 +2,13 @@ import Image from "@/components/site-image";
 import Link from "next/link";
 
 export interface BrandLogoProps {
-  variant?: "full" | "lockup" | "monogram";
+  variant?: "full" | "lockup" | "monogram" | "hero";
   className?: string;
   priority?: boolean;
   asLink?: boolean;
   altText?: string;
+  width?: number;
+  height?: number;
 }
 
 export function BrandLogo({
@@ -15,6 +17,8 @@ export function BrandLogo({
   priority = false,
   asLink = false,
   altText = "Daisy Designs | Where Ideas Bloom",
+  width: customWidth,
+  height: customHeight,
 }: BrandLogoProps) {
   let lightSrc = "/brand/daisy-designs-lockup-dark.png";
   let darkSrc = "/brand/daisy-designs-lockup-light.png";
@@ -26,12 +30,20 @@ export function BrandLogo({
     darkSrc = "/brand/daisy-designs-logo-light.png";
     width = 240;
     height = 180;
+  } else if (variant === "hero") {
+    lightSrc = "/brand/daisy-designs-logo-dark.png";
+    darkSrc = "/brand/daisy-designs-logo-light.png";
+    width = 440;
+    height = 330;
   } else if (variant === "monogram") {
     lightSrc = "/brand/daisy-designs-monogram-square-dark.png";
     darkSrc = "/brand/daisy-designs-monogram-square-light.png";
     width = 100;
     height = 100;
   }
+
+  if (customWidth) width = customWidth;
+  if (customHeight) height = customHeight;
 
   const content = (
     <span className={`daisy-brand-logo daisy-brand-logo--${variant} ${className}`}>

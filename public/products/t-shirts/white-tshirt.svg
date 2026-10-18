@@ -1,0 +1,287 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <!-- Multi-stage ambient + contact drop shadow for soft photographic realism -->
+    <filter id="garment-shadow-white" x="-20%" y="-15%" width="140%" height="135%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0f172a" flood-opacity="0.08" />
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.05" />
+    </filter>
+
+    <!-- Collar cast shadow onto chest -->
+    <filter id="collar-shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.07" />
+    </filter>
+
+    <!-- Sleeve underarm fold shadow -->
+    <filter id="fold-softness" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" />
+    </filter>
+
+    <!-- Torso base volumetric shading (smooth cylindrical highlight & soft sides) -->
+    <linearGradient id="white-torso-base" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#edf2f7" />
+      <stop offset="12%" stop-color="#f8fafc" />
+      <stop offset="42%" stop-color="#ffffff" />
+      <stop offset="58%" stop-color="#ffffff" />
+      <stop offset="88%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#edf2f7" />
+    </linearGradient>
+
+    <!-- Vertical soft fabric gradient from shoulders to hem -->
+    <linearGradient id="white-vertical-drape" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="70%" stop-color="#ffffff" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#e2e8f0" stop-opacity="0.6" />
+    </linearGradient>
+
+    <!-- Left sleeve natural light & drape -->
+    <linearGradient id="white-sleeve-left" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+
+    <!-- Right sleeve natural light & drape -->
+    <linearGradient id="white-sleeve-right" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+
+    <!-- Inside back neck depth -->
+    <linearGradient id="white-collar-inner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1" />
+      <stop offset="40%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#64748b" />
+    </linearGradient>
+
+    <!-- Front ribbed collar band gradient -->
+    <linearGradient id="white-ribbed-collar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+
+    <!-- Soft highlight for chest volume -->
+    <radialGradient id="chest-highlight" cx="50%" cy="32%" r="35%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="800" fill="transparent" />
+
+  <!-- Main Garment Silhouette with Soft Drop Shadows -->
+  <g filter="url(#garment-shadow-white)">
+
+    <!-- 1. Inner Back Collar Wall (Creates realistic hollow neck cavity) -->
+    <path
+      d="M 334 162 C 368 178 432 178 466 162 C 452 196 348 196 334 162 Z"
+      fill="url(#white-collar-inner)"
+    />
+
+    <!-- Inside Neck Brand Tape (Clean luxury detail) -->
+    <path
+      d="M 346 168 C 378 180 422 180 454 168"
+      fill="none"
+      stroke="#94a3b8"
+      stroke-width="3"
+      stroke-linecap="round"
+      opacity="0.6"
+    />
+
+    <!-- 2. Left Sleeve (Natural children's slope & relaxed fold) -->
+    <g id="left-sleeve">
+      <path
+        d="M 226 198 
+           C 200 232 168 274 146 312 
+           C 142 320 144 326 150 330 
+           L 194 362 
+           C 200 366 206 364 210 358 
+           C 226 332 242 308 248 316 
+           C 246 270 236 230 226 198 Z"
+        fill="url(#white-sleeve-left)"
+        stroke="#e2e8f0"
+        stroke-width="1.2"
+        stroke-linejoin="round"
+      />
+      <!-- Left Sleeve Hem Fold & Stitching -->
+      <path
+        d="M 148 322 L 198 358"
+        fill="none"
+        stroke="#cbd5e1"
+        stroke-width="1.2"
+        stroke-dasharray="3 2"
+        opacity="0.85"
+      />
+      <!-- Left Underarm Crease Shadow -->
+      <path
+        d="M 240 306 C 234 324 220 340 206 352"
+        fill="none"
+        stroke="#cbd5e1"
+        stroke-width="2"
+        stroke-linecap="round"
+        opacity="0.45"
+      />
+    </g>
+
+    <!-- 3. Right Sleeve (Symmetric organic drape & light falloff) -->
+    <g id="right-sleeve">
+      <path
+        d="M 574 198 
+           C 600 232 632 274 654 312 
+           C 658 320 656 326 650 330 
+           L 606 362 
+           C 600 366 594 364 590 358 
+           C 574 332 558 308 552 316 
+           C 554 270 564 230 574 198 Z"
+        fill="url(#white-sleeve-right)"
+        stroke="#e2e8f0"
+        stroke-width="1.2"
+        stroke-linejoin="round"
+      />
+      <!-- Right Sleeve Hem Fold & Stitching -->
+      <path
+        d="M 652 322 L 602 358"
+        fill="none"
+        stroke="#cbd5e1"
+        stroke-width="1.2"
+        stroke-dasharray="3 2"
+        opacity="0.85"
+      />
+      <!-- Right Underarm Crease Shadow -->
+      <path
+        d="M 560 306 C 566 324 580 340 594 352"
+        fill="none"
+        stroke="#cbd5e1"
+        stroke-width="2"
+        stroke-linecap="round"
+        opacity="0.45"
+      />
+    </g>
+
+    <!-- 4. Main Torso Body (Children's boxy cotton proportion) -->
+    <path
+      d="M 334 162 
+         C 292 174 246 188 226 198 
+         C 236 230 246 270 248 316 
+         C 252 380 254 490 252 660 
+         C 252 670 260 676 270 676 
+         L 530 676 
+         C 540 676 548 670 548 660 
+         C 546 490 548 380 552 316 
+         C 554 270 564 230 574 198 
+         C 554 188 508 174 466 162 
+         C 450 220 350 220 334 162 Z"
+      fill="url(#white-torso-base)"
+      stroke="#e2e8f0"
+      stroke-width="1.2"
+      stroke-linejoin="round"
+    />
+
+    <!-- Torso Vertical Drape Overlay for Soft Cotton Depth -->
+    <path
+      d="M 334 162 
+         C 292 174 246 188 226 198 
+         C 236 230 246 270 248 316 
+         C 252 380 254 490 252 660 
+         C 252 670 260 676 270 676 
+         L 530 676 
+         C 540 676 548 670 548 660 
+         C 546 490 548 380 552 316 
+         C 554 270 564 230 574 198 
+         C 554 188 508 174 466 162 
+         C 450 220 350 220 334 162 Z"
+      fill="url(#white-vertical-drape)"
+      style="mix-blend-mode: multiply;"
+    />
+
+    <!-- Volumetric Chest Highlight -->
+    <ellipse cx="400" cy="310" rx="140" ry="110" fill="url(#chest-highlight)" />
+
+    <!-- 5. Ribbed Crewneck Front Band (Clean, authentic cotton collar) -->
+    <g filter="url(#collar-shadow)">
+      <path
+        d="M 334 162 
+           C 350 220 450 220 466 162 
+           C 454 175 432 186 400 186 
+           C 368 186 346 175 334 162 Z"
+        fill="url(#white-ribbed-collar)"
+        stroke="#cbd5e1"
+        stroke-width="1.2"
+      />
+      <!-- Collar Inner Seam Detail -->
+      <path
+        d="M 340 168 C 354 212 446 212 460 168"
+        fill="none"
+        stroke="#e2e8f0"
+        stroke-width="1.2"
+        stroke-dasharray="2 1.5"
+      />
+    </g>
+
+    <!-- 6. Realistic Soft Fabric Creases (Subtle, organic drapes — no harsh lines) -->
+    <!-- Underarm / Side Drape Folds -->
+    <path
+      d="M 252 328 C 262 360 260 400 256 430"
+      fill="none"
+      stroke="#e2e8f0"
+      stroke-width="2"
+      stroke-linecap="round"
+      opacity="0.6"
+    />
+    <path
+      d="M 548 328 C 538 360 540 400 544 430"
+      fill="none"
+      stroke="#e2e8f0"
+      stroke-width="2"
+      stroke-linecap="round"
+      opacity="0.6"
+    />
+
+    <!-- Subtle Waist / Lower Torso Fabric Tension Waves -->
+    <path
+      d="M 264 540 C 310 554 360 548 400 542 C 440 548 490 554 536 540"
+      fill="none"
+      stroke="#edf2f7"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      opacity="0.7"
+    />
+    <path
+      d="M 270 615 C 320 626 360 622 400 618 C 440 622 480 626 530 615"
+      fill="none"
+      stroke="#edf2f7"
+      stroke-width="2"
+      stroke-linecap="round"
+      opacity="0.7"
+    />
+
+    <!-- 7. Premium Double-Needle Bottom Hem -->
+    <!-- Hem Fold Depth Line -->
+    <path
+      d="M 254 654 C 330 658 470 658 546 654"
+      fill="none"
+      stroke="#cbd5e1"
+      stroke-width="1"
+      opacity="0.5"
+    />
+    <!-- Double-Needle Stitching Details -->
+    <path
+      d="M 256 662 L 544 662"
+      fill="none"
+      stroke="#cbd5e1"
+      stroke-width="1.2"
+      stroke-dasharray="3 2"
+      opacity="0.75"
+    />
+    <path
+      d="M 256 667 L 544 667"
+      fill="none"
+      stroke="#cbd5e1"
+      stroke-width="1.2"
+      stroke-dasharray="3 2"
+      opacity="0.75"
+    />
+
+  </g>
+</svg>
