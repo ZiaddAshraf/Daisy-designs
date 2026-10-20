@@ -25,7 +25,14 @@ export function validateCustomization(
     input?: Record<string, string>,
 ): CustomizationValidation {
     const values = normalizeCustomization(input) ?? {};
-    const knownKeys = new Set(fields.map(field => field.key));
+    const knownKeys = new Set([
+        ...fields.map(field => field.key),
+        "custom_design_text",
+        "school_name",
+        "grade",
+        "class_name",
+        "child_photo",
+    ]);
     if (Object.keys(values).some(key => !knownKeys.has(key))) {
         return { success: false, reason: "INVALID_CUSTOMIZATION" };
     }
@@ -60,10 +67,29 @@ export function validateCustomization(
             if (field.maxLength !== null && value.length > field.maxLength) {
                 return { success: false, reason: "INVALID_CUSTOMIZATION" };
             }
-        } else if (choiceTypes.has(field.type) && !field.options.some(option => option.value === value)) {
-            return { success: false, reason: "INVALID_CUSTOMIZATION" };
+        } else if (choiceTypes.has(field.type)) {
+            const isDesignThemeCustom = field.key === "design_theme" && value === "custom-design";
+            if (!isDesignThemeCustom && !field.options.some(option => option.value === value)) {
+                return { success: false, reason: "INVALID_CUSTOMIZATION" };
+            }
         }
         validated[field.key] = value;
+    }
+
+    // Preserve allowed extra fields if they weren't in the DB fields list
+    for (const extraKey of ["custom_design_text", "school_name", "grade", "class_name", "child_photo"]) {
+        const val = values[extraKey];
+        if (val && !validated[extraKey]) {
+            if (typeof val === "string" && val.length <= 500) {
+                if (extraKey === "child_photo") {
+                    if (val.startsWith("private:") || val.startsWith("/uploads/") || val.startsWith("stk_child_")) {
+                        validated[extraKey] = val;
+                    }
+                } else {
+                    validated[extraKey] = val;
+                }
+            }
+        }
     }
 
     return { success: true, data: Object.keys(validated).length ? validated : undefined };

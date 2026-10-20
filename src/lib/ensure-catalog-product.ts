@@ -5,8 +5,39 @@ export async function ensureCatalogProductInTransaction(
   slug: string,
   tx: Prisma.TransactionClient
 ): Promise<void> {
-  const existing = await tx.product.findUnique({ where: { slug } });
-  if (existing) return;
+  const existing = await tx.product.findUnique({
+    where: { slug },
+    include: { customizationFields: { include: { options: true } } },
+  });
+  if (existing) {
+    if (slug === "custom-waterproof-stickers") {
+      const existingKeys = new Set(existing.customizationFields.map((f) => f.key));
+      if (!existingKeys.has("custom_design_text")) {
+        await tx.customizationField.create({
+          data: {
+            productId: existing.id,
+            position: 7,
+            label: "وصف فكرة التصميم المطلوب (للتصميم المخصص)",
+            key: "custom_design_text",
+            type: "TEXT",
+            required: false,
+            maxLength: 500,
+          },
+        });
+      }
+      const themeField = existing.customizationFields.find((f) => f.key === "design_theme");
+      if (themeField && !themeField.options.some((o) => o.value === "custom-design")) {
+        await tx.customizationOption.create({
+          data: {
+            fieldId: themeField.id,
+            label: "استيكر مخصص بتصميمك وفكرتك الخاصة",
+            value: "custom-design",
+          },
+        });
+      }
+    }
+    return;
+  }
 
   if (slug === "reward-cards-box-set") {
     let cat = await tx.category.findUnique({ where: { slug: "reward-cards" } });
