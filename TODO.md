@@ -120,10 +120,10 @@
 
 
 
-- [ ] Phase 18: Dynamic Quantity-Based Price Scaling for Core Products (Reward Cards, T-Shirts, Customized Stories)
-  - [ ] Task 18.1: Update `RewardCardsPreview` (`src/components/reward-cards-preview.tsx`) to scale displayed price with quantity (`unitPrice * quantity`) and update Add to Cart button
-  - [ ] Task 18.2: Update `TShirtPreview` (`src/components/tshirt-preview.tsx`) to scale pricing card price with quantity (`unitPrice * quantity`) and update quantity note
-  - [ ] Task 18.3: Update `StoryBookPreview` (`src/components/story-book-preview.tsx`) to scale displayed price with quantity (`unitPrice * quantity`) and update Add to Cart button
-  - [ ] Task 18.4: Update generic `ProductDetail` in `src/components/commerce.tsx` to scale price with quantity
-  - [ ] Task 18.5: Run continuous verification (tsc 0 errors, lint 0 errors, tests 89/89 pass, build clean)
-  - [ ] Task 18.6: Browser verification with Playwright across all 3 pages
+- [x] Phase 18: Dynamic Quantity-Based Price Scaling for Core Products (Reward Cards, T-Shirts, Customized Stories)
+  - [x] Task 18.1: Update `RewardCardsPreview` (`src/components/reward-cards-preview.tsx`) to scale displayed price with quantity (`unitPrice * quantity`) and update Add to Cart button
+  - [x] Task 18.2: Update `TShirtPreview` (`src/components/tshirt-preview.tsx`) to scale pricing card price with quantity (`unitPrice * quantity`) and update quantity note
+  - [x] Task 18.3: Update `StoryBookPreview` (`src/components/story-book-preview.tsx`) to scale displayed price with quantity (`unitPrice * quantity`) and update Add to Cart button
+  - [x] Task 18.4: Update generic `ProductDetail` in `src/components/commerce.tsx` to scale price with quantity
+  - [x] Task 18.5: Run continuous verification (tsc 0 errors, lint 0 errors, tests 89/89 pass, build clean)
+  - [x] Task 18.6: Browser verification with Playwright across all 3 pages
