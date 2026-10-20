@@ -1,14 +1,14 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight } from "lucide-react";
-import { HeroTextReveal, SectionReveal, StorybookReveal, InteractiveMark, StaggerCategoryGrid } from "@/components/home-motion";
+import { StorybookReveal, StaggerCategoryGrid } from "@/components/home-motion";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import {
   getStoreCategories,
 } from "@/lib/store-categories";
 import { CategoryCard } from "@/components/category-card";
-import { DaisyFlower, SparkleStar, StorybookIcon, TinyDaisyDoodle, PlayfulWiggle } from "@/components/decorative-marks";
+import { DaisyFlower, SparkleStar, StorybookIcon } from "@/components/decorative-marks";
 import { BrandLogo } from "@/components/brand-logo";
 
 export const dynamic = "force-dynamic";
@@ -25,63 +25,21 @@ export default async function Home() {
 
   return (
     <main className="daisy-home">
-      <section className="daisy-hero" aria-labelledby="hero-title">
-        <HeroTextReveal className="daisy-hero__copy">
-          <p className="eyebrow">
-            DAISY DESIGNS <span> / </span> {t("homeBrandMadePersonal")}
-            <InteractiveMark className="daisy-hero__flower-mark">
-              <DaisyFlower size={15} />
-            </InteractiveMark>
-          </p>
-          <h1 id="hero-title">
-            {t("homeHeroTitle")}<br />
-            <em>{t("homeHeroTitleSecond")}</em>
-            <PlayfulWiggle className="daisy-hero__title-wiggle" />
-          </h1>
-          <p className="daisy-hero__intro">{t("homeHeroIntro")}</p>
-          <div className="daisy-hero__actions">
-            <Link href="/categories" className="daisy-button daisy-button--dark">
-              {t("exploreCategories")} <Arrow size={16} />
-            </Link>
-            <Link href="/products" className="daisy-text-link">
-              {t("homeHeroProductsCta")} <UpArrow size={16} />
-            </Link>
-          </div>
-          <span className="daisy-hero__index">{t("homeHeroIndex")}</span>
-        </HeroTextReveal>
-        <div className="daisy-hero__image daisy-hero__brand-showcase" data-scroll-reveal suppressHydrationWarning>
-          <div className="daisy-hero__brand-backdrop" aria-hidden="true" />
-          <BrandLogo
-            variant="hero"
+      <section className="daisy-hero daisy-hero--banner" aria-label="Daisy Designs | Where Ideas Bloom">
+        <h1 className="sr-only">Daisy Designs | Where Ideas Bloom</h1>
+        <div className="daisy-hero__banner-frame">
+          <Image
+            src="/hero.jpeg"
+            alt="Daisy Designs | Where Ideas Bloom"
+            width={1600}
+            height={533}
             priority
-            className="daisy-hero__brand-logo"
-            altText="Daisy Designs | Where Ideas Bloom"
+            quality={95}
+            sizes="(max-width: 1400px) 100vw, 1400px"
+            className="daisy-hero__banner-img"
           />
-          <span className="daisy-image-caption">{t("homeHeroCaption")}</span>
         </div>
       </section>
-
-      <SectionReveal className="daisy-intro" labelledBy="intro-title">
-        <div className="daisy-intro__heading">
-          <p className="eyebrow">
-            {t("homeIntroEyebrow")}
-            <TinyDaisyDoodle size={15} />
-          </p>
-          <h2 id="intro-title">{t("homeIntroTitle")}<br /><em>{t("homeIntroTitleSecond")}</em></h2>
-        </div>
-        <div className="daisy-intro__brand-mark" aria-hidden="true">
-          <span className="daisy-intro__flower-orbit">
-            <DaisyFlower size={20} />
-          </span>
-          <BrandLogo variant="monogram" className="daisy-intro__monogram" altText="Daisy Designs" />
-        </div>
-        <div className="daisy-intro__body">
-          <p>{t("homeIntroBody")}</p>
-          <Link href="/about" className="daisy-text-link">
-            {t("homeIntroAboutCta")} <UpArrow size={16} />
-          </Link>
-        </div>
-      </SectionReveal>
 
       <section className="daisy-categories" aria-labelledby="categories-title">
         <header className="daisy-section-heading" data-scroll-reveal suppressHydrationWarning>

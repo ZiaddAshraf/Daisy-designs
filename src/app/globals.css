@@ -2848,7 +2848,6 @@ h3 {
 
 .daisy-editorial-photo {
   object-fit: cover;
-  filter: grayscale(1) contrast(.94);
 }
 
 .daisy-image-caption {
@@ -2914,7 +2913,6 @@ h3 {
 
 .daisy-category__image .daisy-image:not([src*="daisy-designs-placeholder"]) {
   object-fit: cover;
-  filter: grayscale(1) contrast(1.08) brightness(.96);
 }
 
 .daisy-category__label {
@@ -2974,7 +2972,6 @@ h3 {
 
 .daisy-product__image:not(.daisy-product__image--placeholder) {
   object-fit: cover;
-  filter: grayscale(1) contrast(1.08) brightness(.96);
 }
 
 .daisy-product__image--placeholder {
@@ -3668,7 +3665,6 @@ img[src*="daisy-designs-placeholder"] {
 
 .catalog-category__image .daisy-image:not([src*="daisy-designs-placeholder"]) {
   object-fit: cover;
-  filter: grayscale(1) contrast(1.08) brightness(.96);
 }
 
 .catalog-category__meta {
@@ -8484,14 +8480,60 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
   }
 }
 
+/* ==========================================================================
+   Daisy Designs — Panoramic Full Hero Banner
+   ========================================================================== */
 
+.daisy-hero.daisy-hero--banner {
+  display: block !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  min-height: 0 !important;
+  height: auto !important;
+  width: min(calc(100% - var(--page-gutter) * 2), var(--content-width));
+  margin: 24px auto 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
 
+:root[data-theme="dark"] .daisy-hero.daisy-hero--banner,
+.dark .daisy-hero.daisy-hero--banner {
+  background: #18181b;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
 
+.daisy-hero__banner-frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  background: #ffffff;
+  border-radius: 15px;
+}
 
+.daisy-hero__banner-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 1600 / 533;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
 
+@media (max-width: 760px) {
+  .daisy-hero.daisy-hero--banner {
+    width: calc(100% - var(--page-gutter) * 2);
+    margin-top: 14px;
+    border-radius: 12px;
+  }
 
-
-
-
-
+  .daisy-hero__banner-frame {
+    border-radius: 11px;
+  }
+}
 
