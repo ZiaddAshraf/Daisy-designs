@@ -1,17 +1,20 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB for high-resolution print artwork
 export const MIN_DIMENSION = 600; // Minimum 600px width/height for viable print clarity
 export const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-export const PRIVATE_STORAGE_DIR = path.join(
-  process.cwd(),
-  "storage",
-  "private_uploads",
-  "tshirt_artwork"
-);
+export function getPrivateStorageDir(): string {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return path.join(os.tmpdir(), "daisy_storage", "private_uploads", "tshirt_artwork");
+  }
+  return path.join(process.cwd(), "storage", "private_uploads", "tshirt_artwork");
+}
+
+export const PRIVATE_STORAGE_DIR = getPrivateStorageDir();
 
 export type ImageDimensions = {
   width: number;
@@ -194,13 +197,23 @@ export async function saveTshirtArtwork(buffer: Buffer, format: "jpg" | "png" | 
   filename: string;
   fullPath: string;
 }> {
-  await fs.mkdir(PRIVATE_STORAGE_DIR, { recursive: true });
+  let storageDir = getPrivateStorageDir();
+  try {
+    await fs.mkdir(storageDir, { recursive: true });
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "code" in err && (err.code === "EROFS" || err.code === "EACCES")) {
+      storageDir = path.join(os.tmpdir(), "daisy_storage", "private_uploads", "tshirt_artwork");
+      await fs.mkdir(storageDir, { recursive: true });
+    } else {
+      throw err;
+    }
+  }
 
   const sanitized = stripMetadata(buffer, format);
   const ext = format === "jpg" ? "jpg" : format;
   const uuid = randomUUID();
   const filename = `tshirt_art_${uuid}.${ext}`;
-  const fullPath = path.join(PRIVATE_STORAGE_DIR, filename);
+  const fullPath = path.join(storageDir, filename);
 
   await fs.writeFile(fullPath, sanitized);
 
@@ -225,8 +238,9 @@ export function resolveTshirtArtworkPath(storageKey: string): string | null {
     return null;
   }
 
-  const resolved = path.resolve(PRIVATE_STORAGE_DIR, rawFilename);
-  if (!resolved.startsWith(PRIVATE_STORAGE_DIR)) {
+  const baseDir = getPrivateStorageDir();
+  const resolved = path.resolve(baseDir, rawFilename);
+  if (!resolved.startsWith(baseDir)) {
     return null; // Prevent path traversal
   }
 

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { isAdmin } from "@/lib/admin-auth";
 import { resolveChildPhotoPath } from "@/lib/child-photo-storage";
 import { prisma } from "@/lib/prisma";
@@ -44,19 +46,28 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       return NextResponse.json({ error: "مسار الصورة غير صالح" }, { status: 400 });
     }
 
+    let buffer: Buffer;
     try {
-      const buffer = await fs.readFile(filePath);
-      const ext = filePath.endsWith(".png") ? "png" : filePath.endsWith(".webp") ? "webp" : "jpeg";
-      return new NextResponse(buffer, {
-        headers: {
-          "Content-Type": `image/${ext}`,
-          "Content-Disposition": `inline; filename="order_${id}_child_photo.${ext}"`,
-          "Cache-Control": "private, no-cache, no-store, must-revalidate",
-        },
-      });
+      buffer = await fs.readFile(filePath);
     } catch {
-      return NextResponse.json({ error: "الملف غير موجود على الخادم أو تم حذفه وفق سياسة الاحتفاظ" }, { status: 404 });
+      try {
+        const altDir = filePath.includes("daisy_storage")
+          ? path.join(process.cwd(), "storage", "private_uploads", "story_child_photos")
+          : path.join(os.tmpdir(), "daisy_storage", "private_uploads", "story_child_photos");
+        buffer = await fs.readFile(path.join(altDir, path.basename(filePath)));
+      } catch {
+        return NextResponse.json({ error: "الملف غير موجود على الخادم أو تم حذفه وفق سياسة الاحتفاظ" }, { status: 404 });
+      }
     }
+
+    const ext = filePath.endsWith(".png") ? "png" : filePath.endsWith(".webp") ? "webp" : "jpeg";
+    return new NextResponse(new Uint8Array(buffer), {
+      headers: {
+        "Content-Type": `image/${ext}`,
+        "Content-Disposition": `inline; filename="order_${id}_child_photo.${ext}"`,
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "SERVER_ERROR";
     return NextResponse.json({ error: message }, { status: 500 });

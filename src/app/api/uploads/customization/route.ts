@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 export const runtime = "nodejs";
@@ -67,8 +68,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "INVALID_FILE_MAGIC_BYTES" }, { status: 400 });
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "customizations");
-    await fs.mkdir(uploadDir, { recursive: true });
+    let uploadDir = (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+      ? path.join(os.tmpdir(), "daisy_storage", "uploads", "customizations")
+      : path.join(process.cwd(), "public", "uploads", "customizations");
+
+    try {
+      await fs.mkdir(uploadDir, { recursive: true });
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "code" in err && (err.code === "EROFS" || err.code === "EACCES")) {
+        uploadDir = path.join(os.tmpdir(), "daisy_storage", "uploads", "customizations");
+        await fs.mkdir(uploadDir, { recursive: true });
+      } else {
+        throw err;
+      }
+    }
 
     const secureFilename = `stk_child_${randomUUID()}.${ext}`;
     const filePath = path.join(uploadDir, secureFilename);

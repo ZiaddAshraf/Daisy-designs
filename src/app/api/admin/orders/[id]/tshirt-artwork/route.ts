@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { isAdmin } from "@/lib/admin-auth";
 import { resolveTshirtArtworkPath } from "@/lib/tshirt-artwork-storage";
 import { prisma } from "@/lib/prisma";
@@ -66,19 +68,28 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       return NextResponse.json({ error: "مسار ملف التصميم غير صالح / Invalid artwork path" }, { status: 400 });
     }
 
+    let buffer: Buffer;
     try {
-      const buffer = await fs.readFile(filePath);
-      const ext = filePath.endsWith(".png") ? "png" : filePath.endsWith(".webp") ? "webp" : "jpeg";
-      return new NextResponse(buffer, {
-        headers: {
-          "Content-Type": `image/${ext}`,
-          "Content-Disposition": `inline; filename="order_${id}_tshirt_artwork.${ext}"`,
-          "Cache-Control": "private, no-cache, no-store, must-revalidate",
-        },
-      });
+      buffer = await fs.readFile(filePath);
     } catch {
-      return NextResponse.json({ error: "الملف غير موجود على الخادم / Artwork file missing" }, { status: 404 });
+      try {
+        const altDir = filePath.includes("daisy_storage")
+          ? path.join(process.cwd(), "storage", "private_uploads", "tshirt_artwork")
+          : path.join(os.tmpdir(), "daisy_storage", "private_uploads", "tshirt_artwork");
+        buffer = await fs.readFile(path.join(altDir, path.basename(filePath)));
+      } catch {
+        return NextResponse.json({ error: "الملف غير موجود على الخادم / Artwork file missing" }, { status: 404 });
+      }
     }
+
+    const ext = filePath.endsWith(".png") ? "png" : filePath.endsWith(".webp") ? "webp" : "jpeg";
+    return new NextResponse(new Uint8Array(buffer), {
+      headers: {
+        "Content-Type": `image/${ext}`,
+        "Content-Disposition": `inline; filename="order_${id}_tshirt_artwork.${ext}"`,
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error) {
     console.error("Failed to retrieve T-shirt artwork:", error);
     return NextResponse.json({ error: "خطأ داخلي في الخادم / Internal error" }, { status: 500 });

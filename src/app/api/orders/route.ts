@@ -9,6 +9,7 @@ import { calculateDiscount, calculateShipping } from "@/lib/commerce-rules";
 import { validateCustomization, validateTshirtCustomization } from "@/lib/customization-validation";
 import { isDemoCatalogProduct } from "@/lib/demo-preview-safety";
 import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
+import { ensureCatalogProductInTransaction } from "@/lib/ensure-catalog-product";
 
 export const runtime = "nodejs";
 
@@ -29,7 +30,14 @@ export async function POST(request: Request) {
         const result = await prisma.$transaction(async transaction => {
             const existingOrder = await transaction.order.findUnique({ where: { number }, include: { items: true } });
             if (existingOrder) return { id: existingOrder.id, number: existingOrder.number, total: existingOrder.total, items: existingOrder.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) };
-            const products = await transaction.product.findMany({ where: { slug: { in: input.items.map(item => item.slug) }, published: true }, include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 }, customizationFields: { include: { options: true } } } });
+            let products = await transaction.product.findMany({ where: { slug: { in: input.items.map(item => item.slug) }, published: true }, include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 }, customizationFields: { include: { options: true } } } });
+            const missingSlugs = input.items.map(i => i.slug).filter(s => !products.some(p => p.slug === s));
+            if (missingSlugs.length > 0) {
+                for (const slug of missingSlugs) {
+                    await ensureCatalogProductInTransaction(slug, transaction);
+                }
+                products = await transaction.product.findMany({ where: { slug: { in: input.items.map(item => item.slug) }, published: true }, include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 }, customizationFields: { include: { options: true } } } });
+            }
             if (products.some(isDemoCatalogProduct)) throw new Error("PRODUCT_NOT_FOUND");
             if (products.length !== new Set(input.items.map(item => item.slug)).size) throw new Error("PRODUCT_NOT_FOUND");
             const pricedItems = input.items.map(item => {

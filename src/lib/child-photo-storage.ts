@@ -1,17 +1,20 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB for high-resolution print photos
 export const MIN_DIMENSION = 600; // Minimum 600px width and height for print viability
 export const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-export const PRIVATE_STORAGE_DIR = path.join(
-  process.cwd(),
-  "storage",
-  "private_uploads",
-  "story_child_photos"
-);
+export function getPrivateStorageDir(): string {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return path.join(os.tmpdir(), "daisy_storage", "private_uploads", "story_child_photos");
+  }
+  return path.join(process.cwd(), "storage", "private_uploads", "story_child_photos");
+}
+
+export const PRIVATE_STORAGE_DIR = getPrivateStorageDir();
 
 export type ImageDimensions = {
   width: number;
@@ -199,10 +202,20 @@ export async function saveChildPhoto(buffer: Buffer, format: "jpg" | "png" | "we
   filename: string;
   fullPath: string;
 }> {
-  await fs.mkdir(PRIVATE_STORAGE_DIR, { recursive: true });
+  let storageDir = getPrivateStorageDir();
+  try {
+    await fs.mkdir(storageDir, { recursive: true });
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "code" in err && (err.code === "EROFS" || err.code === "EACCES")) {
+      storageDir = path.join(os.tmpdir(), "daisy_storage", "private_uploads", "story_child_photos");
+      await fs.mkdir(storageDir, { recursive: true });
+    } else {
+      throw err;
+    }
+  }
 
   const filename = `story_child_${randomUUID()}.${format}`;
-  const fullPath = path.join(PRIVATE_STORAGE_DIR, filename);
+  const fullPath = path.join(storageDir, filename);
 
   const sanitized = stripMetadata(buffer, format);
   await fs.writeFile(fullPath, sanitized);
@@ -220,7 +233,9 @@ export function resolveChildPhotoPath(storageKey: string): string | null {
   // Sanitize filename against directory traversal
   const baseName = path.basename(filename);
   if (!baseName || baseName !== filename) return null;
-  return path.join(PRIVATE_STORAGE_DIR, baseName);
+  if (!/^[a-zA-Z0-9_\-]+\.(jpg|png|webp)$/.test(baseName)) return null;
+
+  return path.join(getPrivateStorageDir(), baseName);
 }
 
 /**
