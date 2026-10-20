@@ -7,22 +7,9 @@ import { getTranslation } from "@/lib/i18n/messages";
 import type { Locale } from "@/lib/locale";
 
 function subscribeToTheme(onChange: () => void) {
-  const root = document.documentElement;
-  const media = window.matchMedia("(prefers-color-scheme: dark)");
-  const syncSystemTheme = (event: MediaQueryListEvent) => {
-    if (root.dataset.themePreference === "system") {
-      const nextTheme = resolveTheme(null, event.matches);
-      root.dataset.theme = nextTheme;
-      root.classList.toggle("dark", nextTheme === "dark");
-      onChange();
-    }
-  };
-
   window.addEventListener("daisy-theme-change", onChange);
-  media.addEventListener("change", syncSystemTheme);
   return () => {
     window.removeEventListener("daisy-theme-change", onChange);
-    media.removeEventListener("change", syncSystemTheme);
   };
 }
 
@@ -35,7 +22,7 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
 
   const toggleTheme = () => {
     const root = document.documentElement;
-    const currentTheme = resolveTheme(root.dataset.theme ?? null, window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const currentTheme = resolveTheme(root.dataset.theme ?? null);
     const nextTheme = getNextTheme(currentTheme);
     root.dataset.theme = nextTheme;
     root.dataset.themePreference = "user";
