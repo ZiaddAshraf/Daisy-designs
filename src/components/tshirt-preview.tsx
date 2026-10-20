@@ -76,6 +76,8 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
 
   // Quantity & Submission state
   const [quantity, setQuantity] = useState(1);
+  const unitPrice = product.price ?? 500;
+  const totalPrice = unitPrice * quantity;
   const [addedToCart, setAddedToCart] = useState(false);
 
   // Validation Gate: Logical OR rule (has valid upload OR non-empty text >= 3 chars)
@@ -359,10 +361,16 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
             <div className="flex items-baseline justify-between gap-4">
               <div>
                 <span className="text-3xl font-black text-teal-600 dark:text-teal-400">
-                  {formatPrice(product.price ?? 500, locale)}
+                  {formatPrice(totalPrice, locale)}
                 </span>
                 <span className="block text-[11px] text-slate-500 dark:text-neutral-400 mt-0.5">
-                  {isAr ? "للتيشيرت الواحد شامل الطباعة على الصدر" : "per shirt including center chest printing"}
+                  {quantity > 1
+                    ? isAr
+                      ? `إجمالي ${quantity} تيشيرتات (${formatPrice(unitPrice, locale)} للتيشيرت)`
+                      : `Total for ${quantity} shirts (${formatPrice(unitPrice, locale)} each)`
+                    : isAr
+                    ? "للتيشيرت الواحد شامل الطباعة على الصدر"
+                    : "per shirt including center chest printing"}
                 </span>
               </div>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 border border-teal-200/50 dark:border-teal-800/50">
@@ -598,8 +606,8 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
                           ? "أرفق تصميماً أو اكتب وصفاً للإضافة"
                           : "Add image or text to order"
                         : isAr
-                        ? `أضف إلى السلة — ${(product.price * quantity).toLocaleString("ar-EG")} ج.م`
-                        : `Add to Cart — ${product.price * quantity} EGP`}
+                        ? `أضف إلى السلة — ${formatPrice(totalPrice, locale)}`
+                        : `Add to Cart — ${formatPrice(totalPrice, locale)}`}
                     </span>
                   </>
                 )}

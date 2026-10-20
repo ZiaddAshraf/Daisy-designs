@@ -71,6 +71,8 @@ export function StoryBookPreview({ locale, inStock = true }: StoryBookPreviewPro
 
   // Commerce controls
   const [quantity, setQuantity] = useState(1);
+  const unitPrice = product.price ?? 200;
+  const totalPrice = unitPrice * quantity;
   const [addedToCart, setAddedToCart] = useState(false);
   const { toggle: toggleStoreWishlist, has: inStoreWishlist } = useWishlist();
   const isWishlisted = inStoreWishlist("first-year-at-school");
@@ -434,10 +436,16 @@ export function StoryBookPreview({ locale, inStock = true }: StoryBookPreviewPro
             <div className="sb-purchase-card__price-row">
               <div>
                 <span className="sb-purchase-card__price">
-                  {formatPrice(product.price ?? 200, locale)}
+                  {formatPrice(totalPrice, locale)}
                 </span>
                 <span className="sb-purchase-card__price-note">
-                  {isAr ? "للكتاب الورقي المطبوع كاملاً" : "per complete printed storybook"}
+                  {quantity > 1
+                    ? isAr
+                      ? `إجمالي ${quantity} قصص (${formatPrice(unitPrice, locale)} للقصة)`
+                      : `Total for ${quantity} books (${formatPrice(unitPrice, locale)} each)`
+                    : isAr
+                    ? "للكتاب الورقي المطبوع كاملاً"
+                    : "per complete printed storybook"}
                 </span>
               </div>
               <span className={`sb-stock-badge ${inStock ? "sb-stock-badge--in" : "sb-stock-badge--out"}`}>
@@ -596,6 +604,10 @@ export function StoryBookPreview({ locale, inStock = true }: StoryBookPreviewPro
                         ? isAr
                           ? "ارفع صورة الطفل للإضافة"
                           : "Upload photo to add"
+                        : quantity > 1
+                        ? isAr
+                          ? `أضف القصة إلى السلة — ${formatPrice(totalPrice, locale)}`
+                          : `Add Story to Cart — ${formatPrice(totalPrice, locale)}`
                         : isAr
                         ? "أضف القصة إلى السلة"
                         : "Add Story to Cart"}

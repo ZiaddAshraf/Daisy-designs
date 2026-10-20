@@ -185,6 +185,8 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
   const { add } = useCart();
   const { toggle: toggleStoreWishlist, has: inStoreWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
+  const unitPrice = product.price ?? 200;
+  const totalPrice = unitPrice * quantity;
   const [added, setAdded] = useState(false);
   // State
   const [activeTheme, setActiveTheme] = useState<CardTheme>("all");
@@ -612,9 +614,15 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
           <div className="rc-purchase-container">
             <div className="rc-price-header">
               <div className="rc-price-tag">
-                <span className="rc-price-number">{formatPrice(product.price ?? 200, locale)}</span>
+                <span className="rc-price-number">{formatPrice(totalPrice, locale)}</span>
                 <span className="rc-price-unit">
-                  {isAr ? "للعلبة الكاملة (١٠ كروت)" : "per complete box (10 cards)"}
+                  {quantity > 1
+                    ? isAr
+                      ? `إجمالي ${quantity} علب (${formatPrice(unitPrice, locale)} للعلبة)`
+                      : `Total for ${quantity} boxes (${formatPrice(unitPrice, locale)} each)`
+                    : isAr
+                    ? "للعلبة الكاملة (١٠ كروت)"
+                    : "per complete box (10 cards)"}
                 </span>
               </div>
               <div className="rc-availability-wrap">
@@ -667,7 +675,19 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
                     className="rc-add-to-cart-btn daisy-button daisy-button--dark"
                   >
                     <ShoppingBag size={16} />
-                    <span>{isAr ? "أضف إلى السلة" : "Add to Cart"}</span>
+                    <span>
+                      {added
+                        ? isAr
+                          ? "تمت الإضافة للسلة!"
+                          : "Added to Cart!"
+                        : quantity > 1
+                        ? isAr
+                          ? `أضف إلى السلة — ${formatPrice(totalPrice, locale)}`
+                          : `Add to Cart — ${formatPrice(totalPrice, locale)}`
+                        : isAr
+                        ? "أضف إلى السلة"
+                        : "Add to Cart"}
+                    </span>
                   </button>
 
                   <button

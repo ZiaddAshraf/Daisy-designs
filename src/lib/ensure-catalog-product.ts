@@ -202,42 +202,11 @@ export async function ensureCatalogProductInTransaction(
             },
             {
               position: 2,
-              label: "اسم المدرسة (اختياري)",
-              key: "school_name",
-              type: "TEXT",
-              required: false,
-              maxLength: 120,
-            },
-            {
-              position: 3,
-              label: "المرحلة / الصف (اختياري)",
-              key: "grade",
-              type: "TEXT",
-              required: false,
-              maxLength: 80,
-            },
-            {
-              position: 4,
-              label: "الفصل (اختياري)",
-              key: "class_name",
-              type: "TEXT",
-              required: false,
-              maxLength: 80,
-            },
-            {
-              position: 5,
               label: "رقم هاتف ولي الأمر (اختياري)",
               key: "parent_phone",
               type: "TEXT",
               required: false,
               maxLength: 20,
-            },
-            {
-              position: 6,
-              label: "صورة الطفل (اختياري)",
-              key: "child_photo",
-              type: "IMAGE",
-              required: false,
             },
           ],
         },
@@ -246,3 +215,4 @@ export async function ensureCatalogProductInTransaction(
     return;
   }
 }
+
