@@ -122,4 +122,19 @@ Implement the new physical printed customized storybook product **"أول سنة
   - Admin dashboard: Displays garment color, size, print placement (Center Chest), artwork download, customer text, and 1-click WhatsApp customer contact button.
   - Cart line isolation: Unique `cartLineId` per customization.
 
+### 2.9 Phase 20: Storewide Wishlist Architecture & Stickers Customization Add-to-Cart Protocol
+- **Stickers Customization Add-to-Cart**:
+  - `parent_phone` is strictly optional (`required: false`), adhering to store data schema.
+  - Phone validation only executes if a phone number is entered (`if (parentPhone.trim() && !validateEgyptianPhone(parentPhone))`).
+  - Clear user feedback if custom sticker idea is missing on design 0 (`customTextError`).
+  - Scaled price display on modal matching quantity (`product.price * quantity`).
+  - Automatic drawer reveal on add to cart (`setCartOpen(true)`).
+- **Storewide Wishlist Unification**:
+  - All product previewers and catalog cards hook into reactive `useWishlist()`.
+  - Floating toast feedback provides tactile confirmation upon toggling items in the wishlist.
+  - Sticker design wishlist items route directly to `/products/custom-waterproof-stickers?design=${designId}`.
+  - Any direct visit to `/products/sticker-*` redirects automatically to the appropriate sticker customizer, preventing 404 / "المنتج غير موجود".
+  - Touch targets for wishlist heart buttons maintain minimum 44x44px.
+
+
 

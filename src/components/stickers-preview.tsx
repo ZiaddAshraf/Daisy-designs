@@ -8,7 +8,7 @@ import {
   TinyDaisyDoodle,
   SparkleStar,
 } from "@/components/decorative-marks";
-import { useCart } from "@/components/storefront";
+import { useCart, useWishlist } from "@/components/storefront";
 import { formatPrice } from "@/lib/products";
 import { validateEgyptianPhone } from "@/lib/customization-validation";
 import {
@@ -105,7 +105,8 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
   const [activeTab, setActiveTab] = useState<ThemeFilter>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [customizingIndex, setCustomizingIndex] = useState<number | null>(null);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { toggle: toggleWishlist, has: inWishlist } = useWishlist();
+  const isWishlisted = inWishlist(product.slug);
   const [added, setAdded] = useState(false);
 
   // Customization Form State
@@ -122,22 +123,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
   const [quantity, setQuantity] = useState(1);
   const [phoneError, setPhoneError] = useState(false);
   const [nameError, setNameError] = useState(false);
-
-  // Load wishlist from localStorage
-  useEffect(() => {
-    try {
-      if (typeof window !== "undefined") {
-        const saved = localStorage.getItem("daisy_wishlist_stickers");
-        if (saved === "true") {
-          requestAnimationFrame(() => {
-            setIsWishlisted(true);
-          });
-        }
-      }
-    } catch {
-      // Ignore
-    }
-  }, []);
+  const [customTextError, setCustomTextError] = useState(false);
 
   // Check URL query param for ?design=ID to auto-open customization
   useEffect(() => {
@@ -170,13 +156,16 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
   }, [product.designs]);
 
   const handleToggleWishlist = () => {
-    const next = !isWishlisted;
-    setIsWishlisted(next);
-    try {
-      localStorage.setItem("daisy_wishlist_stickers", String(next));
-    } catch {
-      // Ignore
-    }
+    toggleWishlist({
+      slug: product.slug,
+      name: isAr ? product.arabicName : product.name,
+      category: isAr ? stickersData.category.arabicName : stickersData.category.name,
+      price: product.price,
+      image: product.primaryImage.url,
+      description: isAr ? product.arabicDescription : product.description,
+      customizable: true,
+      hasVariants: false,
+    });
   };
 
   useEffect(() => {
@@ -291,6 +280,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
     setQuantity(1);
     setNameError(false);
     setPhoneError(false);
+    setCustomTextError(false);
   };
 
   // Add to cart with full validation
@@ -305,7 +295,8 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
     }
     setNameError(false);
 
-    if (!validateEgyptianPhone(parentPhone)) {
+    // Parent phone is optional; validate only if provided
+    if (parentPhone.trim() && !validateEgyptianPhone(parentPhone)) {
       setPhoneError(true);
       return;
     }
@@ -313,14 +304,19 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
 
     const chosenDesign = product.designs[customizingIndex];
     if (chosenDesign.id === 0 && !customDesignText.trim()) {
+      setCustomTextError(true);
       return;
     }
+    setCustomTextError(false);
 
     const customizationPayload: Record<string, string> = {
       design_theme: chosenDesign.slug,
       child_name: trimmedName, // Preserves exact case (e.g. Malak Khaled)
-      parent_phone: parentPhone.trim(),
     };
+
+    if (parentPhone.trim()) {
+      customizationPayload.parent_phone = parentPhone.trim();
+    }
 
     if (chosenDesign.id === 0 && customDesignText.trim()) {
       customizationPayload.custom_design_text = customDesignText.trim();
@@ -753,12 +749,22 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                       type="text"
                       required
                       value={customDesignText}
-                      onChange={(e) => setCustomDesignText(e.target.value)}
+                      onChange={(e) => {
+                        setCustomDesignText(e.target.value);
+                        if (customTextError) setCustomTextError(false);
+                      }}
                       placeholder={isAr ? "مثال: روبلوكس، حكاية لعبة وودي، باتمان، أو فكرة خاصة..." : "e.g. Roblox, Toy Story Woody, Batman, or your own idea..."}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-teal-300 dark:border-teal-700 text-sm bg-[var(--card)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-teal-500 transition font-medium"
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-[var(--card)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-teal-500 transition font-medium ${
+                        customTextError ? "border-rose-500 ring-1 ring-rose-500" : "border-teal-300 dark:border-teal-700"
+                      }`}
                     />
                     <Palette size={16} className="absolute end-3.5 top-3 text-teal-600 dark:text-teal-400 pointer-events-none" />
                   </div>
+                  {customTextError && (
+                    <p className="text-[11px] text-rose-500 mt-1 font-semibold">
+                      {isAr ? "يرجى كتابة فكرة أو وصف الاستيكر المطلوب." : "Please enter your custom sticker idea or description."}
+                    </p>
+                  )}
                   <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium leading-relaxed">
                     {isAr
                       ? "💡 صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية أو رسمة تحبها وسيقوم فريق Daisy Designs بتصميم الشيت بالكامل وفق طلبك."
@@ -864,16 +870,14 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                 <div>
                   <label htmlFor="parentPhoneInput" className="block text-xs font-bold text-[var(--foreground)] mb-1">
                     {isAr ? "موبايل ولي الأمر" : "Parent's Phone"}{" "}
-                    <span className="text-rose-500 font-black">*</span>
-                    <span className="text-[var(--muted-foreground)] font-normal text-[11px] ms-1">
-                      {isAr ? "(مصر: 01X)" : "(Egypt)"}
+                    <span className="text-[var(--muted-foreground)] font-normal text-[11px]">
+                      {isAr ? "(اختياري - مصر: 01X)" : "(Optional - Egypt)"}
                     </span>
                   </label>
                   <div className="relative">
                     <input
                       id="parentPhoneInput"
                       type="tel"
-                      required
                       dir="ltr"
                       value={parentPhone}
                       onChange={(e) => {

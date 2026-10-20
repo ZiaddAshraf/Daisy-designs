@@ -128,11 +128,12 @@
   - [x] Task 18.5: Run continuous verification (tsc 0 errors, lint 0 errors, tests 89/89 pass, build clean)
   - [x] Task 18.6: Browser verification with Playwright across all 3 pages
 
-- [x] Phase 19: First-Item Custom Sticker (صمم استيكرك بنفسك) in Stickers Catalog
-  - [x] Task 19.1: Create high-fidelity custom sticker sheet vector illustration in `public/products/stickers/custom-sticker-design.svg`
-  - [x] Task 19.2: Register custom sticker design at index 0 in `src/data/stickers-product.json` and `src/lib/ensure-catalog-product.ts`
-  - [x] Task 19.3: Update `src/lib/customization-validation.ts` to support custom design text and stickers image uploads
-  - [x] Task 19.4: Update `src/components/stickers-catalog-client.tsx` to feature the custom sticker card as the first item with custom badge
-  - [x] Task 19.5: Update `src/components/stickers-preview.tsx` modal to include custom design description field and artwork upload
-  - [x] Task 19.6: Run continuous verification (tsc 0 errors, lint 0 errors, tests pass, build clean)
-  - [x] Task 19.7: Playwright browser verification on `/categories/stickers`
+- [x] Phase 20: Fix Stickers Customization Cart Addition & Storewide Wishlist System
+  - [x] Task 20.1: Fix stickers customization validation in `src/components/stickers-preview.tsx` (optional phone, custom design text validation, quantity price scaling)
+  - [x] Task 20.2: Connect `stickers-preview.tsx` wishlist button to global `useWishlist` hook
+  - [x] Task 20.3: Fix `stickers-catalog-client.tsx` wishlist button positioning, touch targets, and eliminate badge collision in RTL
+  - [x] Task 20.4: Fix wishlist item routing in `ProductCard` and handle `sticker-*` aliases in `src/app/products/[slug]/page.tsx`
+  - [x] Task 20.5: Add tactile wishlist toast notification feedback in `StoreShell`
+  - [x] Task 20.6: Run continuous verification (tsc, lint, tests, build) and browser verification with Playwright
+  - [x] Task 20.7: Deploy to Vercel production and verify live
+

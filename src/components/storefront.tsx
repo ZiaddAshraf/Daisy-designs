@@ -78,7 +78,35 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
   const update = (lineId: string, amount: number) => setItems(current => adjustCartLine(current, lineId, amount));
   const remove = (lineId: string) => setItems(current => removeCartLine(current, lineId));
   const clear = () => setItems([]);
-  const toggle = (product: Product) => { if (demoMode) return; setWishlist(current => current.some(item => item.slug === product.slug) ? current.filter(item => item.slug !== product.slug) : [...current, { ...product, image: getProductImageUrl(product.image) }]); };
+  const [wishlistToast, setWishlistToast] = useState<{ message: string; actionText?: string; actionHref?: string; isAdded: boolean } | null>(null);
+
+  const toggle = (product: Product) => {
+    if (demoMode) return;
+    const isAdding = !wishlist.some(item => item.slug === product.slug);
+    setWishlist(current =>
+      current.some(item => item.slug === product.slug)
+        ? current.filter(item => item.slug !== product.slug)
+        : [...current, { ...product, image: getProductImageUrl(product.image) }]
+    );
+    setWishlistToast({
+      message: isAdding
+        ? locale === "ar"
+          ? `تمت إضافة "${product.name}" إلى قائمة الرغبات`
+          : `Added "${product.name}" to wishlist`
+        : locale === "ar"
+        ? `تمت إزالة "${product.name}" من قائمة الرغبات`
+        : `Removed "${product.name}" from wishlist`,
+      actionText: isAdding ? (locale === "ar" ? "عرض القائمة" : "View Wishlist") : undefined,
+      actionHref: isAdding ? "/wishlist" : undefined,
+      isAdded: isAdding,
+    });
+  };
+
+  useEffect(() => {
+    if (!wishlistToast) return;
+    const timer = setTimeout(() => setWishlistToast(null), 3500);
+    return () => clearTimeout(timer);
+  }, [wishlistToast]);
 
   return <LocaleContext.Provider value={locale}>
     <WishlistContext.Provider value={{ items: wishlist, demoMode, toggle, has: slug => wishlist.some(item => item.slug === slug) }}>
@@ -89,6 +117,37 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
         {children}
         <Footer locale={locale} />
         {cartOpen && <CartDrawer onClose={() => setCartOpen(false)} />}
+        {wishlistToast && (
+          <aside
+            role="status"
+            aria-live="polite"
+            className="fixed bottom-6 start-6 z-50 flex items-center gap-3 rounded-2xl bg-neutral-950/95 dark:bg-neutral-900/95 text-white px-4 py-3 shadow-2xl backdrop-blur-md border border-neutral-700/60 max-w-sm transition-all animate-in fade-in slide-in-from-bottom-2 duration-300"
+          >
+            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${wishlistToast.isAdded ? "bg-rose-500/20 text-rose-400" : "bg-neutral-800 text-neutral-400"}`}>
+              <Heart size={16} fill={wishlistToast.isAdded ? "currentColor" : "none"} />
+            </div>
+            <div className="flex-1 text-xs">
+              <p className="font-semibold line-clamp-2">{wishlistToast.message}</p>
+            </div>
+            {wishlistToast.actionHref && (
+              <Link
+                href={wishlistToast.actionHref}
+                onClick={() => setWishlistToast(null)}
+                className="shrink-0 rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-xs font-bold text-amber-300 transition-colors"
+              >
+                {wishlistToast.actionText}
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => setWishlistToast(null)}
+              className="text-neutral-400 hover:text-white p-1 cursor-pointer"
+              aria-label={locale === "ar" ? "إغلاق" : "Close"}
+            >
+              <X size={14} />
+            </button>
+          </aside>
+        )}
       </CartContext.Provider>
     </WishlistContext.Provider>
   </LocaleContext.Provider>;
@@ -183,15 +242,22 @@ export function ProductCard({ product, editorial = false }: { product: Product; 
   const t = useTranslation();
   const locale = useLocale();
   const image = getProductImageUrl(product.image);
+
+  let productHref = `/products/${product.slug}`;
+  if (product.slug.startsWith("sticker-")) {
+    const match = product.slug.match(/^sticker-(\d+)/);
+    const designId = match ? match[1] : "0";
+    productHref = `/products/custom-waterproof-stickers?design=${designId}`;
+  }
   return <article data-scroll-reveal suppressHydrationWarning className={`daisy-product ${editorial ? "daisy-product--editorial" : ""}`}>
     <div className="daisy-product__media">
-      <Link href={`/products/${product.slug}`} aria-label={formatMessage(t("viewProduct"), { name: product.name })} className="daisy-product__image-link"><Image src={image} alt={product.name} fill sizes="(max-width: 760px) 50vw, 25vw" className={`daisy-image daisy-product__image ${image === PRODUCT_IMAGE_PLACEHOLDER ? "daisy-product__image--placeholder" : ""}`} /></Link>
+      <Link href={productHref} aria-label={formatMessage(t("viewProduct"), { name: product.name })} className="daisy-product__image-link"><Image src={image} alt={product.name} fill sizes="(max-width: 760px) 50vw, 25vw" className={`daisy-image daisy-product__image ${image === PRODUCT_IMAGE_PLACEHOLDER ? "daisy-product__image--placeholder" : ""}`} /></Link>
       {!demoMode && <WishlistButton product={product} />}
       {product.badge && <span className="daisy-product__badge">{product.badge}</span>}
-      {editorial && <Link href={`/products/${product.slug}`} className="daisy-product__quick">{t("customizeNow")} {locale === "ar" ? <ArrowUpLeft size={15} /> : <ArrowUpRight size={15} />}</Link>}
+      {editorial && <Link href={productHref} className="daisy-product__quick">{t("customizeNow")} {locale === "ar" ? <ArrowUpLeft size={15} /> : <ArrowUpRight size={15} />}</Link>}
     </div>
-    <div className="daisy-product__meta"><div><p className="daisy-product__category">{product.category}</p><Link href={`/products/${product.slug}`} className="daisy-product__name">{product.name}</Link>{editorial && product.customizable && <span className="daisy-product__personalized">{t("customizable")}</span>}</div><span className="daisy-product__price">{formatPrice(product.price, locale)}</span></div>
-    {!editorial && (demoMode ? <span className="daisy-product__add daisy-product__demo-label">{t("previewOnly")}</span> : product.customizable || product.hasVariants ? <Link href={`/products/${product.slug}`} className="daisy-product__add">{t("chooseDetails")} {locale === "ar" ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}</Link> : <button onClick={() => add(product)} className="daisy-product__add">{t("addToCart")} <Plus size={14} /></button>)}
+    <div className="daisy-product__meta"><div><p className="daisy-product__category">{product.category}</p><Link href={productHref} className="daisy-product__name">{product.name}</Link>{editorial && product.customizable && <span className="daisy-product__personalized">{t("customizable")}</span>}</div><span className="daisy-product__price">{formatPrice(product.price, locale)}</span></div>
+    {!editorial && (demoMode ? <span className="daisy-product__add daisy-product__demo-label">{t("previewOnly")}</span> : product.customizable || product.hasVariants ? <Link href={productHref} className="daisy-product__add">{t("chooseDetails")} {locale === "ar" ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}</Link> : <button onClick={() => add(product)} className="daisy-product__add">{t("addToCart")} <Plus size={14} /></button>)}
   </article>;
 }
 
@@ -199,7 +265,8 @@ export function WishlistButton({ product }: { product: Product }) {
   const { toggle, has, demoMode } = useWishlist();
   const t = useTranslation();
   if (demoMode) return null;
-  return <button onClick={event => { event.preventDefault(); event.stopPropagation(); toggle({ ...product, image: getProductImageUrl(product.image) }); }} aria-label={has(product.slug) ? t("removeFromWishlist") : t("addToWishlist")} className="daisy-wishlist-button"><Heart size={17} strokeWidth={1.5} fill={has(product.slug) ? "currentColor" : "none"} /></button>;
+  const isFav = has(product.slug);
+  return <button type="button" onClick={event => { event.preventDefault(); event.stopPropagation(); toggle({ ...product, image: getProductImageUrl(product.image) }); }} aria-label={isFav ? t("removeFromWishlist") : t("addToWishlist")} className="daisy-wishlist-button cursor-pointer"><Heart size={17} strokeWidth={1.6} className={isFav ? "fill-rose-500 text-rose-500" : "text-[var(--muted-foreground)] hover:text-rose-500"} /></button>;
 }
 
 const FREE_SHIPPING_THRESHOLD = 2500;

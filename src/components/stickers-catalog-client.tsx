@@ -253,7 +253,7 @@ export function StickersCatalogClient({
                 key={design.id}
                 className="catalog-card group relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-[var(--border)] bg-[var(--card)] shadow-[0_2px_14px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)] hover:shadow-[0_14px_34px_rgba(0,0,0,0.09)] dark:hover:shadow-[0_14px_36px_rgba(0,0,0,0.65)] hover:border-teal-600/50 dark:hover:border-teal-400/50 transition-all duration-300 hover:-translate-y-1"
               >
-                {/* Wishlist Heart Button - Top Left */}
+                {/* Wishlist Heart Button - Top Start */}
                 <button
                   type="button"
                   onClick={handleToggleWishlist}
@@ -266,10 +266,10 @@ export function StickersCatalogClient({
                       ? "إضافة لقائمة الرغبات"
                       : "Add to wishlist"
                   }
-                  className="catalog-card__heart absolute top-3.5 left-3.5 z-20 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+                  className="catalog-card__heart absolute top-3.5 start-3.5 z-30 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full shadow-sm transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
                 >
                   <Heart
-                    size={18}
+                    size={19}
                     strokeWidth={1.8}
                     className={
                       isFavorite
@@ -281,7 +281,7 @@ export function StickersCatalogClient({
 
                 {/* Custom Sticker Highlight Badge */}
                 {design.id === 0 && (
-                  <span className="absolute top-3.5 end-3.5 z-20 inline-flex items-center gap-1 rounded-full bg-teal-600 dark:bg-teal-500 text-white text-[11px] font-extrabold px-3 py-1 shadow-sm">
+                  <span className="absolute top-3.5 end-3.5 z-20 pointer-events-none inline-flex items-center gap-1 rounded-full bg-teal-600 dark:bg-teal-500 text-white text-[11px] font-extrabold px-3 py-1 shadow-sm">
                     {isAr ? "✨ صمّم بنفسك" : "✨ Custom"}
                   </span>
                 )}

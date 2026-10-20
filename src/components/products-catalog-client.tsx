@@ -229,7 +229,7 @@ export function ProductsCatalogClient({
                       ? isRtl ? "إزالة من قائمة الرغبات" : "Remove from wishlist"
                       : isRtl ? "إضافة لقائمة الرغبات" : "Add to wishlist"
                   }
-                  className="catalog-card__heart absolute top-3.5 start-3.5 z-20 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+                  className="catalog-card__heart absolute top-3.5 start-3.5 z-30 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full shadow-sm transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
                 >
                   <Heart
                     size={18}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ProductDetail } from "@/components/commerce";
 import { RewardCardsPreview } from "@/components/reward-cards-preview";
 import { StickersPreview } from "@/components/stickers-preview";
@@ -131,6 +131,12 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const [{ slug }, locale] = await Promise.all([params, getRequestLocale()]);
+    if (slug.startsWith("sticker-")) {
+        return {
+            title: `استيكرات مدرسية مخصصة | Daisy Designs`,
+            description: stickersData.product.arabicDescription,
+        };
+    }
     const resolvedSlug = PRODUCT_SLUG_ALIASES[slug] ?? slug;
     try {
         const product = await getPublishedProduct(resolvedSlug);
@@ -159,6 +165,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const locale = await getRequestLocale();
     const { slug } = await params;
+    if (slug.startsWith("sticker-")) {
+        const match = slug.match(/^sticker-(\d+)/);
+        const designId = match ? match[1] : "0";
+        redirect(`/products/custom-waterproof-stickers?design=${designId}`);
+    }
     const resolvedSlug = PRODUCT_SLUG_ALIASES[slug] ?? slug;
     let product: Awaited<ReturnType<typeof getPublishedProduct>> | CoreFallbackProduct | null = null;
     let unavailable = false;
