@@ -39,7 +39,10 @@ export function validateCustomization(
                 if (
                     typeof value !== "string" ||
                     value.length > 500 ||
-                    (!value.startsWith("private:story_child_") && !value.startsWith("private:tshirt_art_"))
+                    (!value.startsWith("private:story_child_") &&
+                     !value.startsWith("private:tshirt_art_") &&
+                     !value.startsWith("/uploads/customizations/") &&
+                     !value.startsWith("stk_child_"))
                 ) {
                     return { success: false, reason: "INVALID_CUSTOMIZATION" };
                 }

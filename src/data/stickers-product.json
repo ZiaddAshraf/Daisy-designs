@@ -33,6 +33,19 @@
     },
     "designs": [
       {
+        "id": 0,
+        "slug": "custom-design",
+        "title": "Custom Design (Your Own Idea)",
+        "arabicTitle": "استيكر مخصص بتصميمك وفكرتك الخاصة",
+        "themeGroup": "custom",
+        "arabicThemeGroup": "تصميم مخصص بالكامل",
+        "url": "/products/stickers/custom-sticker-design.svg",
+        "dimensions": { "width": 855, "height": 1280 },
+        "sampleName": "صمم أي شخصية أو فكرة",
+        "sampleGrade": "شيت استيكر مخصص",
+        "isCustom": true
+      },
+      {
         "id": 1,
         "slug": "kpop-demon-hunters",
         "title": "K-Pop Demon Hunters",

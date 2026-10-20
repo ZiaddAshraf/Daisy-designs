@@ -31,6 +31,7 @@ const FIELD_LABELS_EN: Record<string, string> = {
 };
 
 const DESIGN_NAMES_AR: Record<string, string> = {
+  "custom-design": "استيكر مخصص بتصميمك الخاص (Custom)",
   "kpop-demon-hunters": "كي بوب ديمون هنترز (K-Pop)",
   "super-cool-dino": "ديناصورات مرحة (Dino)",
   "kuromi": "كورومي سانريو (Kuromi)",
@@ -58,6 +59,7 @@ const DESIGN_NAMES_AR: Record<string, string> = {
 };
 
 const DESIGN_NAMES_EN: Record<string, string> = {
+  "custom-design": "Custom Design Sticker Sheet (Custom)",
   "kpop-demon-hunters": "K-Pop Demon Hunters",
   "super-cool-dino": "Super Cool Dino",
   "kuromi": "Kuromi Purple Sanrio",

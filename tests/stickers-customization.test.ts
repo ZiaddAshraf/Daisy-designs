@@ -96,3 +96,31 @@ test("sticker unit price is strictly 50 EGP and calculates total correctly", () 
   assert.equal(lineTotal, 150, "3 sheets must equal 150 EGP");
 });
 
+test("custom sticker design at index 0 validates custom design text correctly", () => {
+  const firstDesign = stickersData.product.designs[0];
+  assert.equal(firstDesign.id, 0);
+  assert.equal(firstDesign.slug, "custom-design");
+  assert.equal(firstDesign.isCustom, true);
+
+  const fields = [
+    { key: "design_theme", type: "SELECT" as const, required: true, maxLength: 80, options: [{ value: "custom-design" }] },
+    { key: "custom_design_text", type: "TEXT" as const, required: false, maxLength: 500, options: [] },
+    { key: "child_name", type: "TEXT" as const, required: true, maxLength: 80, options: [] },
+    { key: "parent_phone", type: "TEXT" as const, required: false, maxLength: 20, options: [] },
+  ];
+
+  const result = validateCustomization(fields, {
+    design_theme: "custom-design",
+    custom_design_text: "رسمة ديناصور مخصص يرتدي نظارة شمسية",
+    child_name: "سليم أحمد",
+    parent_phone: "01012345678",
+  });
+
+  assert.equal(result.success, true);
+  if (result.success && result.data) {
+    assert.equal(result.data.custom_design_text, "رسمة ديناصور مخصص يرتدي نظارة شمسية");
+    assert.equal(result.data.child_name, "سليم أحمد");
+  }
+});
+
+

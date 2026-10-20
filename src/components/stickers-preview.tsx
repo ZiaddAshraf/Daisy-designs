@@ -42,6 +42,7 @@ type StickersPreviewProps = {
 
 type ThemeFilter =
   | "all"
+  | "custom"
   | "superheroes"
   | "girls"
   | "gaming"
@@ -52,7 +53,8 @@ type ThemeFilter =
 
 // Distinct tab filters
 const FILTER_TABS: { id: ThemeFilter; labelAr: string; labelEn: string }[] = [
-  { id: "all", labelAr: "الكل (٢٤ تصميم)", labelEn: "All (24 Designs)" },
+  { id: "all", labelAr: "الكل (٢٥ تصميم)", labelEn: "All (25 Designs)" },
+  { id: "custom", labelAr: "تصميم مخصص", labelEn: "Custom Design" },
   { id: "superheroes", labelAr: "أبطال وخوارق", labelEn: "Superheroes" },
   { id: "girls", labelAr: "شخصيات وبنات", labelEn: "Girls & Princesses" },
   { id: "gaming", labelAr: "جيمنج وألعاب", labelEn: "Gaming" },
@@ -107,6 +109,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
   const [added, setAdded] = useState(false);
 
   // Customization Form State
+  const [customDesignText, setCustomDesignText] = useState("");
   const [childName, setChildName] = useState("");
   const [schoolName, setSchoolName] = useState("");
   const [grade, setGrade] = useState("");
@@ -143,12 +146,21 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
         const params = new URLSearchParams(window.location.search);
         const designParam = params.get("design");
         if (designParam) {
-          const designId = parseInt(designParam, 10);
-          const foundIdx = product.designs.findIndex((d) => d.id === designId);
-          if (foundIdx !== -1) {
-            requestAnimationFrame(() => {
-              setCustomizingIndex(foundIdx);
-            });
+          if (designParam === "custom" || designParam === "custom-design") {
+            const foundIdx = product.designs.findIndex((d) => d.slug === "custom-design" || d.id === 0);
+            if (foundIdx !== -1) {
+              requestAnimationFrame(() => {
+                setCustomizingIndex(foundIdx);
+              });
+            }
+          } else {
+            const designId = parseInt(designParam, 10);
+            const foundIdx = product.designs.findIndex((d) => d.id === designId || d.slug === designParam);
+            if (foundIdx !== -1) {
+              requestAnimationFrame(() => {
+                setCustomizingIndex(foundIdx);
+              });
+            }
           }
         }
       }
@@ -275,6 +287,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
   const handleOpenCustomize = (index: number) => {
     setCustomizingIndex(index);
     setLightboxIndex(null);
+    setCustomDesignText("");
     setQuantity(1);
     setNameError(false);
     setPhoneError(false);
@@ -299,12 +312,19 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
     setPhoneError(false);
 
     const chosenDesign = product.designs[customizingIndex];
+    if (chosenDesign.id === 0 && !customDesignText.trim()) {
+      return;
+    }
 
     const customizationPayload: Record<string, string> = {
       design_theme: chosenDesign.slug,
       child_name: trimmedName, // Preserves exact case (e.g. Malak Khaled)
       parent_phone: parentPhone.trim(),
     };
+
+    if (chosenDesign.id === 0 && customDesignText.trim()) {
+      customizationPayload.custom_design_text = customDesignText.trim();
+    }
 
     if (schoolName.trim()) customizationPayload.school_name = schoolName.trim();
     if (grade.trim()) customizationPayload.grade = grade.trim();
@@ -543,7 +563,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                     className="object-contain transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute top-3 end-3 bg-neutral-950/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">
-                    #{design.id}
+                    {design.id === 0 ? (isAr ? "✨ تصميم مخصص" : "✨ Custom") : `#${design.id}`}
                   </div>
                   <div className="absolute bottom-3 start-3 end-3 flex justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                     <span className="inline-flex items-center gap-1.5 bg-white/95 dark:bg-neutral-900/95 text-neutral-900 dark:text-neutral-100 text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
@@ -603,7 +623,11 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
             <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
               <div>
                 <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase tracking-wider block">
-                  {isAr ? "تصميم رقم" : "Design #"} {currentLightboxDesign.id} / 24
+                  {currentLightboxDesign.id === 0
+                    ? isAr
+                      ? "تصميم مخصص بالكامل"
+                      : "Full Custom Design"
+                    : `${isAr ? "تصميم رقم" : "Design #"} ${currentLightboxDesign.id} / 24`}
                 </span>
                 <h3 className="text-base font-bold text-[var(--foreground)]">
                   {isAr ? currentLightboxDesign.arabicTitle : currentLightboxDesign.title}
@@ -716,6 +740,33 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
 
             {/* Customization Form */}
             <form onSubmit={handleAddToCart} className="p-4 sm:p-6 space-y-4 text-start">
+              {/* Custom Design Idea / Character (Shown for Custom Sticker) */}
+              {activeDesign.id === 0 && (
+                <div className="p-4 rounded-2xl border-2 border-teal-500/40 bg-teal-50/60 dark:bg-teal-950/30 space-y-2">
+                  <label htmlFor="customDesignTextInput" className="block text-xs font-black text-teal-900 dark:text-teal-200">
+                    {isAr ? "فكرة أو شخصية التصميم المطلوب" : "Requested Design Theme or Character"}{" "}
+                    <span className="text-rose-500 font-black">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="customDesignTextInput"
+                      type="text"
+                      required
+                      value={customDesignText}
+                      onChange={(e) => setCustomDesignText(e.target.value)}
+                      placeholder={isAr ? "مثال: روبلوكس، حكاية لعبة وودي، باتمان، أو فكرة خاصة..." : "e.g. Roblox, Toy Story Woody, Batman, or your own idea..."}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-teal-300 dark:border-teal-700 text-sm bg-[var(--card)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-teal-500 transition font-medium"
+                    />
+                    <Palette size={16} className="absolute end-3.5 top-3 text-teal-600 dark:text-teal-400 pointer-events-none" />
+                  </div>
+                  <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium leading-relaxed">
+                    {isAr
+                      ? "💡 صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية أو رسمة تحبها وسيقوم فريق Daisy Designs بتصميم الشيت بالكامل وفق طلبك."
+                      : "💡 Create any sticker you want: describe any character or artwork, and Daisy Designs will custom-craft the sheet for you."}
+                  </p>
+                </div>
+              )}
+
               {/* Child Name (Required & Case Sensitive) */}
               <div>
                 <label htmlFor="childNameInput" className="block text-xs font-bold text-[var(--foreground)] mb-1">
@@ -846,12 +897,24 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                 </div>
               </div>
 
-              {/* Optional Child Photo Upload */}
+              {/* Optional Child Photo / Artwork Upload */}
               <div>
                 <label className="block text-xs font-bold text-[var(--foreground)] mb-1">
-                  {isAr ? "صورة الطفل" : "Child's Photo"}{" "}
+                  {activeDesign.id === 0
+                    ? isAr
+                      ? "صورة التصميم أو صورة الطفل"
+                      : "Design Artwork or Child's Photo"
+                    : isAr
+                    ? "صورة الطفل"
+                    : "Child's Photo"}{" "}
                   <span className="text-[var(--muted-foreground)] font-normal text-[11px]">
-                    {isAr ? "(اختياري - متاح لجميع التصاميم)" : "(Optional - Available for all designs)"}
+                    {activeDesign.id === 0
+                      ? isAr
+                        ? "(اختياري - يمكنك رفع رسمة أو فكرة أو صورة خاصة)"
+                        : "(Optional - Upload artwork, reference, or child photo)"
+                      : isAr
+                      ? "(اختياري - متاح لجميع التصاميم)"
+                      : "(Optional - Available for all designs)"}
                   </span>
                 </label>
 
@@ -862,12 +925,18 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handlePhotoChange}
                       className="absolute inset-0 opacity-0 cursor-pointer"
-                      aria-label={isAr ? "رفع صورة الطفل" : "Upload child photo"}
+                      aria-label={isAr ? "رفع صورة الطفل أو التصميم" : "Upload child photo or artwork"}
                     />
                     <div className="flex flex-col items-center justify-center">
                       <Camera size={20} className="text-amber-500 mb-1" />
                       <span className="text-xs font-bold text-[var(--foreground)]">
-                        {isAr ? "انقر لاختيار صورة طفلك" : "Click to upload your child's photo"}
+                        {activeDesign.id === 0
+                          ? isAr
+                            ? "انقر لاختيار رسمة التصميم أو صورة الطفل"
+                            : "Click to upload design artwork or child's photo"
+                          : isAr
+                          ? "انقر لاختيار صورة طفلك"
+                          : "Click to upload your child's photo"}
                       </span>
                       <span className="text-[11px] text-[var(--muted-foreground)]">
                         JPG / PNG / WEBP ({isAr ? "الحد الأقصى 5 ميجابايت" : "Max 5MB"})

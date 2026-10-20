@@ -14,6 +14,7 @@ type StickersCatalogClientProps = {
 
 // Design badges for the bottom-left arched cutout tab
 const DESIGN_BADGES: Record<number, { en: string; ar: string }> = {
+  0: { en: "Custom", ar: "مخصص" },
   1: { en: "K-Pop", ar: "K-Pop" },
   2: { en: "Dino", ar: "داينو" },
   3: { en: "Kuromi", ar: "كورومي" },
@@ -57,6 +58,7 @@ export function StickersCatalogClient({
   const themes = useMemo(
     () => [
       { id: "all", label: isAr ? "الكل" : "All" },
+      { id: "custom", label: isAr ? "تصميم مخصص" : "Custom Design" },
       { id: "girls", label: isAr ? "أناقة وبنات" : "Girls & Style" },
       { id: "cartoons", label: isAr ? "كرتون وشخصيات" : "Cartoons" },
       { id: "superheroes", label: isAr ? "أبطال وخوارق" : "Superheroes" },
@@ -277,6 +279,13 @@ export function StickersCatalogClient({
                   />
                 </button>
 
+                {/* Custom Sticker Highlight Badge */}
+                {design.id === 0 && (
+                  <span className="absolute top-3.5 end-3.5 z-20 inline-flex items-center gap-1 rounded-full bg-teal-600 dark:bg-teal-500 text-white text-[11px] font-extrabold px-3 py-1 shadow-sm">
+                    {isAr ? "✨ صمّم بنفسك" : "✨ Custom"}
+                  </span>
+                )}
+
                 {/* Whole Card Link */}
                 <Link href={customizerHref} className="flex flex-col flex-1 justify-between">
                   <div>
@@ -315,7 +324,11 @@ export function StickersCatalogClient({
 
                       {/* Line 3: Short Description (Truncated single line) */}
                       <p className="catalog-card__desc text-xs sm:text-[13px] line-clamp-1 leading-relaxed">
-                        {isAr
+                        {design.id === 0
+                          ? isAr
+                            ? "صمم شيت استيكرات مدرسي مقاوم للماء بفكرتك أو رسمتك الخاصة مع بيانات طفلك"
+                            : "Design your custom waterproof sticker sheet with your own idea and child details"
+                          : isAr
                           ? "مجموعة ملصقات لاصقة مقاومة للماء باسم طفلك ومدرسته وفصله"
                           : "Personalized waterproof school sticker sheet for notebooks and bottles"}
                       </p>
