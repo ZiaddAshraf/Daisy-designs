@@ -122,19 +122,108 @@ Implement the new physical printed customized storybook product **"أول سنة
   - Admin dashboard: Displays garment color, size, print placement (Center Chest), artwork download, customer text, and 1-click WhatsApp customer contact button.
   - Cart line isolation: Unique `cartLineId` per customization.
 
-### 2.9 Phase 20: Storewide Wishlist Architecture & Stickers Customization Add-to-Cart Protocol
-- **Stickers Customization Add-to-Cart**:
-  - `parent_phone` is strictly optional (`required: false`), adhering to store data schema.
-  - Phone validation only executes if a phone number is entered (`if (parentPhone.trim() && !validateEgyptianPhone(parentPhone))`).
-  - Clear user feedback if custom sticker idea is missing on design 0 (`customTextError`).
-  - Scaled price display on modal matching quantity (`product.price * quantity`).
-  - Automatic drawer reveal on add to cart (`setCartOpen(true)`).
-- **Storewide Wishlist Unification**:
-  - All product previewers and catalog cards hook into reactive `useWishlist()`.
-  - Floating toast feedback provides tactile confirmation upon toggling items in the wishlist.
-  - Sticker design wishlist items route directly to `/products/custom-waterproof-stickers?design=${designId}`.
-  - Any direct visit to `/products/sticker-*` redirects automatically to the appropriate sticker customizer, preventing 404 / "المنتج غير موجود".
-  - Touch targets for wishlist heart buttons maintain minimum 44x44px.
+### 2.10 Phase 21: Stickers Category Inline Customization & Direct Add-to-Cart Redesign
+- **Removal of Detail-Page Navigation**:
+  - Clicking any sticker card or "خصص الآن" on `/categories/stickers` must open the inline customization modal on the category page without navigating away.
+  - Links to `/products/custom-waterproof-stickers` from the category card grid are removed.
+- **Inline Customization Modal**:
+  - High-resolution design preview & craftsmanship pillars.
+  - Child's Name: Required (exact spelling and casing preserved).
+  - School Name: Optional.
+  - Grade / Class: Optional.
+  - Parent's Egyptian Mobile: Required (enforcing Egyptian phone regex).
+  - Child's Photo / Design Reference: Optional (via `/api/uploads/customization`).
+  - For Custom Design (`id: 0`): Design Idea Description is Required.
+  - Quantity Selector: Stepper with live price scaling (`product.price * quantity`).
+- **Direct Add to Cart**:
+  - "أضف للسلة" button in modal triggers `useCart().add(...)` with isolated `cartLineId`.
+  - Automatic reveal of `CartDrawer` with customized chips upon submission.
+  - Success feedback toast and prevention of duplicate submissions.
+- **Editorial Category Layout**:
+  - Premium Daisy Designs header: value proposition, 50 EGP pricing highlight, and 3-step guide.
+  - Search input, theme filters with counts, and sort selector.
+  - 3-column / 2-column responsive luxury grid with "خصص الآن" CTA and unobtrusive wishlist hearts.
+
+### 2.11 Phase 22: Removal of All Emojis and Sparkle Icons Across Storefront
+- **Sparkle Icon Removal**:
+  - Removed all instances of the yellow/amber `<Sparkles>` and `<SparkleStar>` icons across buttons, headers, cards, and notice callouts.
+  - Stickers CTA buttons now feature clean typography with directional chevron indicators.
+  - Replaced decorative sparkles with semantic icons (`Tag`, `Palette`, `Info`, `Truck`, `ShieldCheck`, `BookOpen`, `Shirt`, `Ruler`).
+- **Unicode Emoji Elimination**:
+  - Completely stripped all Unicode emojis (`✨`, `🏷️`, `💡`, `⏱️`, `✓`, `♡`) from all components, data fixtures, and banners.
+  - Maintained authentic, high-end editorial typography adhering to Daisy Designs luxury identity.
+
+### 2.12 Phase 23: Clean Category Cards (Arrow and Number Removal)
+- **Corner Index Numbers**:
+  - Removed the `store-category-card__index` block (`1`, `2`, `3`, `4`, divider rule line, and flower icon) from all category cards on the homepage.
+- **Arrow Removal**:
+  - Removed diagonal title arrows (`↗`) from `CategoryCard` and `collection-card`.
+  - Removed footer action arrows (`←` / `→`) from the "استكشف القسم" links, leaving clean, minimalist typography.
+
+### 2.13 Phase 24: Sticker Backgrounds Full Card Coverage
+- **Stickers Catalog & Products Grid**:
+  - `catalog-card__frame` now features zero internal padding (`p-0`) and `object-cover` image rendering across `/categories/stickers` and `/products`.
+  - Eliminates empty pastel side gutters, allowing the sticker artwork and background patterns to extend edge-to-edge.
+- **Homepage Stickers Category Card**:
+  - Retains clean standard layout with `object-fit: cover` on cover image, preserving visual balance and crisp typography without numbers or arrows.
+
+### 2.14 Phase 25: Streamline Stickers Header & Eliminate Verbose Copy
+- **Header Simplification**:
+  - Completely removed the 3-step numbered instructional cards (١، ٢، ٣) and explanatory how-to-order paragraphs.
+  - Removed redundant side badge card (`تخصيص مباشر وسريع`).
+  - Replaced bulky banner with a clean, luxury category heading matching Daisy Designs design language:
+    - Eyebrow: `DAISY DESIGNS / استيكرات مدرسية`
+    - Title: `استيكرات مدرسية مخصصة`
+    - 1-line subtitle: `فينيل أصلي مقاوم للماء والحرارة، مخصص باسم طفلك ومدرسته.`
+    - Compact price and waterproof pills: `٥٠ ج.م للشيت` + `مقاوم للماء ١٠٠%`.
+- **Card Description Trimming**:
+  - Condensed sticker card description copy down to a crisp 1-line statement (`ملصقات مقاومة للماء باسم طفلك ومدرسته`).
+- **Visual Impact**:
+  - Category content and sticker cards now appear immediately above the fold without any distracting walls of text.
+
+### 2.15 Phase 26: Fix Sticker Card Cropping & Portrait Sheet Fitting
+- **Root Cause Identified**:
+  - The browser subagent confirmed that all 25 sticker sheet images are tall vertical sheets (portrait aspect ratios ~0.668 to 0.826).
+  - The previous container was landscape `aspect-[4/3.5]` (1.143). Applying `object-cover` forced vertical overflow, clipping ~41.6% of the sheet (top branding logo and bottom row stickers).
+- **Portrait Frame Alignment**:
+  - Updated `catalog-card__frame` in `src/components/stickers-catalog-client.tsx` to portrait `aspect-[3/4]` with `object-contain` and seamless surface background (`p-1 sm:p-1.5 bg-white dark:bg-neutral-900`).
+  - Updated modal preview in `stickers-catalog-client.tsx` to portrait `aspect-[3/4]` with `object-contain`.
+  - Updated `src/components/products-catalog-client.tsx` to `object-contain` with clean padding.
+- **Result**:
+  - Zero percent cropping: 100% of the sticker sheet is fully visible from top logo to bottom name labels.
+  - Image fills the portrait card snugly edge-to-edge without awkward letterboxing borders.
+
+### 2.18 Phase 29: Mobile UI/UX & Responsive Experience Optimization
+- **Touch Target Ergonomics (WCAG 2.5.5 Compliant)**:
+  - Header icon buttons (`.daisy-header .daisy-icon-button`) enforced to minimum 44×44px across all viewports (320px–430px).
+  - Round link buttons (`.daisy-round-link`) upgraded from 42px to 44×44px.
+  - Cart drawer and cart page steppers (`.w-11 .h-11`) and delete buttons have min 44px tap zones with comfortable hitboxes.
+  - Reward cards steppers (`.rc-qty-btn`) upgraded to 44×44px and wishlist button to min-height 44px.
+  - T-shirt size guide close button upgraded to 44×44px and guide trigger to min-height 44px.
+  - Mobile drawer navigation links padded to min 48px height.
+- **Form Input UX & iOS Safari Auto-Zoom Prevention**:
+  - Global CSS rule in `globals.css` enforcing `font-size: 16px !important` on mobile (`< 768px`) for all input, textarea, and select elements, preventing iOS Safari auto-zoom permanently.
+  - Native mobile keyboard optimizations: `inputMode="tel"` on Egyptian phone fields.
+  - Added `w-full min-w-0` to all checkout inputs and textareas and reduced card padding to `p-4 sm:p-6`, eliminating all horizontal overflow down to 320px.
+- **Mobile Modal & Drawer Polish**:
+  - Sticker customization modal sticky purchase footer on mobile with live line total, quantity stepper, and primary Add to Cart CTA pinned cleanly above screen bottom/keyboard.
+  - T-shirt size guide modal table configured with smooth horizontal scrolling and 44px accessible close targets.
+  - T-shirt visualizer color swatches container wraps responsively (`flex-col sm:flex-row`), avoiding text clipping on < 390px screens.
+  - Removed duplicate breadcrumbs and outer double-padding on `/categories/printed-t-shirts`.
+- **Watermark & Layout Stability**:
+  - Contained `.daisy-cta__monogram-watermark` on mobile to 220px maximum with strict containment (`overflow: hidden`), preventing any horizontal scrollbar.
+  - Fixed Storybook swipe gesture direction for RTL Arabic vs LTR English.
+- **Ralph Loop Verification**:
+  - 0 ESLint errors, 0 ESLint warnings (`npm run lint`).
+  - 0 TypeScript errors (`tsc --noEmit`).
+  - 90/90 automated tests passed (`npm test`).
+  - 41/41 routes built cleanly in production Turbopack build (`npm run build`).
+
+
+
+
+
+
 
 
 

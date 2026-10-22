@@ -11,7 +11,7 @@ import {
   MapPin,
   Phone,
   User,
-  Sparkles,
+  Clock,
   ExternalLink,
   Shirt,
   Tag,
@@ -350,8 +350,9 @@ export function AdminOrdersTable({ orders }: AdminOrdersTableProps) {
                         <p className="text-xs text-[var(--foreground)]">
                           المنتجات: {order.subtotal.toLocaleString("ar-EG")} ج.م | الشحن: {order.shipping.toLocaleString("ar-EG")} ج.م
                         </p>
-                        <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium mt-1">
-                          ⏱️ مدة التجهيز للمطبوعات: 2-3 أيام عمل قبل الشحن
+                        <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium mt-1 flex items-center gap-1">
+                          <Clock size={13} className="shrink-0" />
+                          مدة التجهيز للمطبوعات: 2-3 أيام عمل قبل الشحن
                         </p>
                       </div>
                     </div>
@@ -400,7 +401,7 @@ export function AdminOrdersTable({ orders }: AdminOrdersTableProps) {
                               {cust && Object.keys(cust).length > 0 && (
                                 <div className="rounded-lg bg-[var(--surface-soft)] p-3 text-xs space-y-2 border border-[var(--border)]/60">
                                   <p className="font-bold text-[var(--foreground)] flex items-center gap-1 text-[11px] uppercase tracking-wide">
-                                    <Sparkles size={13} className="text-teal-600 dark:text-teal-400" />
+                                    <Tag size={13} className="text-teal-600 dark:text-teal-400" />
                                     مواصفات التخصيص للمنتج:
                                   </p>
 

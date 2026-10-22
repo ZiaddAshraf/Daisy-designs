@@ -1,8 +1,11 @@
 import { z } from "zod";
+import { validateEgyptianPhone } from "@/lib/customization-validation";
 
 export const checkoutSchema = z.object({
     fullName: z.string().trim().min(2).max(120),
-    phone: z.string().trim().min(8).max(30),
+    phone: z.string().trim().min(8).max(30).refine(validateEgyptianPhone, {
+        message: "رقم الهاتف غير صحيح، يرجى إدخال رقم محمول مصري يبدأ بـ 010 أو 011 أو 012 أو 015",
+    }),
     email: z.string().email().optional().or(z.literal("")),
     governorate: z.string().trim().min(2).max(80),
     city: z.string().trim().min(2).max(80),

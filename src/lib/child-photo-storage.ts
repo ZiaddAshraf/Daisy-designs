@@ -235,7 +235,7 @@ export function resolveChildPhotoPath(storageKey: string): string | null {
   if (!baseName || baseName !== filename) return null;
   if (!/^[a-zA-Z0-9_\-]+\.(jpg|png|webp)$/.test(baseName)) return null;
 
-  return path.join(getPrivateStorageDir(), baseName);
+  return path.join(/* turbopackIgnore: true */ getPrivateStorageDir(), baseName);
 }
 
 /**
@@ -264,8 +264,8 @@ export async function purgeOrphanedPhotos(maxAgeHours = 24): Promise<number> {
 
     for (const entry of entries) {
       if (entry.isFile() && entry.name.startsWith("story_child_")) {
-        const filePath = path.join(PRIVATE_STORAGE_DIR, entry.name);
-        const stat = await fs.stat(filePath);
+        const filePath = path.join(/* turbopackIgnore: true */ PRIVATE_STORAGE_DIR, entry.name);
+        const stat = await fs.stat(/* turbopackIgnore: true */ filePath);
         if (now - stat.mtimeMs > thresholdMs) {
           await fs.unlink(filePath);
           purgedCount++;

@@ -240,7 +240,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     }
 
     if (resolvedSlug === "custom-printed-tshirt") {
+        const t = (key: TranslationKey) => getTranslation(locale, key);
         return <main className="catalog-page">
+            <nav className="catalog-breadcrumb" aria-label={t("breadcrumb")}>
+                <Link href="/">{t("home")}</Link>
+                <span>/</span>
+                <Link href="/categories">{t("categoriesHeading")}</Link>
+                <span>/</span>
+                <Link href="/categories/printed-t-shirts">{selectLocalizedText(locale, product.category.name, product.category.arabicName)}</Link>
+                <span>/</span>
+                <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
+            </nav>
             <TShirtPreview locale={locale} inStock={product.stock > 0} />
         </main>;
     }

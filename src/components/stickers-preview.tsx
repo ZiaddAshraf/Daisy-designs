@@ -6,7 +6,6 @@ import type { Locale } from "@/lib/locale";
 import stickersData from "@/data/stickers-product.json";
 import {
   TinyDaisyDoodle,
-  SparkleStar,
 } from "@/components/decorative-marks";
 import { useCart, useWishlist } from "@/components/storefront";
 import { formatPrice } from "@/lib/products";
@@ -17,9 +16,10 @@ import {
   X,
   Maximize2,
   Heart,
-  Sparkles,
   ShieldCheck,
   Layers,
+  Droplets,
+  Info,
   ShoppingBag,
   Check,
   Truck,
@@ -80,8 +80,8 @@ const CRAFTSMANSHIP = [
     descEn: "Pre-cut, easy-peel labels with smooth child-safe rounded corners.",
   },
   {
-    icon: Sparkles,
-    titleAr: "ألوان مبهجة وطباعة عالية الوضوح",
+    icon: Droplets,
+    titleAr: "ألوان مبهجة وطباعة عالية الووضوح",
     titleEn: "Vibrant High-Definition Inks",
     descAr: "ألوان ساطعة تحافظ على بهجتها ولمعانها طوال العام الدراسي.",
     descEn: "High-resolution, fade-proof vivid inks designed for lasting vibrancy.",
@@ -460,7 +460,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
               <span>{isAr ? "شحن لجميع محافظات مصر والدفع عند الاستلام (COD)" : "Cash on Delivery across all Egypt governorates"}</span>
             </div>
             <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/30 text-amber-900 dark:text-amber-300">
-              <SparkleStar size={14} className="text-amber-500 shrink-0 mt-0.5" />
+              <Info size={14} className="text-teal-600 dark:text-teal-400 shrink-0 mt-0.5" />
               <span>
                 <strong>{isAr ? "تنبيه المتجر:" : "Store Notice:"}</strong>{" "}
                 {isAr ? product.arabicSurfaceNotice : product.surfaceNotice}
@@ -559,7 +559,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                     className="object-contain transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute top-3 end-3 bg-neutral-950/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">
-                    {design.id === 0 ? (isAr ? "✨ تصميم مخصص" : "✨ Custom") : `#${design.id}`}
+                    {design.id === 0 ? (isAr ? "تصميم مخصص" : "Custom") : `#${design.id}`}
                   </div>
                   <div className="absolute bottom-3 start-3 end-3 flex justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                     <span className="inline-flex items-center gap-1.5 bg-white/95 dark:bg-neutral-900/95 text-neutral-900 dark:text-neutral-100 text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
@@ -754,7 +754,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                         if (customTextError) setCustomTextError(false);
                       }}
                       placeholder={isAr ? "مثال: روبلوكس، حكاية لعبة وودي، باتمان، أو فكرة خاصة..." : "e.g. Roblox, Toy Story Woody, Batman, or your own idea..."}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-[var(--card)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-teal-500 transition font-medium ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-base sm:text-sm bg-[var(--card)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-teal-500 transition font-medium ${
                         customTextError ? "border-rose-500 ring-1 ring-rose-500" : "border-teal-300 dark:border-teal-700"
                       }`}
                     />
@@ -767,8 +767,8 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                   )}
                   <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium leading-relaxed">
                     {isAr
-                      ? "💡 صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية أو رسمة تحبها وسيقوم فريق Daisy Designs بتصميم الشيت بالكامل وفق طلبك."
-                      : "💡 Create any sticker you want: describe any character or artwork, and Daisy Designs will custom-craft the sheet for you."}
+                      ? "صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية أو رسمة تحبها وسيقوم فريق Daisy Designs بتصميم الشيت بالكامل وفق طلبك."
+                      : "Create any sticker you want: describe any character or artwork, and Daisy Designs will custom-craft the sheet for you."}
                   </p>
                 </div>
               )}
@@ -795,7 +795,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                       if (nameError) setNameError(false);
                     }}
                     placeholder={isAr ? "مثال: Younis Mohamed أو يونس محمد" : "e.g. Younis Mohamed"}
-                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-transparent text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition ${
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-base sm:text-sm bg-transparent text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition ${
                       nameError ? "border-rose-500" : "border-[var(--border)]"
                     }`}
                   />
@@ -878,6 +878,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                     <input
                       id="parentPhoneInput"
                       type="tel"
+                      inputMode="tel"
                       dir="ltr"
                       value={parentPhone}
                       onChange={(e) => {
@@ -885,7 +886,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                         if (phoneError) setPhoneError(false);
                       }}
                       placeholder="01012345678"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-transparent text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-base sm:text-sm bg-transparent text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition ${
                         phoneError ? "border-rose-500" : "border-[var(--border)]"
                       }`}
                     />

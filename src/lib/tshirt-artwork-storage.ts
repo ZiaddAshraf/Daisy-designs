@@ -239,7 +239,7 @@ export function resolveTshirtArtworkPath(storageKey: string): string | null {
   }
 
   const baseDir = getPrivateStorageDir();
-  const resolved = path.resolve(baseDir, rawFilename);
+  const resolved = path.resolve(/* turbopackIgnore: true */ baseDir, rawFilename);
   if (!resolved.startsWith(baseDir)) {
     return null; // Prevent path traversal
   }

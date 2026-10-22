@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 import { ProductCard, useLocale, useTranslation, useWishlist } from "@/components/storefront";
 import { directionForLocale, formatLocaleNumber } from "@/lib/locale";
 
@@ -61,7 +61,6 @@ export default function WishlistPage() {
                             href="/products/stickers"
                             className="inline-flex items-center gap-2 rounded-xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 px-6 py-3.5 text-sm font-semibold hover:opacity-95 hover:-translate-y-0.5 hover:shadow-md transition-all shadow-sm active:scale-95 cursor-pointer"
                         >
-                            <Sparkles size={16} className="text-amber-400" />
                             <span>{t("emptyCartExploreStickers")}</span>
                         </Link>
                         <Link

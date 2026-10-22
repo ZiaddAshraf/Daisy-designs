@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import type { Locale } from "@/lib/locale";
-import { X, Ruler, Sparkles, Check } from "lucide-react";
+import { X, Ruler, Info, Check } from "lucide-react";
 
 type TShirtSizeGuideModalProps = {
   isOpen: boolean;
@@ -99,7 +99,7 @@ export function TShirtSizeGuideModal({
             type="button"
             onClick={onClose}
             aria-label={isAr ? "إغلاق دليل المقاسات" : "Close Size Guide"}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+            className="flex h-11 w-11 min-w-[44px] min-h-[44px] items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -126,7 +126,7 @@ export function TShirtSizeGuideModal({
               {/* Terminology Explanation from the Diagram */}
               <div className="sm:col-span-7 space-y-2.5 text-xs sm:text-[13px] leading-relaxed text-slate-600 dark:text-neutral-300">
                 <h3 className="font-bold text-slate-900 dark:text-neutral-100 flex items-center gap-1.5 text-xs sm:text-sm">
-                  <Sparkles size={14} className="text-teal-600 dark:text-teal-400" />
+                  <Ruler size={14} className="text-teal-600 dark:text-teal-400" />
                   {isAr ? "طريقة أخذ القياس الصحيحة" : "How to Measure Correctly"}
                 </h3>
                 <p>
@@ -216,7 +216,7 @@ export function TShirtSizeGuideModal({
 
           {/* Measurement Recommendation Tip */}
           <div className="flex items-start gap-3 rounded-xl bg-amber-50/80 p-3.5 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200 border border-amber-200/60 dark:border-amber-800/50">
-            <span className="text-base leading-none">💡</span>
+            <Info size={16} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               {isAr
                 ? "نصيحة مهمة: للحصول على أفضل مقاس مناسب لطفلك، يُفضل قياس تيشيرت قطني مريح لديه وهو مفرود تماماً على سطح مستوٍ ومقارنة عرضه وطوله بالجدول أعلاه."
@@ -230,7 +230,7 @@ export function TShirtSizeGuideModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto rounded-full bg-slate-900 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-slate-800 active:scale-95 transition-all dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-white"
+            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-slate-800 active:scale-95 transition-all dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-white cursor-pointer"
           >
             {isAr ? "حسناً، فهمت" : "Got it, Close"}
           </button>

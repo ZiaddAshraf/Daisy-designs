@@ -19,7 +19,6 @@ import {
     ChevronUp,
     ShieldCheck,
     ShoppingBag,
-    Sparkles,
     Truck,
 } from "lucide-react";
 
@@ -98,10 +97,20 @@ export default function CheckoutPage() {
                     INVALID_CUSTOMIZATION: t("checkoutErrInvalidCustomization"),
                     UNSUPPORTED_CUSTOMIZATION: t("checkoutErrUnsupportedCustomization"),
                     INVALID_COUPON: t("checkoutErrInvalidCoupon"),
+                    MISSING_CUSTOMIZATION: locale === "ar" ? "بيانات التخصيص مطلوبة لإتمام الطلب" : "Customization details are required",
+                    INVALID_GARMENT_COLOR: locale === "ar" ? "لون التيشيرت المختار غير متاح" : "Invalid garment color",
+                    INVALID_GARMENT_SIZE: locale === "ar" ? "مقاس التيشيرت المختار غير متاح" : "Invalid garment size",
                 };
+                let displayError = errors[data.error];
+                if (!displayError && data.issues?.fieldErrors?.phone?.[0]) {
+                    displayError = data.issues.fieldErrors.phone[0];
+                }
+                if (!displayError && typeof data.error === "string" && !data.error.includes("_")) {
+                    displayError = data.error;
+                }
                 setMessage(data.error?.startsWith("OUT_OF_STOCK")
                     ? t("checkoutErrOutOfStock")
-                    : errors[data.error] ?? t("checkoutErrGeneral"));
+                    : displayError ?? t("checkoutErrGeneral"));
                 return;
             }
             const confirmation: OrderConfirmation = data;
@@ -266,7 +275,7 @@ export default function CheckoutPage() {
                         {/* Left Column: Checkout Form */}
                         <form id="checkout-form" className="space-y-6" onSubmit={submit}>
                             {/* Card 1: Customer Details */}
-                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xs">
+                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-6 shadow-xs">
                                 <div className="flex items-center gap-3 border-b border-[var(--border)] pb-4">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-sm">
                                         1
@@ -288,7 +297,7 @@ export default function CheckoutPage() {
                                             maxLength={120}
                                             autoComplete="name"
                                             placeholder={locale === "ar" ? "مثال: مريم أحمد" : "e.g. Maryam Ahmed"}
-                                            className="min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                            className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                         />
                                     </label>
 
@@ -303,9 +312,10 @@ export default function CheckoutPage() {
                                             minLength={8}
                                             maxLength={30}
                                             type="tel"
+                                            inputMode="tel"
                                             autoComplete="tel"
                                             placeholder="01012345678"
-                                            className="min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                            className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                         />
                                         <span className="text-xs text-[var(--muted-foreground)]">
                                             {t("egyptPhoneHelp")}
@@ -319,14 +329,14 @@ export default function CheckoutPage() {
                                             type="email"
                                             autoComplete="email"
                                             placeholder="name@example.com"
-                                            className="min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                            className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                         />
                                     </label>
                                 </div>
                             </div>
 
                             {/* Card 2: Delivery Address */}
-                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xs">
+                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-6 shadow-xs">
                                 <div className="flex items-center gap-3 border-b border-[var(--border)] pb-4">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-sm">
                                         2
@@ -348,7 +358,7 @@ export default function CheckoutPage() {
                                             maxLength={80}
                                             autoComplete="address-level1"
                                             placeholder={locale === "ar" ? "مثال: القاهرة / الجيزة / الإسكندرية" : "e.g. Cairo / Giza / Alexandria"}
-                                            className="min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                            className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                         />
                                     </label>
 
@@ -363,7 +373,7 @@ export default function CheckoutPage() {
                                             maxLength={80}
                                             autoComplete="address-level2"
                                             placeholder={locale === "ar" ? "مثال: المعادي / الشيخ زايد / سموحة" : "e.g. Maadi / Sheikh Zayed / Smouha"}
-                                            className="min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                            className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                         />
                                     </label>
 
@@ -379,14 +389,14 @@ export default function CheckoutPage() {
                                             autoComplete="street-address"
                                             rows={3}
                                             placeholder={locale === "ar" ? "اسم الشارع، رقم العمارة، رقم الشقة، علامة مميزة" : "Street name, building number, apartment, landmark"}
-                                            className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                            className="w-full min-w-0 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                         />
                                     </label>
                                 </div>
                             </div>
 
                             {/* Card 3: Payment Method & Notes */}
-                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xs">
+                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-6 shadow-xs">
                                 <div className="flex items-center gap-3 border-b border-[var(--border)] pb-4">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-sm">
                                         3
@@ -420,7 +430,7 @@ export default function CheckoutPage() {
                                                 maxLength={40}
                                                 autoComplete="off"
                                                 placeholder={locale === "ar" ? "أدخل الرمز إن وُجد" : "Enter code if available"}
-                                                className="min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                                className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                             />
                                         </label>
 
@@ -431,7 +441,7 @@ export default function CheckoutPage() {
                                                 maxLength={300}
                                                 autoComplete="off"
                                                 placeholder={locale === "ar" ? "أي ملاحظة لمندوب التوصيل" : "Notes for the courier"}
-                                                className="min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                                className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                             />
                                         </label>
                                     </div>
@@ -473,7 +483,7 @@ export default function CheckoutPage() {
 
                         {/* Right Column: Sticky Order Summary (Desktop) */}
                         <aside className="hidden lg:block lg:sticky lg:top-24 space-y-6">
-                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xs">
+                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-6 shadow-xs">
                                 <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
                                     <div className="flex items-center gap-2">
                                         <ShoppingBag size={20} className="text-amber-500" />
@@ -534,7 +544,7 @@ export default function CheckoutPage() {
                                 <div className="mt-5 rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
                                     <div className="flex items-center justify-between text-xs">
                                         <span className="font-semibold text-[var(--foreground)] flex items-center gap-1.5">
-                                            <Sparkles size={14} className="text-amber-500" />
+                                            <Truck size={14} className="text-teal-600 dark:text-teal-400" />
                                             {subtotal >= FREE_SHIPPING_THRESHOLD ? (
                                                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                                                     {t("freeShippingUnlocked")}
@@ -593,7 +603,7 @@ export default function CheckoutPage() {
                                     <span>{t("trustNationwideDelivery")}</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-xs font-medium text-[var(--muted-foreground)]">
-                                    <Sparkles size={18} className="text-amber-500 shrink-0" />
+                                    <ShieldCheck size={18} className="text-teal-600 dark:text-teal-400 shrink-0" />
                                     <span>{t("trustKidSafe")}</span>
                                 </div>
                             </div>

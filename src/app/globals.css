@@ -581,12 +581,13 @@ a:hover {
   align-items: center;
   gap: 10px;
   width: fit-content;
+  min-height: 44px;
   border: 0;
   border-bottom: 1px solid currentColor;
-  padding: 0 0 7px;
+  padding: 6px 0;
   background: transparent;
   color: var(--foreground);
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   transition: opacity var(--transition), transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -708,8 +709,10 @@ a:hover {
 }
 
 .daisy-round-link {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   display: grid;
   place-items: center;
   border: 1px solid var(--border);
@@ -1304,11 +1307,22 @@ a:hover {
 }
 
 .daisy-cart-view-link {
-  display: block;
-  margin-top: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 8px;
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted-foreground);
   text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color var(--transition);
+}
+
+.daisy-cart-view-link:hover {
+  color: var(--foreground);
 }
 
 .catalog-page {
@@ -2571,6 +2585,10 @@ a:hover {
 
 .daisy-mobile-menu nav a {
   width: fit-content;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 0;
   color: var(--muted-foreground);
 }
 
@@ -2711,10 +2729,29 @@ a:hover {
   }
 }
 
+@media (max-width: 768px) {
+  .daisy-header__inner {
+    width: calc(100% - 20px);
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .daisy-header .daisy-icon-button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 360px) {
   .daisy-header__inner {
-    width: calc(100% - 16px);
-    grid-template-columns: 40px minmax(0, 1fr) auto;
+    width: calc(100% - 12px);
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 6px;
   }
 
   .daisy-header__inner > .daisy-wordmark {
@@ -2727,8 +2764,10 @@ a:hover {
   }
 
   .daisy-header .daisy-icon-button {
-    flex-basis: 36px;
-    width: 36px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
   }
 }
 
@@ -6005,6 +6044,16 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
   object-fit: contain;
 }
 
+@media (max-width: 640px) {
+  .daisy-cta__monogram-watermark {
+    width: 220px;
+    height: 220px;
+    top: -20px;
+    inset-inline-end: -10px;
+    max-width: calc(100vw - 32px);
+  }
+}
+
 @keyframes daisySpin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -6522,7 +6571,8 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
+  width: 44px;
+  min-width: 44px;
   height: 100%;
   background: transparent;
   border: none;
@@ -6647,15 +6697,31 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 8px 16px;
+  min-height: 44px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--card);
   color: var(--muted-foreground);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 160ms ease;
+}
+
+@media (max-width: 480px) {
+  .rc-purchase-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .rc-qty-picker {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .rc-add-to-cart-btn {
+    width: 100%;
+    min-height: 48px;
+  }
 }
 
 .rc-wishlist-btn:hover {
@@ -8536,4 +8602,14 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
     border-radius: 11px;
   }
 }
+
+/* Universal iOS Safari auto-zoom prevention: ensure form inputs have at least 16px font-size on mobile */
+@media screen and (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 

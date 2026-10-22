@@ -3,7 +3,7 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Minus, Plus, ShieldCheck, ShoppingBag, Sparkles, Trash2, Truck } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, Truck } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/products";
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
@@ -218,7 +218,7 @@ export function CartView() {
                       <button
                         onClick={() => update(item.lineId, -1)}
                         aria-label={t("decreaseQuantity")}
-                        className="w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 transition-all cursor-pointer"
+                        className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 transition-all cursor-pointer"
                       >
                         <Minus size={14} />
                       </button>
@@ -226,7 +226,7 @@ export function CartView() {
                       <button
                         onClick={() => update(item.lineId, 1)}
                         aria-label={t("increaseQuantity")}
-                        className="w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 transition-all cursor-pointer"
+                        className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 transition-all cursor-pointer"
                       >
                         <Plus size={14} />
                       </button>
@@ -234,7 +234,7 @@ export function CartView() {
 
                     <button
                       onClick={() => remove(item.lineId)}
-                      className="inline-flex items-center gap-1.5 py-2 px-2.5 rounded-lg text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30 active:scale-95 font-medium transition cursor-pointer min-h-[38px]"
+                      className="inline-flex items-center gap-1.5 py-2 px-3 rounded-lg text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30 active:scale-95 font-medium transition cursor-pointer min-h-[44px]"
                     >
                       <Trash2 size={14} />
                       <span>{t("remove")}</span>
@@ -255,7 +255,7 @@ export function CartView() {
               {/* Free shipping progress bar */}
               <div className="rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
                 <div className="text-xs font-semibold text-[var(--foreground)] flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-amber-500 shrink-0" />
+                  <Truck size={14} className="text-teal-600 dark:text-teal-400 shrink-0" />
                   {total >= FREE_SHIPPING_THRESHOLD ? (
                     <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                       {t("freeShippingUnlocked")}

@@ -114,17 +114,17 @@
       <!-- Pill 1: أي شخصية أو فكرة -->
       <g transform="translate(-180, 0)">
         <rect x="-75" y="-18" width="150" height="36" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
-        <text y="5" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#334155">🎨 شخصيتك المفضلة</text>
+        <text y="5" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#334155">شخصيتك المفضلة</text>
       </g>
       <!-- Pill 2: مع بيانات الطفل -->
       <g transform="translate(0, 0)">
         <rect x="-75" y="-18" width="150" height="36" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
-        <text y="5" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#334155">✍️ باسم طفلك ومدرسته</text>
+        <text y="5" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#334155">باسم طفلك ومدرسته</text>
       </g>
       <!-- Pill 3: مقاوم للماء 100% -->
       <g transform="translate(180, 0)">
         <rect x="-75" y="-18" width="150" height="36" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
-        <text y="5" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#0F766E">💧 مقاوم للماء 100%</text>
+        <text y="5" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#0F766E">مقاوم للماء 100%</text>
       </g>
     </g>
   </g>
@@ -155,7 +155,7 @@
       </g>
     </g>
 
-    <!-- Right Personalization Data Zone (Arabic Text Mockup) -->
+    <!-- Right Personalization Data Zone (Arabic Text Mockup - Clean Blank Fields) -->
     <g transform="translate(260, 45)" text-anchor="end">
       <!-- Title Badge -->
       <rect x="220" y="0" width="150" height="28" rx="8" fill="#F0FDFA" stroke="#99F6E4" stroke-width="1" />
@@ -163,52 +163,42 @@
         استيكر الدفاتر والكتب
       </text>
 
-      <!-- Child Name Field Mockup -->
+      <!-- Child Name Field Mockup (Blank Template) -->
       <g transform="translate(370, 50)">
         <text x="0" y="0" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="700" fill="#64748B">اسم الطفل:</text>
         <rect x="-370" y="8" width="370" height="46" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2" />
-        <text x="-15" y="38" font-family="'Cairo', system-ui, sans-serif" font-size="17" font-weight="900" fill="#0F172A">
-          يونس محمد — Younis Mohamed
-        </text>
       </g>
 
-      <!-- School & Grade Row -->
+      <!-- School & Grade Row (Blank Template) -->
       <g transform="translate(370, 135)">
         <!-- School -->
         <g transform="translate(0, 0)">
           <text x="0" y="0" font-family="'Cairo', system-ui, sans-serif" font-size="11" font-weight="700" fill="#64748B">المدرسة:</text>
           <rect x="-180" y="6" width="180" height="40" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2" />
-          <text x="-12" y="31" font-family="'Cairo', system-ui, sans-serif" font-size="13" font-weight="800" fill="#334155">St. Joseph School</text>
         </g>
         <!-- Grade & Class -->
         <g transform="translate(-190, 0)">
           <text x="0" y="0" font-family="'Cairo', system-ui, sans-serif" font-size="11" font-weight="700" fill="#64748B">الصف / الفصل:</text>
           <rect x="-180" y="6" width="180" height="40" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2" />
-          <text x="-12" y="31" font-family="'Cairo', system-ui, sans-serif" font-size="13" font-weight="800" fill="#334155">Year FS2 — 1B</text>
         </g>
       </g>
 
-      <!-- Parent Phone Row -->
+      <!-- Parent Phone Row (Blank Template) -->
       <g transform="translate(370, 215)">
         <text x="0" y="0" font-family="'Cairo', system-ui, sans-serif" font-size="11" font-weight="700" fill="#64748B">رقم هاتف ولي الأمر:</text>
         <rect x="-370" y="6" width="370" height="38" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2" />
-        <text x="-15" y="31" font-family="system-ui, sans-serif" font-size="14" font-weight="800" fill="#334155" dir="ltr" text-anchor="start">
-          01012345678
-        </text>
       </g>
     </g>
   </g>
 
-  <!-- Thin Pencil & Water Bottle Strips (Multiple Cut Stickers) -->
+  <!-- Thin Pencil & Water Bottle Strips (Multiple Cut Stickers - Clean Blank Templates) -->
   <g transform="translate(100, 920)">
     <!-- Strip 1 -->
     <g transform="translate(0, 0)">
       <rect width="655" height="52" rx="14" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.8" />
       <circle cx="28" cy="26" r="14" fill="#F0FDFA" />
-      <text x="28" y="31" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#0F766E" text-anchor="middle">✏️</text>
-      <text x="60" y="33" font-family="'Cairo', system-ui, sans-serif" font-size="15" font-weight="900" fill="#0F172A">
-        يونس محمد • Younis Mohamed
-      </text>
+      <path d="M22 29 L23.5 25 L30 18.5 L33.5 22 L27 28.5 Z M30 18.5 L32 16.5 L35.5 20 L33.5 22 Z" fill="#0F766E" />
+      <line x1="56" y1="26" x2="320" y2="26" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="6 4" />
       <text x="630" y="32" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="700" fill="#64748B" text-anchor="end">
         ليبل رفيع للأقلام والمساطر
       </text>
@@ -218,10 +208,8 @@
     <g transform="translate(0, 64)">
       <rect width="655" height="52" rx="14" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.8" />
       <circle cx="28" cy="26" r="14" fill="#FEF3C7" />
-      <text x="28" y="31" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#D97706" text-anchor="middle">⭐</text>
-      <text x="60" y="33" font-family="'Cairo', system-ui, sans-serif" font-size="15" font-weight="900" fill="#0F172A">
-        يونس محمد • Year FS2 • 01012345678
-      </text>
+      <path d="M28 19 L29.8 23.5 L34.5 24 L31 27.2 L32 32 L28 29.5 L24 32 L25 27.2 L21.5 24 L26.2 23.5 Z" fill="#D97706" />
+      <line x1="56" y1="26" x2="320" y2="26" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="6 4" />
       <text x="630" y="32" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="700" fill="#64748B" text-anchor="end">
         استيكر مقاوم لزجاجات المياه
       </text>
@@ -231,10 +219,9 @@
     <g transform="translate(0, 128)">
       <rect width="655" height="52" rx="14" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.8" />
       <circle cx="28" cy="26" r="14" fill="#F0FDFA" />
-      <text x="28" y="31" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="800" fill="#0F766E" text-anchor="middle">🎒</text>
-      <text x="60" y="33" font-family="'Cairo', system-ui, sans-serif" font-size="15" font-weight="900" fill="#0F172A">
-        يونس محمد • St. Joseph School
-      </text>
+      <path d="M23 21 L29 21 L34 26 L29 31 L23 31 Z" fill="none" stroke="#0F766E" stroke-width="1.8" stroke-linejoin="round" />
+      <circle cx="26" cy="26" r="1.5" fill="#0F766E" />
+      <line x1="56" y1="26" x2="320" y2="26" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="6 4" />
       <text x="630" y="32" font-family="'Cairo', system-ui, sans-serif" font-size="12" font-weight="700" fill="#64748B" text-anchor="end">
         لانش بوكس وأدوات مدرسية
       </text>

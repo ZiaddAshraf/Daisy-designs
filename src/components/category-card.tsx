@@ -9,7 +9,8 @@ import {
 } from "@/lib/store-categories";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import type { Locale } from "@/lib/locale";
-import { DaisyFlower, SparkleStar, StorybookIcon } from "@/components/decorative-marks";
+import { StorybookIcon } from "@/components/decorative-marks";
+import { Shirt } from "lucide-react";
 
 type CategoryCardProps = {
   category: StoreCategory;
@@ -32,7 +33,6 @@ const LIVE_CATEGORY_SLUGS = new Set(["stickers", "reward-cards", "customized-sto
 export function CategoryCard({
   category,
   locale,
-  index = 0,
   showNotice = false,
   showDescription = true,
   headingTag = "h3",
@@ -42,7 +42,6 @@ export function CategoryCard({
   const description = categoryDescriptionForLocale(category, locale);
   const notice = categoryNoticeForLocale(category, locale);
   const t = (key: TranslationKey) => getTranslation(locale, key);
-  const indexStr = String(index + 1);
   const Heading = headingTag;
   const isLive = LIVE_CATEGORY_SLUGS.has(category.slug);
   const categoryImage = CATEGORY_IMAGES[category.slug];
@@ -77,21 +76,13 @@ export function CategoryCard({
               )}
               {category.slug === "printed-t-shirts" && (
                 <span className="store-category-card__floating-icon">
-                  <SparkleStar size={15} />
+                  <Shirt size={15} />
                 </span>
               )}
             </div>
             <small>DAISY DESIGNS / {t("categoryLabel")}</small>
           </div>
         )}
-
-        <div className={`store-category-card__index ${categoryImage ? "store-category-card__index--on-image" : ""}`} aria-hidden="true">
-          <span>{indexStr}</span>
-          <span className="store-category-card__index-rule" />
-          <span className="store-category-card__flower-badge">
-            <DaisyFlower size={13} />
-          </span>
-        </div>
 
         <span className={`store-category-card__badge ${isLive ? "store-category-card__badge--live" : "store-category-card__badge--soon"}`}>
           {isLive ? (locale === "ar" ? "متاح للطلب" : "Available Now") : t("comingSoonBadge")}
@@ -106,16 +97,12 @@ export function CategoryCard({
       <div className="store-category-card__content">
         <div className="store-category-card__title">
           <Heading>{name}</Heading>
-          <span className="store-category-card__arrow" aria-hidden="true">↗</span>
         </div>
         <p className="store-category-card__tagline">{tagline}</p>
         {showDescription && <p className="store-category-card__description">{description}</p>}
         {showNotice && notice && <span className="store-category-card__notice">{notice}</span>}
         <div className="store-category-card__action">
           <span>{t("exploreCategory")}</span>
-          <span className="store-category-card__action-arrow" aria-hidden="true">
-            {locale === "ar" ? "←" : "→"}
-          </span>
         </div>
       </div>
     </Link>

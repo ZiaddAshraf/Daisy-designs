@@ -7,7 +7,6 @@ import type { Locale } from "@/lib/locale";
 import rewardCardsData from "@/data/reward-cards-product.json";
 import {
   TinyDaisyDoodle,
-  SparkleStar,
   PlayfulWiggle,
   DaisyFlower,
 } from "@/components/decorative-marks";
@@ -19,7 +18,7 @@ import {
   X,
   Maximize2,
   Heart,
-  Sparkles,
+  Palette,
   ShieldCheck,
   Layers,
   Sun,
@@ -160,7 +159,7 @@ const CRAFTSMANSHIP = [
     descEn: "Child-friendly smooth rounded corners crafted for little hands.",
   },
   {
-    icon: Sparkles,
+    icon: Palette,
     titleAr: "ألوان مبهجة عالية الثبات",
     titleEn: "Vibrant Eco-Friendly Inks",
     descAr: "طباعة احترافية بألوان ساطعة تحافظ على بهجتها ولمعانها.",
@@ -707,8 +706,8 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
                     <Check size={14} className="rc-added-icon" />
                     <span>
                       {isAr
-                        ? "تمت إضافة علبة كروت التشجيع إلى سلتك بنجاح ✓"
-                        : "Reward Cards Box Set added to your cart ✓"}
+                        ? "تمت إضافة علبة كروت التشجيع إلى سلتك بنجاح"
+                        : "Reward Cards Box Set added to your cart"}
                     </span>
                   </div>
                 )}
@@ -745,7 +744,6 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
       <section className="rc-moments" aria-labelledby="rc-moments-heading">
         <header className="rc-moments__header">
           <p className="rc-moments__eyebrow">
-            <SparkleStar size={12} className="rc-moments__star" />
             {isAr ? "أفكار ملهمة للاستخدام اليومي" : "DAILY INSPIRATION MOMENTS"}
           </p>
           <h2 id="rc-moments-heading" className="rc-moments__title">
@@ -901,8 +899,8 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
           <DaisyFlower size={20} className="rc-closing-flower" />
           <p className="rc-gallery__closing">
             {isAr
-              ? "صنع بكل حب ♡ لمسة جميلة للمكتب أو هدية تُسعد من تحب"
-              : "Crafted with love ♡ A lovely touch for desks or a gift to brighten someone's day"}
+              ? "صنع بكل حب — لمسة جميلة للمكتب أو هدية تُسعد من تحب"
+              : "Crafted with love — A lovely touch for desks or a gift to brighten someone's day"}
           </p>
           <PlayfulWiggle className="rc-closing-wiggle" />
         </footer>
@@ -992,7 +990,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
                 ) : (
                   <div className="rc-modal__idea-box">
                     <div className="rc-modal__idea-header">
-                      <SparkleStar size={13} className="rc-modal__idea-star" />
+                      <HelpCircle size={13} className="rc-modal__idea-star text-teal-600 dark:text-teal-400" />
                       <span>{isAr ? "فكرة ملهمة للمشاركة" : "Parenting Inspiration"}</span>
                     </div>
                     <p className="rc-modal__idea-text">

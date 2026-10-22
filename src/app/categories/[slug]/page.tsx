@@ -17,7 +17,7 @@ import {
   categoryDescriptionForLocale,
   categoryNoticeForLocale,
 } from "@/lib/store-categories";
-import { SparkleStar } from "@/components/decorative-marks";
+import { Info } from "lucide-react";
 import { RewardCardsPreview } from "@/components/reward-cards-preview";
 import { StickersCatalogClient } from "@/components/stickers-catalog-client";
 import { StoryBookPreview } from "@/components/story-book-preview";
@@ -116,7 +116,7 @@ export default async function CategoryPage({ params, searchParams }: { params: P
             {categoryDescription && <p>{categoryDescription}</p>}
             {categoryNotice && (
               <div className="category-surface-notice">
-                <SparkleStar size={13} className="category-surface-notice__star" />
+                <Info size={13} className="category-surface-notice__star text-amber-500 shrink-0" />
                 <span>{categoryNotice}</span>
               </div>
             )}

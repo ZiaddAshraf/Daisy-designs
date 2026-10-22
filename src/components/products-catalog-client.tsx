@@ -245,8 +245,8 @@ export function ProductsCatalogClient({
                 {/* Whole Card Link */}
                 <Link href={prod.href} className="flex flex-col flex-1 justify-between">
                   <div>
-                    {/* Pastel Image Container with Arched Tab */}
-                    <div className="catalog-card__frame relative aspect-[4/3] w-full overflow-hidden p-3.5 sm:p-5 flex items-center justify-center transition-colors">
+                    {/* Image Container with Arched Tab */}
+                    <div className="catalog-card__frame relative aspect-[4/3] p-2 sm:p-3 w-full overflow-hidden flex items-center justify-center transition-colors">
                       <div className="relative h-full w-full">
                         <Image
                           src={prod.image}

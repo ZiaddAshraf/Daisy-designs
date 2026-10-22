@@ -8,7 +8,7 @@ import {
   getStoreCategories,
 } from "@/lib/store-categories";
 import { CategoryCard } from "@/components/category-card";
-import { DaisyFlower, SparkleStar, StorybookIcon } from "@/components/decorative-marks";
+import { DaisyFlower, StorybookIcon } from "@/components/decorative-marks";
 import { BrandLogo } from "@/components/brand-logo";
 
 export const dynamic = "force-dynamic";
@@ -132,7 +132,6 @@ export default async function Home() {
       <section className="daisy-cta" data-scroll-reveal suppressHydrationWarning>
         <p className="eyebrow">
           DAISY DESIGNS <span> / </span> {t("homeBrandPersonalized")}
-          <SparkleStar size={12} className="daisy-cta__inline-sparkle" />
         </p>
         <div className="daisy-cta__row">
           <h2>{t("homeFinalTitle")}<br /><em>{t("homeFinalTitleSecond")}</em></h2>
@@ -142,8 +141,6 @@ export default async function Home() {
         </div>
         <div className="daisy-cta__monogram-watermark" aria-hidden="true">
           <BrandLogo variant="monogram" altText="" />
-          <SparkleStar size={32} className="daisy-cta__sparkle daisy-cta__sparkle--1" />
-          <SparkleStar size={20} className="daisy-cta__sparkle daisy-cta__sparkle--2" />
         </div>
       </section>
     </main>

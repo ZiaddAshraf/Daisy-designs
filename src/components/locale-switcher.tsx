@@ -1,13 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { getAlternativeLocale, getSafeLocaleSwitchHref, type Locale } from "@/lib/locale";
+import { getAlternativeLocale, type Locale } from "@/lib/locale";
 import { getTranslation } from "@/lib/i18n/messages";
 
 export function LocaleSwitcher({ locale, compact = false }: { locale: Locale; compact?: boolean }) {
   const alternativeLocale = getAlternativeLocale(locale);
-  const router = useRouter();
   const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const [error, setError] = useState(false);
   const pending = pendingLocale !== null && pendingLocale !== locale;
@@ -16,7 +14,6 @@ export function LocaleSwitcher({ locale, compact = false }: { locale: Locale; co
     if (pending || nextLocale === locale) return;
     setPendingLocale(nextLocale);
     setError(false);
-    const currentHref = getSafeLocaleSwitchHref(window.location.href, window.location.origin);
 
     try {
       const response = await fetch("/api/locale", {
@@ -26,9 +23,8 @@ export function LocaleSwitcher({ locale, compact = false }: { locale: Locale; co
       });
       if (!response.ok) throw new Error("Locale update failed");
 
-      const liveHref = getSafeLocaleSwitchHref(window.location.href, window.location.origin);
-      if (liveHref !== currentHref) router.replace(currentHref, { scroll: false });
-      router.refresh();
+      // Hard reload ensures <html lang="..." dir="..."> and all translations re-render immediately
+      window.location.reload();
     } catch {
       setError(true);
       setPendingLocale(null);

@@ -13,7 +13,6 @@ import {
   ChevronRight,
   X,
   Heart,
-  Sparkles,
   ShieldCheck,
   BookOpen,
   Lock,
@@ -140,10 +139,12 @@ export function StoryBookPreview({ locale, inStock = true }: StoryBookPreviewPro
     heroTouchStartXRef.current = null;
     if (Math.abs(deltaX) > 40) {
       if (deltaX > 0) {
-        if (isAr) handlePrevPage();
+        // Swiped right
+        if (isAr) handleNextPage();
         else handlePrevPage();
       } else {
-        if (isAr) handleNextPage();
+        // Swiped left
+        if (isAr) handlePrevPage();
         else handleNextPage();
       }
     }
@@ -742,7 +743,7 @@ export function StoryBookPreview({ locale, inStock = true }: StoryBookPreviewPro
         <div className="sb-craftsmanship-card">
           <div className="sb-craftsmanship-card__content">
             <div className="sb-craftsmanship-card__badge">
-              <Sparkles size={14} />
+              <BookOpen size={14} />
               <span>{isAr ? "جودة Daisy Designs" : "Daisy Designs Craftsmanship"}</span>
             </div>
             <h2>

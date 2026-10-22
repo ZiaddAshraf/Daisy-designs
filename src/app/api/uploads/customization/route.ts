@@ -3,13 +3,14 @@ import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { stripMetadata } from "@/lib/child-photo-storage";
 
 export const runtime = "nodejs";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-function getExtension(mimeType: string, buffer: Buffer): string | null {
+function getExtension(mimeType: string, buffer: Buffer): "jpg" | "png" | "webp" | null {
   // Check magic bytes
   if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
     return "jpg";
@@ -85,7 +86,8 @@ export async function POST(request: Request) {
 
     const secureFilename = `stk_child_${randomUUID()}.${ext}`;
     const filePath = path.join(uploadDir, secureFilename);
-    await fs.writeFile(filePath, buffer);
+    const sanitizedBuffer = stripMetadata(buffer, ext);
+    await fs.writeFile(filePath, sanitizedBuffer);
 
     const publicUrl = `/uploads/customizations/${secureFilename}`;
     return NextResponse.json({ success: true, url: publicUrl, filename: secureFilename }, { status: 201 });

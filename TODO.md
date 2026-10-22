@@ -137,3 +137,72 @@
   - [x] Task 20.6: Run continuous verification (tsc, lint, tests, build) and browser verification with Playwright
   - [x] Task 20.7: Deploy to Vercel production and verify live
 
+- [x] Phase 21: Redesign Stickers Category Page — Inline Customization & Direct Add to Cart
+  - [x] Task 21.1: Design and implement the luxury Category Header with value proposition, pricing guarantee, and 3-step order workflow in `src/components/stickers-catalog-client.tsx`
+  - [x] Task 21.2: Refactor sticker product cards to remove detail-page links and feature prominent "خصص الآن" (Customize Now) CTA buttons
+  - [x] Task 21.3: Build the accessible inline customization modal on the category page with required child name, required parent phone, optional school/grade/class, photo upload, and quantity stepper with price scaling
+  - [x] Task 21.4: Implement direct add-to-cart logic preserving line isolation, opening `CartDrawer`, and displaying success confirmation
+  - [x] Task 21.5: Verify responsive layout (desktop 3-col, tablet 2-col, mobile 1/2-col) and dark/light themes
+  - [x] Task 21.6: Run full verification suite (tsc, lint, tests, build)
+  - [x] Task 21.7: Conduct comprehensive browser verification using Playwright / browser tools
+
+- [x] Phase 22: Complete Elimination of Emojis and Sparkle Icons Across Website
+  - [x] Task 22.1: Remove sparkle icons (`<Sparkles>`, `<SparkleStar>`) from CTA buttons, banners, category cards, and modals
+  - [x] Task 22.2: Strip all Unicode emojis (`✨`, `🏷️`, `💡`, `⏱️`, `✓`, `♡`) from UI strings, badges, hints, and data fixtures
+  - [x] Task 22.3: Replace with clean semantic Lucide SVG icons (`Tag`, `Palette`, `Info`, `Truck`, `ShieldCheck`, `BookOpen`, `Shirt`, `Clock`)
+  - [x] Task 22.4: Execute full verification loop (`tsc --noEmit`, `eslint`, `vitest`/`node --test`, Next.js production build)
+
+- [x] Phase 23: Remove Category Card Arrows and Index Numbers
+  - [x] Task 23.1: Remove corner index numbers (`1`, `2`, `3`, `4`) and rule lines (`store-category-card__index`) in `CategoryCard`
+  - [x] Task 23.2: Remove diagonal arrow `↗` (`store-category-card__arrow`) from category card titles
+  - [x] Task 23.3: Remove action arrow `←` / `→` (`store-category-card__action-arrow`) from category card footer
+  - [x] Task 23.4: Remove diagonal arrow `↗` (`collection-card__arrow`) from collection cards
+  - [x] Task 23.5: Run full verification loop (tsc, lint, tests, build, Playwright screenshot)
+
+- [x] Phase 24: Sticker Backgrounds Full Card Coverage
+  - [x] Task 24.1: Update `catalog-card__frame` in `stickers-catalog-client.tsx` to `p-0` with `object-cover` so sticker backgrounds fill the entire frame edge-to-edge
+  - [x] Task 24.2: Update sticker catalog cards in `products-catalog-client.tsx` to `p-0` and `object-cover`
+  - [x] Task 24.3: Implement `.store-category-card--full-bleed` in `category-card.tsx` and `globals.css` so the sticker category card background covers 100% of the card with an editorial gradient overlay
+  - [x] Task 24.4: Execute full Ralph Loop verification (`tsc`, `lint`, `tests`, `build`, Playwright audit)
+
+- [x] Phase 25: Streamline Stickers Header & Eliminate Verbose Copy
+  - [x] Task 25.1: Remove the 3-step numbered instructional cards (١، ٢، ٣) from `stickers-catalog-client.tsx`
+  - [x] Task 25.2: Remove the decorative side card (`تخصيص مباشر وسريع`) and long marketing paragraphs
+  - [x] Task 25.3: Streamline header into a clean, luxury Daisy Designs category title with a single concise subtitle and compact price badge
+  - [x] Task 25.4: Shorten card description copy to crisp 1-line statements
+  - [x] Task 25.5: Run full verification loop (`tsc`, `lint`, `tests` - 90/90 pass, Playwright visual confirmation)
+
+- [x] Phase 26: Fix Sticker Card Cropping & Portrait Sheet Fitting
+  - [x] Task 26.1: Run browser subagent inspection on `/categories/stickers` to diagnose crop mathematics across sticker assets (~0.668 to 0.826 aspect ratios)
+  - [x] Task 26.2: Switch `catalog-card__frame` from landscape `aspect-[4/3.5]` to portrait `aspect-[3/4]` matching sticker sheet dimensions
+  - [x] Task 26.3: Apply `object-contain` with seamless white card surface background (`p-1 sm:p-1.5 bg-white dark:bg-neutral-900`) so 100% of the sticker sheet is visible with zero cropping
+  - [x] Task 26.4: Update modal sticker preview to portrait `aspect-[3/4]` for full uncropped sheet inspection
+  - [x] Task 26.5: Verify zero cropping across general products catalog in `products-catalog-client.tsx`
+  - [x] Task 26.6: Run full verification loop (`tsc`, `lint`, `tests` 90/90 passed, Playwright browser visual verification)
+
+- [x] Phase 27: Strip Dummy Personal Data from Custom Sticker Sheet SVG
+  - [x] Task 27.1: Remove mock personal details (`يونس محمد — Younis Mohamed`, `St. Joseph School`, `Year FS2 — 1B`, `01012345678`) from input field mockups in `public/products/stickers/custom-sticker-design.svg`
+  - [x] Task 27.2: Convert input fields into clean, blank, authentic template rectangles
+  - [x] Task 27.3: Remove dummy names from the 3 thin sticker strips and replace with clean dashed guideline print indicators
+  - [x] Task 27.4: Eliminate all remaining Unicode emojis (`🎨`, `✍️`, `💧`, `✏️`, `⭐`, `🎒`) from `custom-sticker-design.svg`
+  - [x] Task 27.5: Execute continuous verification loop (`tsc`, `lint`, `tests` 90/90 pass, Playwright visual confirmation)
+
+- [x] Phase 28: Full-Stack E-Commerce Audit & Security Hardening
+  - [x] Task 28.1: Complete end-to-end multi-category purchase simulation (Stickers, Reward Cards, Storybook, T-Shirt) creating verified test Order `ST-80A58290BE0B3FD5`
+  - [x] Task 28.2: Harden sticker photo upload security with server-side EXIF/GPS metadata stripping in `src/app/api/uploads/customization/route.ts`
+  - [x] Task 28.3: Enforce strict Egyptian mobile regex validation (`validateEgyptianPhone`) in `src/lib/order-validation.ts`
+  - [x] Task 28.4: Add localized Arabic error handlers for validation rules in `src/app/checkout/page.tsx`
+  - [x] Task 28.5: Security audit of all 13 admin endpoints ensuring 100% `isAdmin()` protection
+  - [x] Task 28.6: Execute full verification loop (`tsc --noEmit`, `eslint`, `vitest` 90/90 passed, Next.js production build 41/41 routes clean)
+
+- [x] Phase 29: Mobile UI/UX & Responsive Experience Optimization
+  - [x] Task 29.1: Mobile Header & Touch Targets Hardening (44×44px icon buttons, round links, watermark containment, and drawer links)
+  - [x] Task 29.2: Mobile Form Inputs & iOS Safari Auto-Zoom Prevention (universal 16px minimum font size on mobile in `globals.css`, `inputMode="tel"` on phone inputs, `w-full min-w-0` on checkout fields)
+  - [x] Task 29.3: Mobile Modals & Sheets (Stickers customizer sticky purchase footer above keyboard/bottom, responsive size guide modal with 44px close button)
+  - [x] Task 29.4: Cart Drawer & Mobile Checkout Usability (44px quantity steppers in cart and reward cards, 44px remove button, `p-4 sm:p-6` cards eliminating 320px horizontal overflow)
+  - [x] Task 29.5: Product Studios Mobile Polish (T-Shirt responsive swatch selector, single breadcrumb, 44px steppers, responsive CTA row, RTL swipe gesture in storybook)
+  - [x] Task 29.6: Verification Suite & Ralph Loop across 320px, 360px, 375px, 390px, 414px, 430px viewports (0 ESLint errors/warnings, 0 TypeScript errors, 90/90 tests passed, 41/41 clean production build)
+
+
+
+

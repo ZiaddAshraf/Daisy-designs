@@ -34,7 +34,7 @@ export default async function CollectionsPage() {
       return <Link key={collection.id} href={`/collections/${collection.slug}`} className="collection-card" data-scroll-reveal suppressHydrationWarning>
         <div className={`collection-card__image${isBrandCover ? " collection-card__image--brand" : ""}`}><Image src={image} alt="" fill sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 50vw" className="daisy-image" />{isBrandCover && <span className="collection-cover-mark" aria-hidden="true"><span>{name.trim().slice(0, 1).toLocaleUpperCase(locale)}</span><small>DAISY DESIGNS / {t("collections")}</small></span>}</div>
         <div className="collection-card__content">
-          <div className="collection-card__title"><h2>{name}</h2><span className="collection-card__arrow" aria-hidden="true">↗</span></div>
+          <div className="collection-card__title"><h2>{name}</h2></div>
           {collection.description && <p className="collection-card__description">{collectionTextForLocale(collection.description, locale)}</p>}
           <div className="collection-card__footer"><span>{formatMessage(t("productCount"), { count: formatLocaleNumber(locale, collection._count.products) })}</span><span className="collection-card__cta">{t("exploreCollection")}</span></div>
         </div>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Locale } from "@/lib/locale";
 import tshirtProductData from "@/data/tshirt-product.json";
-import { TinyDaisyDoodle, SparkleStar } from "@/components/decorative-marks";
+import { TinyDaisyDoodle } from "@/components/decorative-marks";
 import { useCart, useWishlist } from "@/components/storefront";
 import { formatPrice } from "@/lib/products";
 import { TShirtSizeGuideModal } from "@/components/tshirt-size-guide-modal";
@@ -21,7 +21,7 @@ import {
   X,
   Plus,
   Minus,
-  Sparkles,
+  Palette,
   MessageCircle,
 } from "lucide-react";
 
@@ -182,39 +182,11 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Editorial Breadcrumb */}
-      <nav
-        aria-label={isAr ? "مسار التنقل" : "Breadcrumb"}
-        className="catalog-breadcrumb mb-6 text-xs text-slate-500 dark:text-neutral-400"
-      >
-        <Link href="/" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-          {isAr ? "الرئيسية" : "Home"}
-        </Link>
-        <span className="mx-2 text-slate-300 dark:text-neutral-600">/</span>
-        <Link
-          href="/categories"
-          className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
-        >
-          {isAr ? "الأقسام" : "Categories"}
-        </Link>
-        <span className="mx-2 text-slate-300 dark:text-neutral-600">/</span>
-        <Link
-          href="/categories/printed-t-shirts"
-          className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
-        >
-          {isAr ? "تيشيرتات مطبوعة" : "Printed T-Shirts"}
-        </Link>
-        <span className="mx-2 text-slate-300 dark:text-neutral-600">/</span>
-        <span className="font-semibold text-slate-900 dark:text-neutral-100">
-          {isAr ? product.arabicName : product.name}
-        </span>
-      </nav>
-
+    <div className="w-full min-w-0">
       {/* Main Studio Two-Column Grid */}
-      <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
+      <div className="grid gap-8 lg:grid-cols-12 lg:items-start min-w-0">
         {/* Left Column: Interactive Garment Mockup & Chest Overlay */}
-        <div className="lg:col-span-7 flex flex-col gap-4">
+        <div className="lg:col-span-7 flex flex-col gap-4 min-w-0">
           <div className="relative aspect-square w-full overflow-hidden rounded-[32px] border border-slate-200/80 bg-gradient-to-b from-slate-50/80 to-slate-100/50 p-6 shadow-sm dark:border-neutral-800 dark:from-neutral-900/60 dark:to-neutral-900/30">
             {/* Top-Start Wishlist Floating Heart Button */}
             <button
@@ -240,7 +212,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
 
             {/* Print Placement Tag Top End */}
             <span className="absolute top-5 end-5 z-20 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1 text-xs font-semibold text-teal-700 shadow-xs backdrop-blur-xs border border-teal-100 dark:bg-neutral-800/90 dark:text-teal-300 dark:border-teal-900/50">
-              <Sparkles size={13} className="text-teal-600 dark:text-teal-400" />
+              <Palette size={13} className="text-teal-600 dark:text-teal-400" />
               <span>{isAr ? "طباعة منتصف الصدر" : "Center Chest Print"}</span>
             </span>
 
@@ -310,11 +282,11 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
           </div>
 
           {/* Color Switcher Quick Row Under Mockup */}
-          <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-2xs dark:border-neutral-800/80 dark:bg-neutral-900">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-2xs dark:border-neutral-800/80 dark:bg-neutral-900">
             <span className="text-xs font-semibold text-slate-600 dark:text-neutral-300">
               {isAr ? "ألوان التيشيرت السادة المتاحة:" : "Available plain garment colors:"}
             </span>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               {product.colors.map((c) => {
                 const isActive = selectedColor === c.id;
                 return (
@@ -322,7 +294,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
                     key={c.id}
                     type="button"
                     onClick={() => setSelectedColor(c.id as GarmentColor)}
-                    className={`group flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
+                    className={`group flex min-h-[40px] items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer ${
                       isActive
                         ? "bg-slate-900 text-white shadow-xs dark:bg-white dark:text-neutral-950 ring-2 ring-teal-500/50"
                         : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-neutral-800 dark:text-neutral-300"
@@ -341,7 +313,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
         </div>
 
         {/* Right Column: Customizer Studio & Purchase Controls */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        <div className="lg:col-span-5 flex flex-col gap-6 min-w-0">
           {/* Header Info */}
           <div>
             <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400 text-xs font-bold tracking-wider uppercase mb-1">
@@ -389,7 +361,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
               <button
                 type="button"
                 onClick={() => setIsSizeGuideOpen(true)}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors cursor-pointer"
+                className="inline-flex min-h-[44px] items-center gap-1.5 px-2 text-xs font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors cursor-pointer"
               >
                 <Ruler size={14} />
                 <span>{isAr ? "دليل المقاسات" : "Size Guide"}</span>
@@ -527,7 +499,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
                     ? "اكتب فكرة التصميم، أي عبارات أو أسماء ترغب بكتابتها، أو ألوان مفضلة وملاحظات خاصة بالطباعة..."
                     : "Describe your desired design, any names or words to print, preferred colors, or notes..."
                 }
-                className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500 transition-all resize-none"
+                className="w-full rounded-xl border border-slate-200 bg-white p-3 text-base sm:text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500 transition-all resize-none"
               />
               <div className="mt-1 flex justify-end">
                 <span className="text-[10px] text-slate-400 dark:text-neutral-500">
@@ -549,10 +521,10 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
 
           {/* Quantity & Add to Cart Controls */}
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               {/* Stepper */}
               <div
-                className="flex items-center rounded-full border border-slate-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900 shadow-2xs"
+                className="flex items-center justify-between sm:justify-start rounded-full border border-slate-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900 shadow-2xs"
                 role="group"
                 aria-label={isAr ? "الكمية" : "Quantity"}
               >
@@ -560,22 +532,22 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   disabled={quantity <= 1}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 disabled:opacity-40 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                  className="flex h-11 w-11 min-w-[44px] min-h-[44px] items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 disabled:opacity-40 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                   aria-label={isAr ? "تقليل الكمية" : "Decrease quantity"}
                 >
-                  <Minus size={14} />
+                  <Minus size={16} />
                 </button>
-                <span className="w-10 text-center font-bold text-sm text-slate-900 dark:text-neutral-100">
+                <span className="w-12 text-center font-bold text-sm text-slate-900 dark:text-neutral-100">
                   {quantity}
                 </span>
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.min(10, q + 1))}
                   disabled={quantity >= 10}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 disabled:opacity-40 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                  className="flex h-11 w-11 min-w-[44px] min-h-[44px] items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 disabled:opacity-40 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                   aria-label={isAr ? "زيادة الكمية" : "Increase quantity"}
                 >
-                  <Plus size={14} />
+                  <Plus size={16} />
                 </button>
               </div>
 
@@ -584,7 +556,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={!canAddToCart}
-                className={`flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 px-6 font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer active:scale-[0.98] ${
+                className={`w-full sm:flex-1 min-h-[48px] flex items-center justify-center gap-2 rounded-full py-3.5 px-6 font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer active:scale-[0.98] ${
                   addedToCart
                     ? "bg-teal-600 text-white"
                     : canAddToCart
@@ -618,8 +590,8 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
             {!hasValidArtwork && !hasValidText && (
               <p className="text-center text-[11px] text-slate-400 dark:text-neutral-500">
                 {isAr
-                  ? "💡 يلزم تقديم صورة تصميم أو كتابة وصف مختصر للطلب لتفعيل الإضافة للسلة."
-                  : "💡 Upload an artwork file or enter a brief description to enable Add to Cart."}
+                  ? "يلزم تقديم صورة تصميم أو كتابة وصف مختصر للطلب لتفعيل الإضافة للسلة."
+                  : "Upload an artwork file or enter a brief description to enable Add to Cart."}
               </p>
             )}
 
@@ -651,7 +623,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
               <span>{isAr ? "قطن ناعم ومريح للأطفال" : "Soft 100% Cotton"}</span>
             </div>
             <div className="flex items-center gap-2">
-              <SparkleStar size={15} className="text-teal-600 dark:text-teal-400 shrink-0" />
+              <Palette size={15} className="text-teal-600 dark:text-teal-400 shrink-0" />
               <span>{isAr ? "طباعة مخصصة بألوان زاهية" : "Vibrant Custom Print"}</span>
             </div>
             <div className="flex items-center gap-2">
