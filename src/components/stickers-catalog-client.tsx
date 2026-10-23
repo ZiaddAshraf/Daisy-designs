@@ -970,7 +970,7 @@ export function StickersCatalogClient({
                     <ShoppingBag size={18} />
                     <span>
                       {isAr
-                        ? `أضف إلى السلة — ${formatPrice(product.price * quantity, locale)}`
+                        ? `أضيفي للسلة — ${formatPrice(product.price * quantity, locale)}`
                         : `Add to Cart — ${formatPrice(product.price * quantity, locale)}`}
                     </span>
                     {isAr ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}

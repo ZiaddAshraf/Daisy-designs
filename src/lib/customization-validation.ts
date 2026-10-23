@@ -82,7 +82,8 @@ export function validateCustomization(
         if (val && !validated[extraKey]) {
             if (typeof val === "string" && val.length <= 500) {
                 if (extraKey === "child_photo") {
-                    if (val.startsWith("private:") || val.startsWith("/uploads/") || val.startsWith("stk_child_")) {
+                    const keys = val.split(",").map((k) => k.trim()).filter(Boolean);
+                    if (keys.length > 0 && keys.every((k) => k.startsWith("private:") || k.startsWith("/uploads/") || k.startsWith("stk_child_"))) {
                         validated[extraKey] = val;
                     }
                 } else {

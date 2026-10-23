@@ -23,7 +23,7 @@ import { StickersCatalogClient } from "@/components/stickers-catalog-client";
 import { StoryBookPreview } from "@/components/story-book-preview";
 import { TShirtPreview } from "@/components/tshirt-preview";
 
-type SearchFilters = { collection?: string; min?: string; max?: string; availability?: string; customizable?: string; sort?: string; page?: string };
+type SearchFilters = { collection?: string; story?: string; mode?: string; min?: string; max?: string; availability?: string; customizable?: string; sort?: string; page?: string };
 function normalizeFilters(params: SearchFilters) { const numeric = (value?: string) => value && /^\d{1,8}$/.test(value) ? value : undefined; return { collection: params.collection?.slice(0, 80), min: numeric(params.min), max: numeric(params.max), availability: params.availability === "in-stock" ? params.availability : undefined, customizable: params.customizable === "true" ? params.customizable : undefined, sort: ["price-asc", "price-desc", "best-selling", "newest"].includes(params.sort ?? "") ? params.sort : "newest", page: numeric(params.page), limit: "12" }; }
 type CategoryData = { id: string; slug: string; name: string; arabicName: string; description: string | null };
 
@@ -129,7 +129,7 @@ export default async function CategoryPage({ params, searchParams }: { params: P
       ) : slug === "stickers" || slug === "school-stickers" ? (
         <StickersCatalogClient locale={locale} />
       ) : slug === "customized-stories" || slug === "stories" ? (
-        <StoryBookPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
+        <StoryBookPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} initialStoryId={(await searchParams).mode === 'custom' ? 'custom-story' : (await searchParams).collection || (await searchParams).story} />
       ) : slug === "printed-t-shirts" || slug === "t-shirts" || slug === "tshirts" ? (
         <TShirtPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
       ) : hasProducts ? (

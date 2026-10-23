@@ -681,10 +681,10 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
                           : "Added to Cart!"
                         : quantity > 1
                         ? isAr
-                          ? `أضف إلى السلة — ${formatPrice(totalPrice, locale)}`
+                          ? `أضيفي للسلة — ${formatPrice(totalPrice, locale)}`
                           : `Add to Cart — ${formatPrice(totalPrice, locale)}`
                         : isAr
-                        ? "أضف إلى السلة"
+                        ? "أضيفي للسلة"
                         : "Add to Cart"}
                     </span>
                   </button>
@@ -706,7 +706,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
                     <Check size={14} className="rc-added-icon" />
                     <span>
                       {isAr
-                        ? "تمت إضافة علبة كروت التشجيع إلى سلتك بنجاح"
+                        ? "تمت إضافة علبة كروت التشجيع لسلتك بنجاح ✨"
                         : "Reward Cards Box Set added to your cart"}
                     </span>
                   </div>

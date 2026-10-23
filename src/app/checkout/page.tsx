@@ -97,9 +97,9 @@ export default function CheckoutPage() {
                     INVALID_CUSTOMIZATION: t("checkoutErrInvalidCustomization"),
                     UNSUPPORTED_CUSTOMIZATION: t("checkoutErrUnsupportedCustomization"),
                     INVALID_COUPON: t("checkoutErrInvalidCoupon"),
-                    MISSING_CUSTOMIZATION: locale === "ar" ? "بيانات التخصيص مطلوبة لإتمام الطلب" : "Customization details are required",
-                    INVALID_GARMENT_COLOR: locale === "ar" ? "لون التيشيرت المختار غير متاح" : "Invalid garment color",
-                    INVALID_GARMENT_SIZE: locale === "ar" ? "مقاس التيشيرت المختار غير متاح" : "Invalid garment size",
+                    MISSING_CUSTOMIZATION: locale === "ar" ? "يا ريت تكتبي بيانات التخصيص والاسم المطلوب لإتمام الطلب" : "Customization details are required",
+                    INVALID_GARMENT_COLOR: locale === "ar" ? "لون التيشيرت المختار مش متاح حالياً" : "Invalid garment color",
+                    INVALID_GARMENT_SIZE: locale === "ar" ? "مقاس التيشيرت المختار مش متاح حالياً" : "Invalid garment size",
                 };
                 let displayError = errors[data.error];
                 if (!displayError && data.issues?.fieldErrors?.phone?.[0]) {
@@ -429,7 +429,7 @@ export default function CheckoutPage() {
                                                 name="couponCode"
                                                 maxLength={40}
                                                 autoComplete="off"
-                                                placeholder={locale === "ar" ? "أدخل الرمز إن وُجد" : "Enter code if available"}
+                                                placeholder={locale === "ar" ? "اكتبي الكود لو معاكي كوبون" : "Enter code if available"}
                                                 className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                             />
                                         </label>
@@ -440,7 +440,7 @@ export default function CheckoutPage() {
                                                 name="notes"
                                                 maxLength={300}
                                                 autoComplete="off"
-                                                placeholder={locale === "ar" ? "أي ملاحظة لمندوب التوصيل" : "Notes for the courier"}
+                                                placeholder={locale === "ar" ? "أي ملاحظة تحبيها لمندوب الشحن" : "Notes for the courier"}
                                                 className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                             />
                                         </label>

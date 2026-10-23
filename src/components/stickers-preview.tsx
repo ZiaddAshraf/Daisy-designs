@@ -1028,7 +1028,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                 className="w-full py-3.5 px-6 rounded-xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 font-extrabold text-sm shadow-md hover:opacity-95 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"
               >
                 <ShoppingBag size={16} />
-                <span>{isAr ? "إضافة إلى السلة" : "Add to Cart"}</span>
+                <span>{isAr ? "أضيفي للسلة" : "Add to Cart"}</span>
                 {isAr ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
               </button>
             </form>

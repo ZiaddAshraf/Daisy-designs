@@ -620,7 +620,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
           <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-slate-600 dark:text-neutral-400">
             <div className="flex items-center gap-2">
               <ShieldCheck size={15} className="text-teal-600 dark:text-teal-400 shrink-0" />
-              <span>{isAr ? "قطن ناعم ومريح للأطفال" : "Soft 100% Cotton"}</span>
+              <span>{isAr ? "قطن مصري ناعم ومريح للأطفال" : "Soft 100% Cotton"}</span>
             </div>
             <div className="flex items-center gap-2">
               <Palette size={15} className="text-teal-600 dark:text-teal-400 shrink-0" />
@@ -628,11 +628,11 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
             </div>
             <div className="flex items-center gap-2">
               <MessageCircle size={15} className="text-teal-600 dark:text-teal-400 shrink-0" />
-              <span>{isAr ? "تأكيد ومراجعة عبر الواتساب" : "WhatsApp Confirmation"}</span>
+              <span>{isAr ? "معاينة وتأكيد التصميم على واتساب" : "WhatsApp Confirmation"}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock size={15} className="text-teal-600 dark:text-teal-400 shrink-0" />
-              <span>{isAr ? "الدفع عند الاستلام (COD)" : "Cash on Delivery"}</span>
+              <span>{isAr ? "كاش عند الاستلام بعد المعاينة" : "Cash on Delivery"}</span>
             </div>
           </div>
         </div>

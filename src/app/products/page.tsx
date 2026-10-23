@@ -20,26 +20,111 @@ export default async function ProductsPage() {
   const t = (key: TranslationKey) => getTranslation(locale, key);
   const isRtl = locale === "ar";
 
-  // 1. Customized Storybook Product
-  const storybookProduct: CatalogProductItem = {
-    id: "story-first-year-at-school",
+  // 1. All 4 Authentic Customized Storybook Products
+  const storySchoolProduct: CatalogProductItem = {
+    id: "story-01-first-year-at-school",
     slug: "first-year-at-school",
-    href: "/products/first-year-at-school",
+    href: "/products/first-year-at-school?story=first-year-at-school",
     title: isRtl ? "قصة أول سنة في المدرسة" : "First Year at School",
-    subtitle: isRtl ? "كتاب ورقي فاخر مخصص بصورة طفلك" : "Personalized Keepsake Storybook",
+    subtitle: isRtl ? "كتاب ورقي فاخر بطلها طفلك بصورته واسمه" : "Personalized Keepsake Storybook",
     category: isRtl ? "قصص مخصصة" : "Customized Stories",
     categoryId: "customized-stories",
     price: 200,
     priceUnit: isRtl ? "للكتاب المطبوع" : "per printed book",
-    badge: isRtl ? "أول سنة" : "Storybook",
+    badge: isRtl ? "أول سنة مدرسة" : "School Story",
     image: "/products/customized-stories/first-year-at-school/cover.jpeg",
     description: isRtl
-      ? "قصة ورقية مطبوعة تأخذ طفلك في رحلة مشوقة في أول سنة دراسية بصورته الشخصية. ١٠ صفحات ملهمة مطبوعة بجودة عالية تُشحن حتى باب منزلك."
+      ? "قصة ورقية مطبوعة تاخد طفلك في رحلة مشوقة في أول سنة مدرسة بصورته الشخصية. كتاب ملهم مطبوع بجودة عالية بتوصلك لحد باب بيتك."
       : "A premium physical printed storybook featuring your child's photo in their first school adventure. 10 inspiring illustrated pages printed on paper and delivered to your doorstep.",
     features: isRtl
-      ? ["كتاب ورقي مطبوع يُشحن للمنزل", "تخصيص صورة طفلك الشخصية", "١٠ صفحات مصورة ملهمة"]
-      : ["Physical Printed Storybook", "Personalized Child Photo", "10 Inspiring Illustrated Pages"],
-    ctaText: isRtl ? "طلب القصة" : "Order Story",
+      ? ["كتاب ورقي مطبوع بيوصلك لباب البيت", "بصورة واسم طفلك الشخصية", "رسومات ملهمة بألوان مبهجة"]
+      : ["Physical Printed Storybook", "Personalized Child Photo", "Inspiring Full-Color Art"],
+    ctaText: isRtl ? "اطلبي القصة لطفلك" : "Order Story",
+  };
+
+  const storyRedBallProduct: CatalogProductItem = {
+    id: "story-02-red-ball",
+    slug: "yahya-red-ball",
+    href: "/products/first-year-at-school?story=yahya-red-ball",
+    title: isRtl ? "قصة يحيى والكرة الحمراء" : "The Red Ball Adventure",
+    subtitle: isRtl ? "مغامرة حماسية ولطيفة بطلها طفلك باسمه وصورته" : "Personalized Playtime Storybook",
+    category: isRtl ? "قصص مخصصة" : "Customized Stories",
+    categoryId: "customized-stories",
+    price: 200,
+    priceUnit: isRtl ? "للكتاب المطبوع" : "per printed book",
+    badge: isRtl ? "للأطفال الصغار" : "Play & Fun",
+    image: "/products/customized-stories/story-02-red-ball.jpeg",
+    description: isRtl
+      ? "قصة مبهجة ولطيفة للأطفال الصغار عن اللعب والمرح واكتشاف الألوان والأنشطة والابتسامة الحلوة بالكرة الحمراء مع صورة طفلك."
+      : "A joyful personalized storybook celebrating playtime, smiles, and playful discovery with the red ball.",
+    features: isRtl
+      ? ["كتاب ورقي مطبوع فاخر", "باسم وصورة طفلك الشخصية", "ألوان زاهية تناسب الأعمار الصغيرة"]
+      : ["Physical Printed Storybook", "Personalized Name & Photo", "Vibrant Early Years Colors"],
+    ctaText: isRtl ? "اطلبي القصة لطفلك" : "Order Story",
+  };
+
+  const storyCatsProduct: CatalogProductItem = {
+    id: "story-03-cats-friends",
+    slug: "cats-friends",
+    href: "/products/first-year-at-school?story=cats-friends",
+    title: isRtl ? "قصة يحيى وأصدقائه الميااو (لولو وتوتو)" : "The Meow Friends: Lulu & Toto",
+    subtitle: isRtl ? "قصة لطيفة ودافئة عن حب الحيوانات الأليفة بطلها طفلك" : "Animal Friends Storybook",
+    category: isRtl ? "قصص مخصصة" : "Customized Stories",
+    categoryId: "customized-stories",
+    price: 200,
+    priceUnit: isRtl ? "للكتاب المطبوع" : "per printed book",
+    badge: isRtl ? "مغامرة القطط" : "Pets & Kindness",
+    image: "/products/customized-stories/story-03-cats-friends.jpeg",
+    description: isRtl
+      ? "مغامرة لطيفة ودافئة عن حب الحيوانات الأليفة والرفق بها ومواقف مضحكة ومحببة مع القطط الصغيرة لولو وتوتو مع صورة طفلك."
+      : "A gentle story nurturing kindness to pets and adorable adventures with sweet kittens Lulu and Toto.",
+    features: isRtl
+      ? ["كتاب ورقي مطبوع بالكامل", "باسم وصورة طفلك الشخصية", "يعلم الرفق بالحيوان بطريقة مرحة"]
+      : ["Physical Printed Storybook", "Personalized Name & Photo", "Kindness to Animals"],
+    ctaText: isRtl ? "اطلبي القصة لطفلك" : "Order Story",
+  };
+
+  const storyMinecraftProduct: CatalogProductItem = {
+    id: "story-04-minecraft",
+    slug: "minecraft-adventure",
+    href: "/products/first-year-at-school?story=minecraft-adventure",
+    title: isRtl ? "قصة مغامرة علي في عالم Minecraft" : "Minecraft World Adventure",
+    subtitle: isRtl ? "مغامرة خيالية مليانة إثارة وبناء بطلها طفلك" : "Gaming Adventure Storybook",
+    category: isRtl ? "قصص مخصصة" : "Customized Stories",
+    categoryId: "customized-stories",
+    price: 200,
+    priceUnit: isRtl ? "للكتاب المطبوع" : "per printed book",
+    badge: isRtl ? "ماينكرافت وألعاب" : "Gaming Adventure",
+    image: "/products/customized-stories/story-04-minecraft.jpeg",
+    description: isRtl
+      ? "مغامرة حماسية مليئة بالإبداع والذكاء والتحدي والبناء والتعاون داخل عالم ماينكرافت المحبوب لكل الأطفال مع صورة طفلك كبطل القصة."
+      : "An exciting gaming adventure filled with crafting, building, and courage in the Minecraft universe.",
+    features: isRtl
+      ? ["كتاب ورقي مطبوع فاخر", "صورة واسم طفلك بطل القصة", "عالم ماينكرافت ثلاثي الأبعاد"]
+      : ["Physical Printed Storybook", "Child as the Hero", "Minecraft-Themed Artwork"],
+    ctaText: isRtl ? "اطلبي القصة لطفلك" : "Order Story",
+  };
+
+  // 1b. Bespoke "Design Your Story" Product
+  const customStoryProduct: CatalogProductItem = {
+    id: "story-design-your-own",
+    slug: "first-year-at-school?mode=custom",
+    href: "/products/first-year-at-school?mode=custom",
+    title: isRtl ? "صمم قصتك لطفلك ✨ (فكرة خاصة)" : "Design Your Story ✨",
+    subtitle: isRtl ? "نؤلف ونرسم ونطبع قصة حصرية بفكرة ومغامرة طفلك الخاصة" : "Bespoke Personalized Storybook",
+    category: isRtl ? "قصص مخصصة" : "Customized Stories",
+    categoryId: "customized-stories",
+    price: 200,
+    priceUnit: isRtl ? "للكتاب المصمم كاملاً" : "per custom book",
+    badge: isRtl ? "صمم قصتك" : "Custom Story",
+    image: "/products/customized-stories/first-year-at-school/cover.jpeg",
+    description: isRtl
+      ? "عايزة قصة بفكرة وموضوع من اختيارك؟ نؤلف ونرسم ونطبع كتاب ورقي مخصص بالكامل لطفلك باسمه وصوره وأحلى مغامرة بيحبها."
+      : "A bespoke printed storybook authored and illustrated around your child's name, photos, and favorite theme.",
+    features: isRtl
+      ? ["اختاري موضوع القصة أو فكرة حرة", "باسم وصور طفلك وإهداء مطبوع", "كتاب ورقي فاخر ١٠ صفحات ملونة"]
+      : ["Custom Theme & Plot", "Child's Name & Photos", "10 Full-Color Pages"],
+    ctaText: isRtl ? "صممي قصتك دلوقتي" : "Design Story",
   };
 
   // 2. Reward Cards Box Set Product
@@ -48,7 +133,7 @@ export default async function ProductsPage() {
     slug: "reward-cards-box-set",
     href: "/products/reward-cards-box-set",
     title: isRtl ? "علبة كروت التشجيع (١٠ كروت)" : "Reward Cards Gift Box (10 Cards)",
-    subtitle: isRtl ? "علبة هدايا تذكارية أنيقة وملهمة" : "Keepsake Gift Box with Affirmations",
+    subtitle: isRtl ? "علبة كروت تشجيع ومكافآت بعبارات إيجابية للأولاد" : "Keepsake Gift Box with Affirmations",
     category: isRtl ? "كروت التشجيع" : "Reward Cards",
     categoryId: "reward-cards",
     price: 200,
@@ -56,12 +141,12 @@ export default async function ProductsPage() {
     badge: isRtl ? "بوكس المكافآت" : "Gift Box",
     image: "/products/reward-cards/reward-cards-box-set.jpeg",
     description: isRtl
-      ? "علبة تذكارية أنيقة تضم ١٠ كروت تشجيع ملهمة ومختارة بعناية للأطفال، مصممة لإضفاء البهجة وبناء الثقة اليومية في اللانش بوكس أو على المكتب."
+      ? "علبة هدايا شيك فيها ١٠ كروت تشجيع مميزة ومختارة بعناية، معموله مخصوص عشان تفرح طفلك وتبني ثقته بنفسه كل يوم في اللانش بوكس أو على مكتب المذاكرة."
       : "An elegant keepsake gift box containing 10 uplifting affirmation cards, designed to spark joy and daily encouragement in lunchboxes or study desks.",
     features: isRtl
-      ? ["علبة تذكارية فاخرة", "١٠ كروت تشجيع فريدة", "طباعة ورقية سميكة ومحمية"]
+      ? ["علبة هدايا تذكارية أنيقة", "١٠ كروت تشجيع مختلفة ومبهجة", "ورق كوشيه سميك بطبقة حماية من المية"]
       : ["Luxury Keepsake Gift Box", "10 Unique Affirmation Cards", "Thick Coated Finish"],
-    ctaText: isRtl ? "اطلبي العلبة" : "Order Box",
+    ctaText: isRtl ? "اطلبي العلبة دلوقتي" : "Order Box",
   };
 
   // 3. All 24 Individual School Sticker Designs
@@ -71,7 +156,7 @@ export default async function ProductsPage() {
     href: `/products/custom-waterproof-stickers?design=${design.id}`,
     title: isRtl ? design.arabicTitle : design.title,
     subtitle: isRtl
-      ? "شيت استيكرات مخصص مقاوم للماء"
+      ? "شيت استيكرات مخصص باسم طفلك ومقاوم للمية"
       : "Personalized Waterproof Sheet",
     category: isRtl ? "استيكرات وملصقات" : "Stickers",
     categoryId: "stickers",
@@ -80,12 +165,12 @@ export default async function ProductsPage() {
     badge: isRtl ? `${design.arabicThemeGroup}` : `${design.themeGroup}`,
     image: design.url,
     description: isRtl
-      ? `استيكرات مدرسية متينة مقاومة للماء 100% تُطبع باسم طفلك ومدرسته. يشمل كل شيت ملصقاً كبيراً للدفاتر وشريطاً للأقلام وزجاجات المياه.`
+      ? `استيكرات مدرسية متينة بتستحمل المية والغسيل ١٠٠٪ بنطبعها باسم طفلك ومدرسته. كل شيت فيه تيكيت كبير للدفاتر واستيكرات للأقلام والزمزمية.`
       : `Durable 100% waterproof school stickers personalized with your child's name, school, and class. Includes large notebook tickets and pen strips.`,
     features: isRtl
-      ? ["فينيل ألماني مقاوم للماء 100%", "تخصيص الاسم والمدرسة والفصل", `تصميم ${design.arabicTitle}`]
+      ? ["فينيل ألماني أصلي ضد المية والغسيل", "طباعة الاسم والمدرسة والفصل بالطلب", `تصميم ${design.arabicTitle}`]
       : ["100% German Waterproof Vinyl", "Personalized Name, School & Class", `${design.title} Artwork`],
-    ctaText: isRtl ? "تخصيص وطلب" : "Personalize & Order",
+    ctaText: isRtl ? "اطلبي الشيت بالاسم" : "Personalize & Order",
     themeGroup: isRtl ? design.arabicThemeGroup : design.themeGroup,
   }));
 
@@ -94,8 +179,8 @@ export default async function ProductsPage() {
     id: "custom-printed-tshirt",
     slug: "custom-printed-tshirt",
     href: "/products/custom-printed-tshirt",
-    title: isRtl ? "تيشيرت أطفال مطبوع مخصص" : "Custom Printed Children's T-Shirt",
-    subtitle: isRtl ? "طباعة مخصصة بأعلى جودة - مقاسات ٢ إلى ١٦ سنة" : "Custom Artwork Print - Kids Sizes 2 to 16",
+    title: isRtl ? "تيشيرت أطفال قطن مطبوع مخصص" : "Custom Printed Children's T-Shirt",
+    subtitle: isRtl ? "طباعة رسمتك أو فكرتك بأعلى ثبات ألوان - مقاسات ٢ لـ ١٦ سنة" : "Custom Artwork Print - Kids Sizes 2 to 16",
     category: isRtl ? "تيشيرتات مطبوعة" : "Printed T-Shirts",
     categoryId: "printed-t-shirts",
     price: 500,
@@ -103,44 +188,48 @@ export default async function ProductsPage() {
     badge: isRtl ? "جديد للأطفال" : "New for Kids",
     image: "/products/t-shirts/white-tshirt.svg",
     description: isRtl
-      ? "تيشيرت أطفال سادة مريح عالي الجودة متوفر بالألوان الأبيض والأسود والرمادي، ومخصص بطباعة تصميمك الخاص في منتصف الصدر. مقاسات دقيقة من سن سنتين حتى ١٦ سنة."
+      ? "تيشيرت أطفال قطن مصري ١٠٠٪ مريح وناعم، متاح بالأبيض والأسود والرمادي، بنطبع عليه تصميمك الخاص في منتصف الصدر ومقاساته مظبوطة من سنتين لـ ١٦ سنة."
       : "High-quality comfortable plain kids T-shirt in white, black, or gray, customized with your own artwork printed at center chest. Exact fit sizes 2 to 16.",
     features: isRtl
-      ? ["قطن مريح عالي الجودة", "طباعة مخصصة في منتصف الصدر", "مقاسات دقيقة من ٢ إلى ١٦ سنة"]
+      ? ["قطن مصري ناعم ومريح للأطفال", "طباعة ثابتة على منتصف الصدر بألوان زاهية", "مقاسات دقيقة ومريحة من سن ٢ لـ ١٦ سنة"]
       : ["Premium Soft Cotton", "Center Chest Custom Print", "Verified Sizes 2 to 16"],
-    ctaText: isRtl ? "تخصيص التيشيرت" : "Customize T-Shirt",
+    ctaText: isRtl ? "فصّلي التيشيرت دلوقتي" : "Customize T-Shirt",
   };
 
   // 5. Deterministic Interleaved / "عشوائي متناسق" Shuffle
-  // Interleaving storybook, t-shirt, stickers of different themes, and reward cards box set
+  // Interleaving storybooks, t-shirt, stickers of different themes, and reward cards box set
   const shuffledCatalog: CatalogProductItem[] = [
-    storybookProduct,                                 // 1. Storybook
+    storySchoolProduct,                               // 1. Story 1: First Year at School
+    customStoryProduct,                               // 1b. Bespoke: Design Your Story
     tshirtProduct,                                    // 2. Custom Printed Children's T-Shirt
-    stickerProducts[1],                               // 3. Super Cool Dino
-    rewardCardsProduct,                               // 4. Reward Cards Box Set
-    stickerProducts[0],                               // 5. K-Pop Demon Hunters
-    stickerProducts[3],                               // 6. Little Princess
-    stickerProducts[8],                               // 7. Gaming Zone
-    stickerProducts[2],                               // 8. Space Astronaut
-    stickerProducts[4],                               // 9. Super Heroes
-    stickerProducts[9],                               // 10. Magical Unicorn
-    stickerProducts[10],                              // 11. Soccer Champion
-    stickerProducts[5],                               // 12. Cute Animals
-    stickerProducts[6],                               // 13. Racing Cars
-    stickerProducts[7],                               // 14. Mermaid & Ocean
-    stickerProducts[13],                              // 15. Sparkle Princess
-    stickerProducts[11],                              // 16. Wild Safari
-    stickerProducts[12],                              // 17. Futuristic Robots
-    stickerProducts[14],                              // 18. Happy Pets
-    stickerProducts[15],                              // 19. Big Trucks
-    stickerProducts[16],                              // 20. Spring Butterflies
-    stickerProducts[17],                              // 21. Deep Space
-    stickerProducts[18],                              // 22. Sweet Candies
-    stickerProducts[19],                              // 23. Art & Creativity
-    stickerProducts[20],                              // 24. Music Beats
-    stickerProducts[21],                              // 25. Sky Airplanes
-    stickerProducts[22],                              // 26. Martial Arts Hero
-    stickerProducts[23],                              // 27. Cartoon Pals
+    storyMinecraftProduct,                            // 3. Story 4: Minecraft Adventure
+    stickerProducts[1],                               // 4. Super Cool Dino
+    rewardCardsProduct,                               // 5. Reward Cards Box Set
+    storyRedBallProduct,                              // 6. Story 2: Yahya & The Red Ball
+    stickerProducts[0],                               // 7. K-Pop Demon Hunters
+    stickerProducts[3],                               // 8. Little Princess
+    storyCatsProduct,                                 // 9. Story 3: Yahya & Meow Friends
+    stickerProducts[8],                               // 10. Gaming Zone
+    stickerProducts[2],                               // 11. Space Astronaut
+    stickerProducts[4],                               // 12. Super Heroes
+    stickerProducts[9],                               // 13. Magical Unicorn
+    stickerProducts[10],                              // 14. Soccer Champion
+    stickerProducts[5],                               // 15. Cute Animals
+    stickerProducts[6],                               // 16. Racing Cars
+    stickerProducts[7],                               // 17. Mermaid & Ocean
+    stickerProducts[13],                              // 18. Sparkle Princess
+    stickerProducts[11],                              // 19. Wild Safari
+    stickerProducts[12],                              // 20. Futuristic Robots
+    stickerProducts[14],                              // 21. Happy Pets
+    stickerProducts[15],                              // 22. Big Trucks
+    stickerProducts[16],                              // 23. Spring Butterflies
+    stickerProducts[17],                              // 24. Deep Space
+    stickerProducts[18],                              // 25. Sweet Candies
+    stickerProducts[19],                              // 26. Art & Creativity
+    stickerProducts[20],                              // 27. Music Beats
+    stickerProducts[21],                              // 28. Sky Airplanes
+    stickerProducts[22],                              // 29. Martial Arts Hero
+    stickerProducts[23],                              // 30. Cartoon Pals
   ];
 
   const translations = {

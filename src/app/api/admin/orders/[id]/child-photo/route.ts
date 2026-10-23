@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
-export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   if (!(await isAdmin())) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
   }
@@ -41,7 +41,9 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       return NextResponse.json({ error: "لا توجد صورة طفل مرفقة بهذا الطلب" }, { status: 404 });
     }
 
-    const filePath = resolveChildPhotoPath(storageKey);
+    const url = new URL(request.url);
+    const photoIndex = parseInt(url.searchParams.get("index") || "0", 10);
+    const filePath = resolveChildPhotoPath(storageKey, isNaN(photoIndex) ? 0 : photoIndex);
     if (!filePath) {
       return NextResponse.json({ error: "مسار الصورة غير صالح" }, { status: 400 });
     }

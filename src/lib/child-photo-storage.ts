@@ -226,10 +226,14 @@ export async function saveChildPhoto(buffer: Buffer, format: "jpg" | "png" | "we
 
 /**
  * Resolves a private storage key to its secure absolute filesystem path.
+ * Supports single keys or comma-separated keys (defaults to the first photo).
  */
-export function resolveChildPhotoPath(storageKey: string): string | null {
-  if (!storageKey.startsWith("private:story_child_")) return null;
-  const filename = storageKey.replace("private:", "");
+export function resolveChildPhotoPath(storageKey: string, photoIndex: number = 0): string | null {
+  if (!storageKey) return null;
+  const keys = storageKey.split(",").map((k) => k.trim()).filter(Boolean);
+  const targetKey = keys[photoIndex] ?? keys[0];
+  if (!targetKey || !targetKey.startsWith("private:story_child_")) return null;
+  const filename = targetKey.replace("private:", "");
   // Sanitize filename against directory traversal
   const baseName = path.basename(filename);
   if (!baseName || baseName !== filename) return null;

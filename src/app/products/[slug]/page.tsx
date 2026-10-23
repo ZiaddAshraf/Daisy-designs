@@ -26,6 +26,17 @@ const PRODUCT_SLUG_ALIASES: Record<string, string> = {
     "customized-stories": "first-year-at-school",
     "story": "first-year-at-school",
     "first-year-school": "first-year-at-school",
+    "story-first-year-at-school": "first-year-at-school",
+    "story-01-first-year-at-school": "first-year-at-school",
+    "yahya-red-ball": "first-year-at-school",
+    "story-yahya-red-ball": "first-year-at-school",
+    "story-02-red-ball": "first-year-at-school",
+    "cats-friends": "first-year-at-school",
+    "story-cats-friends": "first-year-at-school",
+    "story-03-cats-friends": "first-year-at-school",
+    "minecraft-adventure": "first-year-at-school",
+    "story-minecraft-adventure": "first-year-at-school",
+    "story-04-minecraft": "first-year-at-school",
     "printed-t-shirts": "custom-printed-tshirt",
     "t-shirts": "custom-printed-tshirt",
     "t-shirt": "custom-printed-tshirt",
@@ -162,9 +173,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return { title: getTranslation(locale, "productNotFound"), description: getTranslation(locale, "productNotFoundHelp") };
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ slug: string }>;
+    searchParams?: Promise<{ story?: string; mode?: string }>;
+}) {
     const locale = await getRequestLocale();
-    const { slug } = await params;
+    const [{ slug }, search] = await Promise.all([
+        params,
+        searchParams ? searchParams : Promise.resolve<{ story?: string; mode?: string }>({}),
+    ]);
     if (slug.startsWith("sticker-")) {
         const match = slug.match(/^sticker-(\d+)/);
         const designId = match ? match[1] : "0";
@@ -225,6 +245,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
     if (resolvedSlug === "first-year-at-school") {
         const t = (key: TranslationKey) => getTranslation(locale, key);
+        let initialStoryId: string | undefined = search?.story;
+        if (!initialStoryId) {
+            if (search?.mode === "custom" || slug.includes("custom") || slug.includes("design")) initialStoryId = "custom-story";
+            else if (slug.includes("red-ball")) initialStoryId = "yahya-red-ball";
+            else if (slug.includes("cats")) initialStoryId = "cats-friends";
+            else if (slug.includes("minecraft")) initialStoryId = "minecraft-adventure";
+            else if (slug.includes("first-year") || slug.includes("school")) initialStoryId = "first-year-at-school";
+        }
         return <main className="catalog-page">
             <nav className="catalog-breadcrumb" aria-label={t("breadcrumb")}>
                 <Link href="/">{t("home")}</Link>
@@ -235,7 +263,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <span>/</span>
                 <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
             </nav>
-            <StoryBookPreview locale={locale} inStock={product.stock > 0} />
+            <StoryBookPreview locale={locale} inStock={product.stock > 0} initialStoryId={initialStoryId} />
         </main>;
     }
 

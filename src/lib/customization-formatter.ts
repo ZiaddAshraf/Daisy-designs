@@ -163,10 +163,18 @@ export function formatCustomizationValue(
     value.startsWith("/uploads/") ||
     value.startsWith("http")
   ) {
+    const photoCount = value.includes(",") ? value.split(",").filter(Boolean).length : 1;
     return {
-      displayValue: locale === "ar" ? "صورة مرفقة" : "Photo Attached",
+      displayValue:
+        photoCount > 1
+          ? locale === "ar"
+            ? `${photoCount} صور مرفقة`
+            : `${photoCount} Photos Attached`
+          : locale === "ar"
+          ? "صورة مرفقة"
+          : "Photo Attached",
       isPhoto: true,
-      photoUrl: value,
+      photoUrl: value.split(",")[0].trim(),
     };
   }
 
