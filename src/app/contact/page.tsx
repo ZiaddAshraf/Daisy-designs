@@ -6,6 +6,24 @@ import { directionForLocale } from "@/lib/locale";
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { DaisyFlower } from "@/components/decorative-marks";
 
+function InstagramIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+function FacebookIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
+
 export default function ContactPage() {
   const locale = useLocale();
   const t = useTranslation();
@@ -249,6 +267,27 @@ export default function ContactPage() {
                   </span>
                   <span>{isRtl ? "صُنع وشُحن بكل حب في مصر 🇪🇬" : "Crafted & shipped with love in Egypt 🇪🇬"}</span>
                 </div>
+              </div>
+
+              <div className="pt-2 border-t border-[var(--border)] flex flex-wrap items-center gap-3">
+                <a
+                  href="https://www.instagram.com/daisydesign23"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--surface-soft)] transition-colors"
+                >
+                  <InstagramIcon size={14} className="text-pink-600" />
+                  <span>@daisydesign23</span>
+                </a>
+                <a
+                  href="https://www.facebook.com/share/1PwXqKfKAq/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--surface-soft)] transition-colors"
+                >
+                  <FacebookIcon size={14} className="text-blue-600" />
+                  <span>{isRtl ? "صفحتنا على فيسبوك" : "Facebook Page"}</span>
+                </a>
               </div>
             </div>
           </div>

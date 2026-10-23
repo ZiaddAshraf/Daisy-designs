@@ -2,6 +2,7 @@ import Image from "@/components/site-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, BookOpen } from "lucide-react";
 import { HomeProductCarousel } from "@/components/home-product-carousel";
+import { HomeProductMarquee } from "@/components/home-product-marquee";
 import { StaggerCategoryGrid } from "@/components/home-motion";
 import { CategoryCard } from "@/components/category-card";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
@@ -13,7 +14,6 @@ export const dynamic = "force-dynamic";
 
 type HomeProductRecord = Awaited<ReturnType<typeof getPublishedProducts>>[number] & {
   featured?: boolean;
-  bestSeller?: boolean;
 };
 
 export default async function Home() {
@@ -33,17 +33,14 @@ export default async function Home() {
   }
 
   const featuredRecords = records.filter((product) => product.featured);
-  const popularRecords = records.filter((product) => product.bestSeller);
   const featured = (featuredRecords.length ? featuredRecords : records).slice(0, 4).map((product) => toStorefrontProduct(product, locale));
-  const popular = (popularRecords.length ? popularRecords : records.filter((product) => !featuredRecords.includes(product)))
-    .slice(0, 4)
-    .map((product) => toStorefrontProduct(product, locale));
-  const socialImages = [
-    { src: "/products/customized-stories/first-year-at-school/cover.jpeg", alt: isRtl ? "قصة مخصصة لطفل" : "A personalized storybook" },
-    { src: "/products/reward-cards/reward-cards-box-set.jpeg", alt: isRtl ? "علبة كروت تشجيع" : "A box of affirmation cards" },
-    { src: "/products/stickers/sticker-03-kuromi-sanrio.jpeg", alt: isRtl ? "استيكرات أطفال" : "Children’s stickers" },
-    { src: "/products/customized-stories/story-02-red-ball.jpeg", alt: isRtl ? "صفحات من قصة أطفال" : "Pages from a children’s story" },
-  ];
+  // No order-count analytics is available here, so use the existing featured
+  // selection and avoid presenting it as verified sales data.
+  const popular = featured;
+  const categoryOrder = ["customized-stories", "stickers", "reward-cards"];
+  const homepageCategories = categoryOrder
+    .map((slug) => storeCategories.find((category) => category.slug === slug))
+    .filter((category): category is (typeof storeCategories)[number] => Boolean(category));
 
   return (
     <main className="daisy-home daisy-home--storefront">
@@ -51,10 +48,10 @@ export default async function Home() {
         <h1>{isRtl ? "تفاصيل صغيرة، ذكريات كبيرة" : "Little details, lasting memories"}</h1>
         <div className="daisy-hero__banner-frame">
           <Image
-            src="/hero.jpeg"
-            alt={isRtl ? "منتجات دايزي ديزاينز للأطفال" : "Daisy Designs products for children"}
+            src="/products/reward-cards/reward-cards-box-set.jpeg"
+            alt={isRtl ? "مجموعة كروت التشجيع من دايزي ديزاينز" : "Daisy Designs reward card collection"}
             width={1600}
-            height={533}
+            height={900}
             priority
             quality={95}
             sizes="100vw"
@@ -63,7 +60,6 @@ export default async function Home() {
           <div className="daisy-home-hero__shade" aria-hidden="true" />
           <div className="daisy-home-hero__copy">
             <p className="eyebrow">DAISY DESIGNS</p>
-            <h2>{isRtl ? "حاجات معمولة مخصوص ليهم" : "Made especially for them"}</h2>
             <Link href="/products" className="daisy-button daisy-button--light">
               {isRtl ? "تسوقي الآن" : "Shop now"} <Arrow size={16} />
             </Link>
@@ -90,7 +86,7 @@ export default async function Home() {
           <span aria-hidden="true" />
         </header>
         <StaggerCategoryGrid className="store-category-grid daisy-home-category-grid" data-scroll-reveal-stagger>
-          {storeCategories.map((category, index) => (
+          {homepageCategories.map((category, index) => (
             <CategoryCard key={category.id} category={category} locale={locale} index={index} showDescription={false} headingTag="h3" />
           ))}
         </StaggerCategoryGrid>
@@ -98,7 +94,7 @@ export default async function Home() {
 
       <section className="daisy-featured daisy-home-products daisy-home-popular" aria-labelledby="popular-title">
         <header className="daisy-home-heading" data-scroll-reveal suppressHydrationWarning>
-          <h2 id="popular-title">{isRtl ? "الأكثر مبيعًا" : "Best sellers"}</h2>
+          <h2 id="popular-title">{isRtl ? "اختيارات دايزي" : "Daisy picks"}</h2>
           <span aria-hidden="true" />
         </header>
         {popular.length ? <HomeProductCarousel products={popular} /> : (
@@ -121,18 +117,17 @@ export default async function Home() {
         <header className="daisy-home-heading" data-scroll-reveal suppressHydrationWarning>
           <h2 id="home-social-title">{isRtl ? "من عالم دايزي" : "From the Daisy world"}</h2>
           <span aria-hidden="true" />
-          <p>{isRtl ? "لحظات حقيقية بنعيشها" : "Little moments, made real"}</p>
+          <p>{isRtl ? "اكتشفي لحظات دايزي وشاركي إبداعك" : "Explore Daisy moments and share your creations"}</p>
         </header>
-        <div className="daisy-home-social__grid">
-          {socialImages.map((image) => (
-            <Link href="/products" key={image.src} aria-label={image.alt}>
-              <Image src={image.src} alt={image.alt} fill sizes="(max-width: 650px) 45vw, 18vw" />
-            </Link>
-          ))}
+        <HomeProductMarquee isRtl={isRtl} />
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link href="https://www.instagram.com/daisydesign23" target="_blank" rel="noreferrer" className="daisy-home-social__follow">
+            {isRtl ? "تابعينا على إنستجرام" : "Follow us on Instagram"} <UpArrow size={15} />
+          </Link>
+          <Link href="https://www.facebook.com/share/1PwXqKfKAq/" target="_blank" rel="noreferrer" className="daisy-home-social__follow">
+            {isRtl ? "تابعينا على فيسبوك" : "Follow us on Facebook"} <UpArrow size={15} />
+          </Link>
         </div>
-        <Link href="https://instagram.com" target="_blank" rel="noreferrer" className="daisy-home-social__follow">
-          {isRtl ? "تابعينا على إنستجرام" : "Follow us on Instagram"} <UpArrow size={15} />
-        </Link>
       </section>
     </main>
   );

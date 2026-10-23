@@ -3,7 +3,7 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, Heart, Menu, Minus, Plus, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, Heart, Menu, Minus, Plus, Search, ShoppingBag, ShoppingCart, UserRound, X } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import type { Product } from "@/lib/products";
@@ -213,9 +213,10 @@ function Header({ count, wishlistCount, onCart, locale }: { count: number; wishl
     setSearchOpen(false);
     setQuery("");
   };
+  if (pathname.startsWith("/admin")) return null;
   return <>
     <div className="daisy-announcement">{t("announcement")}</div>
-    <header className="daisy-header">
+    <header className={`daisy-header daisy-header--storefront ${pathname === "/" ? "daisy-header--home" : ""}`}>
       <div className="daisy-header__inner">
         <button ref={menuButtonRef} className="daisy-icon-button daisy-menu-toggle" aria-label={t("menuOpen")} aria-expanded={mobileOpen} aria-controls="daisy-mobile-menu" onClick={() => setMobileOpen(true)}><Menu size={19} strokeWidth={1.5} /></button>
           <Link href="/" className="daisy-wordmark" aria-label={t("brandHome")}><BrandLogo variant="lockup" priority /></Link>
@@ -233,7 +234,7 @@ function Header({ count, wishlistCount, onCart, locale }: { count: number; wishl
       </div>
       {searchOpen && <div id="daisy-search-panel" className="daisy-search-panel"><form onSubmit={submitSearch} role="search"><label htmlFor="daisy-search">{t("searchPrompt")}</label><div><input id="daisy-search" autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder={t("searchPlaceholder")} /><button type="submit" aria-label={t("submitSearch")}><SearchArrow size={18} /></button></div></form><button className="daisy-search-close" onClick={() => setSearchOpen(false)} aria-label={t("searchClose")}><X size={18} /></button></div>}
     </header>
-    {mobileOpen && <div ref={mobileMenuRef} id="daisy-mobile-menu" className="daisy-mobile-menu" role="dialog" aria-modal="true" aria-label={t("siteMenu")}><div className="daisy-mobile-menu__top"><Link href="/" className="daisy-wordmark" aria-label={t("brandHome")} onClick={() => setMobileOpen(false)}><BrandLogo variant="lockup" /></Link><button className="daisy-icon-button" onClick={() => setMobileOpen(false)} aria-label={t("menuClose")}><X size={20} /></button></div><nav aria-label={t("mainNavigation")}><Link href="/" aria-current={pathname === "/" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("home")}</Link><Link href="/products" aria-current={pathname.startsWith("/products") ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("products")}</Link><Link href="/categories" aria-current={pathname.startsWith("/categories") ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("categories")}</Link><Link href="/about" aria-current={pathname === "/about" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("ourStory")}</Link><Link href="/faq" aria-current={pathname === "/faq" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("help")}</Link></nav><div className="daisy-mobile-menu__utilities"><Link href="/account">{t("myAccount")}</Link><Link href="/wishlist">{t("wishlist")}{wishlistCount > 0 && <span className="daisy-mobile-wishlist-count" aria-label={`${wishlistCount}`}> ({wishlistCount})</span>}</Link><button onClick={() => { setMobileOpen(false); setSearchOpen(true); }}>{t("searchProduct")}</button><div className="daisy-mobile-menu__preferences"><ThemeToggle locale={locale} /><LocaleSwitcher locale={locale} compact /></div></div></div>}
+    {mobileOpen && <div className="daisy-mobile-menu-layer" onClick={() => setMobileOpen(false)}><div ref={mobileMenuRef} id="daisy-mobile-menu" className="daisy-mobile-menu" role="dialog" aria-modal="true" aria-label={t("siteMenu")} onClick={event => event.stopPropagation()}><div className="daisy-mobile-menu__top"><Link href="/" className="daisy-wordmark" aria-label={t("brandHome")} onClick={() => setMobileOpen(false)}><BrandLogo variant="lockup" /></Link><button className="daisy-icon-button" onClick={() => setMobileOpen(false)} aria-label={t("menuClose")}><X size={20} /></button></div><nav aria-label={t("mainNavigation")}><Link href="/" aria-current={pathname === "/" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("home")}</Link><Link href="/products" aria-current={pathname.startsWith("/products") ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("products")}</Link><Link href="/categories" aria-current={pathname.startsWith("/categories") ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("categories")}</Link><Link href="/about" aria-current={pathname === "/about" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("ourStory")}</Link><Link href="/faq" aria-current={pathname === "/faq" ? "page" : undefined} onClick={() => setMobileOpen(false)}>{t("help")}</Link></nav><div className="daisy-mobile-menu__utilities"><Link href="/account">{t("myAccount")}</Link><Link href="/wishlist">{t("wishlist")}{wishlistCount > 0 && <span className="daisy-mobile-wishlist-count" aria-label={`${wishlistCount}`}> ({wishlistCount})</span>}</Link><button onClick={() => { setMobileOpen(false); setSearchOpen(true); }}>{t("searchProduct")}</button><div className="daisy-mobile-menu__preferences"><ThemeToggle locale={locale} /><LocaleSwitcher locale={locale} compact /></div></div></div></div>}
   </>;
 }
 
@@ -242,6 +243,8 @@ export function ProductCard({ product, editorial = false }: { product: Product; 
   const t = useTranslation();
   const locale = useLocale();
   const image = getProductImageUrl(product.image);
+  const hasDiscount = Boolean(product.compareAtPrice && product.compareAtPrice > product.price);
+  const discountPercent = hasDiscount ? Math.max(1, Math.round((1 - product.price / product.compareAtPrice!) * 100)) : 0;
 
   let productHref = `/products/${product.slug}`;
   if (product.slug.startsWith("sticker-")) {
@@ -253,11 +256,15 @@ export function ProductCard({ product, editorial = false }: { product: Product; 
     <div className="daisy-product__media">
       <Link href={productHref} aria-label={formatMessage(t("viewProduct"), { name: product.name })} className="daisy-product__image-link"><Image src={image} alt={product.name} fill sizes="(max-width: 760px) 50vw, 25vw" className={`daisy-image daisy-product__image ${image === PRODUCT_IMAGE_PLACEHOLDER ? "daisy-product__image--placeholder" : ""}`} /></Link>
       {!demoMode && <WishlistButton product={product} />}
-      {product.badge && <span className="daisy-product__badge">{product.badge}</span>}
+      {hasDiscount && editorial && <span className="daisy-product__badge">{locale === "ar" ? `خصم ${discountPercent}٪` : `${discountPercent}% off`}</span>}
+      {!hasDiscount && product.badge && <span className="daisy-product__badge">{product.badge}</span>}
       {editorial && <Link href={productHref} className="daisy-product__quick">{t("customizeNow")} {locale === "ar" ? <ArrowUpLeft size={15} /> : <ArrowUpRight size={15} />}</Link>}
+      {editorial && (!product.customizable && !product.hasVariants && !demoMode
+        ? <button type="button" className="daisy-product__quick-add" onClick={() => add(product)} aria-label={`${t("addToCart")}: ${product.name}`}><ShoppingCart size={17} strokeWidth={1.5} /></button>
+        : <Link href={productHref} className="daisy-product__quick-add" aria-label={`${t("chooseDetails")}: ${product.name}`}><ShoppingCart size={17} strokeWidth={1.5} /></Link>)}
     </div>
-    <div className="daisy-product__meta"><div><p className="daisy-product__category">{product.category}</p><Link href={productHref} className="daisy-product__name">{product.name}</Link>{editorial && product.customizable && <span className="daisy-product__personalized">{t("customizable")}</span>}</div><span className="daisy-product__price">{formatPrice(product.price, locale)}</span></div>
-    {!editorial && (demoMode ? <span className="daisy-product__add daisy-product__demo-label">{t("previewOnly")}</span> : product.customizable || product.hasVariants ? <Link href={productHref} className="daisy-product__add">{t("chooseDetails")} {locale === "ar" ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}</Link> : <button onClick={() => add(product)} className="daisy-product__add">{t("addToCart")} <Plus size={14} /></button>)}
+    <div className="daisy-product__meta"><div><p className="daisy-product__category">{product.category}</p><Link href={productHref} className="daisy-product__name">{product.name}</Link>{editorial && product.customizable && <span className="daisy-product__personalized">{t("customizable")}</span>}</div><span className="daisy-product__price">{formatPrice(product.price, locale)}{hasDiscount && editorial && <del className="daisy-product__compare-price">{formatPrice(product.compareAtPrice!, locale)}</del>}</span></div>
+      {!editorial && (demoMode ? <span className="daisy-product__add daisy-product__demo-label">{t("previewOnly")}</span> : product.customizable || product.hasVariants ? <Link href={productHref} className="daisy-product__add">{t("chooseDetails")} {locale === "ar" ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}</Link> : <button onClick={() => add(product)} className="daisy-product__add">{t("addToCart")} <Plus size={14} /></button>)}
   </article>;
 }
 
@@ -376,5 +383,5 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
 
 function Footer({ locale }: { locale: Locale }) {
   const t = (key: TranslationKey) => getTranslation(locale, key);
-  return <footer className="daisy-footer" data-scroll-reveal suppressHydrationWarning><div className="daisy-footer__main"><div className="daisy-footer__brand"><Link href="/" className="daisy-wordmark daisy-wordmark--footer" aria-label={t("brandHome")}><BrandLogo variant="full" /></Link><p>{t("footerIntro")}<br />{t("footerIntroSecond")}</p></div><div className="daisy-footer__links"><div><h2>{t("discover")}</h2><Link href="/categories">{t("categories")}</Link><Link href="/products">{t("products")}</Link><Link href="/about">{t("ourStory")}</Link><Link href="/faq">{t("help")}</Link></div><div><h2>{t("hereForYou")}</h2><Link href="/faq">{t("frequentlyAskedQuestions")}</Link><Link href="/shipping">{t("shippingDelivery")}</Link><Link href="/returns">{t("returns")}</Link><Link href="/contact">{t("contactUs")}</Link></div><div><h2>{t("followUs")}</h2><a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a><a href="https://tiktok.com" target="_blank" rel="noreferrer">TikTok</a><a href="https://facebook.com" target="_blank" rel="noreferrer">Facebook</a></div></div></div><div className="daisy-footer__bottom"><span>{t("copyright")}</span><span>{t("madeWithLove")}</span><Link href="/privacy">{t("privacyTerms")}</Link></div></footer>;
+  return <footer className="daisy-footer" data-scroll-reveal suppressHydrationWarning><div className="daisy-footer__main"><div className="daisy-footer__brand"><Link href="/" className="daisy-wordmark daisy-wordmark--footer" aria-label={t("brandHome")}><BrandLogo variant="full" /></Link><p>{t("footerIntro")}<br />{t("footerIntroSecond")}</p></div><div className="daisy-footer__links"><div><h2>{t("discover")}</h2><Link href="/categories">{t("categories")}</Link><Link href="/products">{t("products")}</Link><Link href="/about">{t("ourStory")}</Link><Link href="/faq">{t("help")}</Link></div><div><h2>{t("hereForYou")}</h2><Link href="/faq">{t("frequentlyAskedQuestions")}</Link><Link href="/shipping">{t("shippingDelivery")}</Link><Link href="/returns">{t("returns")}</Link><Link href="/contact">{t("contactUs")}</Link></div><div><h2>{t("followUs")}</h2><a href="https://www.instagram.com/daisydesign23" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/share/1PwXqKfKAq/" target="_blank" rel="noreferrer">Facebook</a><a href="https://tiktok.com" target="_blank" rel="noreferrer">TikTok</a></div></div></div><div className="daisy-footer__bottom"><span>{t("copyright")}</span><span>{t("madeWithLove")}</span><Link href="/privacy">{t("privacyTerms")}</Link></div></footer>;
 }
