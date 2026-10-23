@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 const projectRoot = process.cwd();
-const envRoot = path.basename(projectRoot) === "store" ? projectRoot : path.join(projectRoot, "store");
+const envRoot = path.basename(projectRoot) === "store" || path.basename(projectRoot).startsWith("store-") ? projectRoot : path.join(projectRoot, "store");
 loadEnvConfig(envRoot);
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
