@@ -41,6 +41,13 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       return NextResponse.json({ error: "لا توجد صورة طفل مرفقة بهذا الطلب" }, { status: 404 });
     }
 
+    if (storageKey.includes("whatsapp_pending")) {
+      return NextResponse.json(
+        { message: "سيتم استلام صور الطفل عبر الواتساب من العميل / Child photos will be provided via WhatsApp", pendingWhatsApp: true },
+        { status: 200 }
+      );
+    }
+
     const url = new URL(request.url);
     const photoIndex = parseInt(url.searchParams.get("index") || "0", 10);
     const filePath = resolveChildPhotoPath(storageKey, isNaN(photoIndex) ? 0 : photoIndex);
