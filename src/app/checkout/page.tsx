@@ -58,7 +58,7 @@ type OrderConfirmation = {
     items: { productName: string; quantity: number; unitPrice: number; customization?: Record<string, string> }[];
 };
 
-const FREE_SHIPPING_THRESHOLD = 2500;
+const FREE_SHIPPING_THRESHOLD = 700;
 const STANDARD_SHIPPING_FEE = 60;
 
 export default function CheckoutPage() {

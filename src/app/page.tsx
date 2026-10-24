@@ -34,9 +34,10 @@ export default async function Home() {
 
   const featuredRecords = records.filter((product) => product.featured);
   const featured = (featuredRecords.length ? featuredRecords : records).slice(0, 4).map((product) => toStorefrontProduct(product, locale));
-  // No order-count analytics is available here, so use the existing featured
-  // selection and avoid presenting it as verified sales data.
-  const popular = featured;
+  // Daisy picks: show non-featured or remaining catalog items to avoid repeating the exact same products twice
+  const remainingRecords = records.filter((p) => !featuredRecords.some((f) => f.id === p.id));
+  const popularRecords = remainingRecords.length > 0 ? remainingRecords : [...records].reverse();
+  const popular = popularRecords.slice(0, 4).map((product) => toStorefrontProduct(product, locale));
   const categoryOrder = ["customized-stories", "stickers", "reward-cards"];
   const homepageCategories = categoryOrder
     .map((slug) => storeCategories.find((category) => category.slug === slug))
@@ -59,10 +60,20 @@ export default async function Home() {
           />
           <div className="daisy-home-hero__shade" aria-hidden="true" />
           <div className="daisy-home-hero__copy">
-            <p className="eyebrow">DAISY DESIGNS</p>
-            <Link href="/products" className="daisy-button daisy-button--light">
-              {isRtl ? "تسوقي الآن" : "Shop now"} <Arrow size={16} />
-            </Link>
+            <p className="eyebrow !block !text-amber-300 font-extrabold tracking-widest text-[11px] sm:text-xs">DAISY DESIGNS</p>
+            <p className="text-xs sm:text-sm text-zinc-100 font-bold max-w-md drop-shadow">
+              {isRtl
+                ? "قصص مطبوعة باسم وصور طفلك، استيكرات مدرسية ضد الماء وتيشيرتات قطن فاخرة 🚚"
+                : "Personalized printed stories, waterproof stickers, and custom t-shirts."}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+              <Link href="/products" className="daisy-button daisy-button--light shadow-md">
+                {isRtl ? "تسوقي الآن" : "Shop now"} <Arrow size={16} />
+              </Link>
+              <Link href="/categories/customized-stories" className="daisy-button bg-amber-500 hover:bg-amber-600 text-white font-bold border-none shadow-md">
+                {isRtl ? "صممي قصة طفلك ✨" : "Custom Storybooks ✨"}
+              </Link>
+            </div>
           </div>
         </div>
       </section>

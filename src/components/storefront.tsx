@@ -276,7 +276,7 @@ export function WishlistButton({ product }: { product: Product }) {
   return <button type="button" onClick={event => { event.preventDefault(); event.stopPropagation(); toggle({ ...product, image: getProductImageUrl(product.image) }); }} aria-label={isFav ? t("removeFromWishlist") : t("addToWishlist")} className="daisy-wishlist-button cursor-pointer"><Heart size={17} strokeWidth={1.6} className={isFav ? "fill-rose-500 text-rose-500" : "text-[var(--muted-foreground)] hover:text-rose-500"} /></button>;
 }
 
-const FREE_SHIPPING_THRESHOLD = 2500;
+const FREE_SHIPPING_THRESHOLD = 700;
 
 function CartDrawer({ onClose }: { onClose: () => void }) {
   const { items, update, remove, demoMode } = useCart();

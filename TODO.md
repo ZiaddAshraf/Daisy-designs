@@ -211,6 +211,14 @@
   - [x] Task 30.5: Post-Purchase WhatsApp Reassurance & 1-tap confirmation button on `/checkout/success`
   - [x] Task 30.6: Ralph Loop Verification (0 lint errors, 0 typecheck errors, 90/90 tests passing, 41/41 routes build clean, browser visual confirmation)
 
+- [/] Phase 31: Comprehensive Mobile UX Polish & Strix Audit Resolution
+  - [ ] Task 31.1: Lower Free Shipping Threshold from 2,500 EGP to 700 EGP across store announcements, cart drawer, checkout, and shipping policy
+  - [ ] Task 31.2: Add "Send Photos via WhatsApp Later" alternative & Child Gender (Boy / Girl) selector in `story-book-preview.tsx`
+  - [ ] Task 31.3: Fix Homepage hero contrast with dark backdrop, add value proposition subtitle, and deduplicate featured vs popular products in `src/app/page.tsx`
+  - [ ] Task 31.4: Refine customization labels in `customization-formatter.ts` (replace "وصف فكرة التصميم" with "بيانات وتفاصيل القصة")
+  - [ ] Task 31.5: Polish catalog filter pill container with horizontal scroll indicators
+  - [ ] Task 31.6: Execute full verification loop (lint, tsc, tests, build) and generate Strix Audit Resolution Report
+
 
 
 

@@ -8981,22 +8981,22 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
 .daisy-home-hero__shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(25, 19, 14, .12), rgba(25, 19, 14, .48));
+  background: linear-gradient(180deg, rgba(15, 12, 10, .45) 0%, rgba(15, 12, 10, .78) 100%);
 }
 
 .daisy-home-hero h1 {
   position: absolute;
   z-index: 2;
   left: 50%;
-  top: 50%;
-  width: min(88%, 560px);
+  top: 42%;
+  width: min(90%, 620px);
   margin: 0;
-  transform: translate(-50%, -70%);
+  transform: translate(-50%, -60%);
   color: white;
   text-align: center;
-  font-size: clamp(27px, 3vw, 42px);
-  font-weight: 600;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, .28);
+  font-size: clamp(26px, 3.2vw, 42px);
+  font-weight: 700;
+  text-shadow: 0 3px 20px rgba(0, 0, 0, .6);
 }
 
 .daisy-home-hero__copy {
@@ -9519,13 +9519,13 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
   }
 
   .daisy-home-hero h1 {
-    top: 39%;
+    top: 32%;
     transform: translate(-50%, -50%);
-    font-size: clamp(24px, 6vw, 34px);
+    font-size: clamp(20px, 5.2vw, 28px);
   }
 
   .daisy-home-hero__copy {
-    top: 53%;
+    top: 48%;
   }
 
   .daisy-home-products,

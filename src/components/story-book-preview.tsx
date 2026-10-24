@@ -156,11 +156,13 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
   // Cover zoom lightbox state
   const [isCoverZoomed, setIsCoverZoomed] = useState(false);
 
-  // Child Name
+  // Child Name & Gender
   const [childName, setChildName] = useState("");
+  const [childGender, setChildGender] = useState<"boy" | "girl">("boy");
 
-  // Multiple photos upload state (up to 5 photos)
+  // Multiple photos upload state (up to 5 photos) & WhatsApp alternative
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedStoryPhoto[]>([]);
+  const [sendPhotosViaWhatsApp, setSendPhotosViaWhatsApp] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -193,7 +195,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
   };
 
   const handleDirectBuy = () => {
-    if (uploadedPhotos.length === 0) {
+    if (uploadedPhotos.length === 0 && !sendPhotosViaWhatsApp) {
       scrollToPhotoUpload();
       return;
     }
@@ -329,15 +331,17 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
   // Add to Cart
   const handleAddToCart = () => {
     if (!inStock) return;
-    if (uploadedPhotos.length === 0) {
+    if (uploadedPhotos.length === 0 && !sendPhotosViaWhatsApp) {
       scrollToPhotoUpload();
       return;
     }
 
     const summaryParts: string[] = [];
     if (childName.trim()) {
-      summaryParts.push(`اسم بطل القصة: ${childName.trim()}`);
+      summaryParts.push(`${childGender === "boy" ? "اسم بطل القصة" : "اسم بطلة القصة"}: ${childName.trim()}`);
     }
+
+    summaryParts.push(`جنس البطل: ${childGender === "boy" ? "ولد (بطل)" : "بنت (بطلة)"}`);
 
     if (isCustomMode) {
       summaryParts.push(`نوع القصة: صمم قصتك (فكرة خاصة)`);
@@ -351,7 +355,11 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       summaryParts.push(`القصة المختارة: ${isAr ? activeStory.titleAr : activeStory.titleEn}`);
     }
 
-    summaryParts.push(`عدد الصور المرفقة: ${uploadedPhotos.length}`);
+    if (uploadedPhotos.length > 0) {
+      summaryParts.push(`عدد الصور المرفقة: ${uploadedPhotos.length}`);
+    } else if (sendPhotosViaWhatsApp) {
+      summaryParts.push("الصور: سيتم إرسالها عبر الواتساب لاحقاً");
+    }
 
     const customText = summaryParts.join(" | ");
 
@@ -371,7 +379,10 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       ? `${activeStory.titleEn} (${childName.trim()})`
       : activeStory.titleEn;
 
-    const aggregateStorageKey = uploadedPhotos.map((p) => p.storageKey).join(",");
+    const aggregateStorageKey =
+      uploadedPhotos.length > 0
+        ? uploadedPhotos.map((p) => p.storageKey).join(",")
+        : "private:story_child_whatsapp_pending.jpg";
 
     add(
       {
@@ -730,12 +741,52 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
               </div>
             )}
 
+            {/* Child's Gender Selector */}
+            <div className="sb-input-group mt-1">
+              <label className="sb-input-label text-zinc-900 dark:text-zinc-100">
+                <Sparkles size={14} className="text-amber-500" />
+                <span>{isAr ? "نوع بطل القصة:" : "Child's Gender:"}</span>
+              </label>
+              <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={isAr ? "نوع بطل القصة" : "Child's Gender"}>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={childGender === "boy"}
+                  onClick={() => setChildGender("boy")}
+                  className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border text-center transition-all cursor-pointer text-xs font-bold ${
+                    childGender === "boy"
+                      ? "bg-amber-500/15 border-amber-500 text-amber-950 dark:text-amber-200 ring-2 ring-amber-500/30 font-extrabold"
+                      : "bg-zinc-50 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700/80 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100"
+                  }`}
+                >
+                  <span className="text-base">👦</span>
+                  <span>{isAr ? "ولد (بطل القصة)" : "Boy (Hero)"}</span>
+                  {childGender === "boy" && <Check size={14} className="text-amber-600" />}
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={childGender === "girl"}
+                  onClick={() => setChildGender("girl")}
+                  className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border text-center transition-all cursor-pointer text-xs font-bold ${
+                    childGender === "girl"
+                      ? "bg-rose-500/15 border-rose-500 text-rose-950 dark:text-rose-200 ring-2 ring-rose-500/30 font-extrabold"
+                      : "bg-zinc-50 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700/80 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100"
+                  }`}
+                >
+                  <span className="text-base">👧</span>
+                  <span>{isAr ? "بنت (بطلة القصة)" : "Girl (Heroine)"}</span>
+                  {childGender === "girl" && <Check size={14} className="text-rose-600" />}
+                </button>
+              </div>
+            </div>
+
             {/* Child's Name Input */}
             <div className="sb-input-group mt-1">
               <label htmlFor="sb-child-name-input" className="sb-input-label text-zinc-900 dark:text-zinc-100">
                 <PenTool size={14} />
                 <span>
-                  {isAr ? "اسم بطل أو بطلة القصة" : "Child's Name"}
+                  {isAr ? (childGender === "boy" ? "اسم بطل القصة" : "اسم بطلة القصة") : "Child's Name"}
                   <span className="text-xs text-[var(--muted-foreground)] font-normal">
                     {" "}
                     ({isAr ? "يُطبع على الغلاف ومقدمة القصة" : "printed on cover & intro"})
@@ -748,7 +799,13 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                 maxLength={60}
                 value={childName}
                 onChange={(e) => setChildName(e.target.value)}
-                placeholder={isAr ? `مثال: ${activeStory.sampleHero}، فريدة، ليلى...` : `e.g. ${activeStory.sampleHero}, Layla...`}
+                placeholder={
+                  isAr
+                    ? childGender === "boy"
+                      ? `مثال: ${activeStory.sampleHero}، حمزة، آدم، يوسف...`
+                      : "مثال: فريدة، ليلى، نادين، كارما..."
+                    : `e.g. ${activeStory.sampleHero}, Layla...`
+                }
                 className="sb-text-input bg-zinc-50 dark:bg-zinc-800/90 text-zinc-900 dark:text-zinc-100 border-zinc-200 dark:border-zinc-700 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:border-amber-500"
               />
             </div>
@@ -901,6 +958,44 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                   <span>{uploadError}</span>
                 </div>
               )}
+
+              {/* WhatsApp Alternative Toggle */}
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setSendPhotosViaWhatsApp((prev) => !prev)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSendPhotosViaWhatsApp((prev) => !prev);
+                  }
+                }}
+                className={`mt-3 p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none ${
+                  sendPhotosViaWhatsApp
+                    ? "bg-emerald-500/10 border-emerald-500/80 text-emerald-950 dark:text-emerald-200 ring-2 ring-emerald-500/20"
+                    : "bg-white/80 dark:bg-zinc-800/60 border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-100/80 dark:hover:bg-zinc-700/50"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  id="send-whatsapp-later"
+                  checked={sendPhotosViaWhatsApp}
+                  onChange={(e) => setSendPhotosViaWhatsApp(e.target.checked)}
+                  onClick={(e) => e.stopPropagation()}
+                  className="mt-0.5 w-4 h-4 accent-emerald-600 rounded cursor-pointer shrink-0"
+                />
+                <div className="text-xs space-y-0.5">
+                  <span className="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
+                    <MessageCircle size={14} className="shrink-0" />
+                    <span>{isAr ? "مش معاكي صورة واضحة دلوقتي؟ هبعت صور طفلي على الواتساب بعد الطلب" : "Send child photos via WhatsApp after ordering"}</span>
+                  </span>
+                  <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-normal">
+                    {isAr
+                      ? "تقدري تكملي طلبك وتأكديه دلوقتي، وفريق Daisy Designs هيتواصل معاكي على الواتساب لاستلام الصور قبل الطباعة."
+                      : "Place your order now, and our team will contact you on WhatsApp to collect child photos before printing."}
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Quantity & Add to Cart Controls */}
@@ -938,10 +1033,10 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                   onClick={handleAddToCart}
                   disabled={!inStock || isUploadingPhoto}
                   title={
-                    uploadedPhotos.length === 0
+                    uploadedPhotos.length === 0 && !sendPhotosViaWhatsApp
                       ? isAr
-                        ? "يرجى رفع صورة الطفل أولاً لإتمام الطلب"
-                        : "Please upload your child's photo first"
+                        ? "يرجى رفع صورة الطفل أو اختيار إرسالها لاحقاً عبر الواتساب"
+                        : "Please upload child photo or choose WhatsApp option"
                       : undefined
                   }
                 >
@@ -955,7 +1050,11 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                       <ShoppingBag size={18} />
                       <span>
                         {uploadedPhotos.length === 0
-                          ? isAr
+                          ? sendPhotosViaWhatsApp
+                            ? isAr
+                              ? "أضيفي للسلة (الصور بالواتساب) 💬"
+                              : "Add to Cart (WhatsApp Photos) 💬"
+                            : isAr
                             ? "ارفعي صورة الطفل للإضافة"
                             : "Upload photo to add"
                           : isAr

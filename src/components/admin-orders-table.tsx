@@ -370,9 +370,13 @@ export function AdminOrdersTable({ orders }: AdminOrdersTableProps) {
                           const hasTshirtArtwork =
                             cust?.custom_design_file &&
                             cust.custom_design_file.startsWith("private:tshirt_art_");
+                          const isChildPhotoPending =
+                            cust?.child_photo === "private:story_child_whatsapp_pending.jpg";
                           const hasChildPhoto =
+                            !isChildPhotoPending &&
                             cust?.child_photo &&
-                            cust.child_photo.startsWith("private:child_photo_");
+                            (cust.child_photo.startsWith("private:child_photo_") ||
+                              cust.child_photo.startsWith("private:story_child_"));
 
                           return (
                             <div
@@ -501,6 +505,13 @@ export function AdminOrdersTable({ orders }: AdminOrdersTableProps) {
                                         <span>معاينة / تحميل تصميم التيشيرت المرفوع</span>
                                         <ExternalLink size={12} className="opacity-80" />
                                       </a>
+                                    )}
+
+                                    {isChildPhotoPending && (
+                                      <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 px-3 py-1.5 text-xs font-bold">
+                                        <MessageCircle size={14} />
+                                        <span>سيتم استلام صور الطفل عبر الواتساب</span>
+                                      </span>
                                     )}
 
                                     {hasChildPhoto && (

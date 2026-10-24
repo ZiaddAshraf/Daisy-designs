@@ -94,7 +94,10 @@ export type FormattedCustomization = {
   photoUrl?: string;
 };
 
-export function getCustomizationFieldLabel(key: string, locale: Locale): string {
+export function getCustomizationFieldLabel(key: string, locale: Locale, isStory = false): string {
+  if (key === "custom_design_text" && isStory) {
+    return locale === "ar" ? "بيانات وتفاصيل القصة" : "Story Details & Plot";
+  }
   if (locale === "ar") {
     return FIELD_LABELS_AR[key] ?? key.replace(/_/g, " ");
   }
@@ -108,6 +111,17 @@ export function formatCustomizationValue(
 ): { displayValue: string; isPhoto: boolean; photoUrl?: string } {
   if (!value) {
     return { displayValue: "", isPhoto: false };
+  }
+
+  if (value === "private:story_child_whatsapp_pending.jpg") {
+    return {
+      displayValue:
+        locale === "ar"
+          ? "سيتم إرسال صور الطفل عبر الواتساب لاحقاً 💬"
+          : "Child photos will be sent via WhatsApp 💬",
+      isPhoto: false,
+      photoUrl: undefined,
+    };
   }
 
   if (value.startsWith("private:story_child_")) {
@@ -214,6 +228,13 @@ export function formatCustomizationEntries(
   const entries: FormattedCustomization[] = [];
   const keys = Object.keys(customization);
 
+  const isStory = Boolean(
+    customization.child_photo?.startsWith("private:story_child_") ||
+    customization.custom_design_text?.includes("القصة") ||
+    customization.custom_design_text?.includes("بطل") ||
+    customization.custom_design_text?.includes("بطلة")
+  );
+
   // Add sorted recognized keys first
   for (const orderedKey of keyOrder) {
     if (orderedKey in customization && customization[orderedKey]) {
@@ -225,7 +246,7 @@ export function formatCustomizationEntries(
       );
       entries.push({
         key: orderedKey,
-        label: getCustomizationFieldLabel(orderedKey, locale),
+        label: getCustomizationFieldLabel(orderedKey, locale, isStory),
         displayValue,
         isPhoto,
         photoUrl,
@@ -240,7 +261,7 @@ export function formatCustomizationEntries(
       const { displayValue, isPhoto, photoUrl } = formatCustomizationValue(key, val, locale);
       entries.push({
         key,
-        label: getCustomizationFieldLabel(key, locale),
+        label: getCustomizationFieldLabel(key, locale, isStory),
         displayValue,
         isPhoto,
         photoUrl,

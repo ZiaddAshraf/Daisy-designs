@@ -103,35 +103,37 @@ export function ProductsCatalogClient({
       {/* Filter and Search Bar */}
       <div className="mb-8 flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--border)] pb-5">
         {/* Category Pills - Smooth horizontal swipeable strip on mobile */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 max-w-full touch-pan-x" role="tablist" aria-label="Product Categories">
-          {categories.map((cat) => {
-            const isActive = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all min-h-[40px] select-none cursor-pointer active:scale-95 ${
-                  isActive
-                    ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 shadow-sm"
-                    : "border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:border-[var(--foreground)]/40 hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
-                }`}
-              >
-                <span>{cat.label}</span>
-                <span
-                  className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold ${
+        <div className="relative max-w-full overflow-hidden">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 max-w-full touch-pan-x scroll-smooth" role="tablist" aria-label="Product Categories">
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all min-h-[40px] select-none cursor-pointer active:scale-95 ${
                     isActive
-                      ? "bg-white/20 text-white dark:bg-neutral-950/20 dark:text-neutral-950"
-                      : "bg-[var(--surface-soft)] text-[var(--muted-foreground)]"
+                      ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 shadow-sm"
+                      : "border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:border-[var(--foreground)]/40 hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
                   }`}
                 >
-                  {cat.count}
-                </span>
-              </button>
-            );
-          })}
+                  <span>{cat.label}</span>
+                  <span
+                    className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold ${
+                      isActive
+                        ? "bg-white/20 text-white dark:bg-neutral-950/20 dark:text-neutral-950"
+                        : "bg-[var(--surface-soft)] text-[var(--muted-foreground)]"
+                    }`}
+                  >
+                    {cat.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Search Input */}

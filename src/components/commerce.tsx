@@ -98,7 +98,7 @@ export function ProductDetail({ product, images = [], variants = [], customizati
   </main>;
 }
 
-const FREE_SHIPPING_THRESHOLD = 2500;
+const FREE_SHIPPING_THRESHOLD = 700;
 
 export function CartView() {
   const { items, update, remove, demoMode } = useCart();

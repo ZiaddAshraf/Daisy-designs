@@ -95,7 +95,7 @@ export async function POST(request: Request) {
             }
             const settings = await transaction.siteSetting.findMany({ where: { key: { in: ["shippingFee", "freeShippingThreshold"] } } });
             const setting = (key: string, fallback: number) => Number(settings.find(item => item.key === key)?.value ?? fallback);
-            const shipping = calculateShipping(subtotal - discount, setting("shippingFee", 60), setting("freeShippingThreshold", 2500));
+            const shipping = calculateShipping(subtotal - discount, setting("shippingFee", 60), setting("freeShippingThreshold", 700));
             const total = Math.max(0, subtotal - discount + shipping);
 
             // Execute single atomic decrement per unique inventory target

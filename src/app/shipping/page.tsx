@@ -28,8 +28,8 @@ export default async function ShippingPage() {
         <div className="rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-4">
           <p className="font-semibold text-amber-800 dark:text-amber-300">
             {isRtl
-              ? "مصاريف الشحن ٦٠ ج.م بس لأي مكان في مصر، والشحن مجاني تماماً لأي أوردر يعدي ٢٬٥٠٠ ج.م 🚚"
-              : "Standard shipping fee is 60 EGP nationwide, and completely free on orders exceeding 2,500 EGP."}
+              ? "مصاريف الشحن ٦٠ ج.م بس لأي مكان في مصر، والشحن مجاني تماماً لأي أوردر يعدي ٧٠٠ ج.م 🚚"
+              : "Standard shipping fee is 60 EGP nationwide, and completely free on orders exceeding 700 EGP."}
           </p>
         </div>
       </div>
