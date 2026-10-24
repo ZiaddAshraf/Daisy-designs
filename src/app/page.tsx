@@ -46,7 +46,6 @@ export default async function Home() {
   return (
     <main className="daisy-home daisy-home--storefront">
       <section className="daisy-hero daisy-hero--banner daisy-home-hero" aria-label={isRtl ? "دايزي ديزاينز، تفاصيل صغيرة وذكريات كبيرة" : "Daisy Designs, made for little moments"}>
-        <h1>{isRtl ? "تفاصيل صغيرة، ذكريات كبيرة" : "Little details, lasting memories"}</h1>
         <div className="daisy-hero__banner-frame">
           <Image
             src="/products/reward-cards/reward-cards-box-set.jpeg"
@@ -60,18 +59,17 @@ export default async function Home() {
           />
           <div className="daisy-home-hero__shade" aria-hidden="true" />
           <div className="daisy-home-hero__copy">
-            <p className="eyebrow !block !text-amber-300 font-extrabold tracking-widest text-[11px] sm:text-xs">DAISY DESIGNS</p>
-            <p className="text-xs sm:text-sm text-zinc-100 font-bold max-w-md drop-shadow">
+            <span className="daisy-home-hero__eyebrow">DAISY DESIGNS</span>
+            <h1>{isRtl ? "تفاصيل صغيرة، ذكريات كبيرة" : "Little details, lasting memories"}</h1>
+            <p className="daisy-home-hero__desc">
               {isRtl
-                ? "قصص مطبوعة باسم وصور طفلك، استيكرات مدرسية ضد الماء وتيشيرتات قطن فاخرة 🚚"
-                : "Personalized printed stories, waterproof stickers, and custom t-shirts."}
+                ? "منتجات وهدايا مخصصة للأطفال بجودة عالية وتفاصيل تصنع ذكريات لا تُنسى 🚚"
+                : "Joyful personalized products and keepsakes crafted to celebrate childhood moments."}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
-              <Link href="/products" className="daisy-button daisy-button--light shadow-md">
-                {isRtl ? "تسوقي الآن" : "Shop now"} <Arrow size={16} />
-              </Link>
-              <Link href="/categories/customized-stories" className="daisy-button bg-amber-500 hover:bg-amber-600 text-white font-bold border-none shadow-md">
-                {isRtl ? "صممي قصة طفلك ✨" : "Custom Storybooks ✨"}
+            <div className="daisy-home-hero__actions">
+              <Link href="/products" className="daisy-button daisy-button--light shadow-xl">
+                <span>{isRtl ? "تسوقي الآن" : "Shop now"}</span>
+                <Arrow size={18} />
               </Link>
             </div>
           </div>
