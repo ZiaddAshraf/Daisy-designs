@@ -97,7 +97,12 @@ export function validateCustomization(
 }
 
 export const VALID_TSHIRT_COLORS = new Set(["white", "black", "gray"]);
-export const VALID_TSHIRT_SIZES = new Set(["2", "4", "6", "8", "10", "12", "14", "16"]);
+export const VALID_TSHIRT_CHILDREN_SIZES = ["2", "4", "6", "8", "10", "12", "14", "16"] as const;
+export const VALID_TSHIRT_ADULT_SIZES = ["S", "M", "L", "XL", "XXL"] as const;
+export const VALID_TSHIRT_SIZES: Set<string> = new Set<string>([
+  ...VALID_TSHIRT_CHILDREN_SIZES,
+  ...VALID_TSHIRT_ADULT_SIZES,
+]);
 export const SUPPORTED_TSHIRT_CUSTOMIZATION_KEYS = new Set([
   "garment_color",
   "garment_size",
@@ -130,7 +135,8 @@ export function validateTshirtCustomization(input?: Record<string, string>): {
   }
 
   const color = values.garment_color;
-  const size = values.garment_size;
+  const rawSize = values.garment_size;
+  const size = typeof rawSize === "string" ? rawSize.trim().toUpperCase() : rawSize;
   const artwork = values.custom_design_file;
   const text = values.custom_design_text;
   const placement = values.print_placement;

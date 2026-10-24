@@ -264,3 +264,41 @@ Transform the entire customer purchase journey into an effortless, intuitive, an
 
 
 
+
+
+---
+
+## 7. Custom Printed T-Shirts: Adult & Children Sizes Specification
+
+### 7.1 Objective
+Expand the custom printed t-shirt line (`custom-printed-tshirt`) from kids-only to both Adults and Children ("عايزين التيشيرتات للكبار والصغيرين كمان مش صغار فقط") according to official source size charts in `D:\esssam\Size chart`.
+
+### 7.2 Size Architecture & Measurements
+- **Adult Sizes** (Source: `WhatsApp Image 2026-10-17 at 2.46.25 AM (2).jpeg`):
+  - `S`: Width 50 cm, Length 70 cm
+  - `M`: Width 52 cm, Length 72 cm
+  - `L`: Width 54 cm, Length 74 cm
+  - `XL`: Width 56 cm, Length 76 cm
+  - `XXL`: Width 58 cm, Length 78 cm
+- **Children Sizes** (Source: `WhatsApp Image 2026-10-17 at 2.46.25 AM (1).jpeg`):
+  - `2`: Width 32 cm, Length 45 cm (Age 2)
+  - `4`: Width 34 cm, Length 47 cm (Age 4)
+  - `6`: Width 36 cm, Length 49 cm (Age 6)
+  - `8`: Width 38 cm, Length 52 cm (Age 8)
+  - `10`: Width 40 cm, Length 54 cm (Age 10)
+  - `12`: Width 42 cm, Length 56 cm (Age 12)
+  - `14`: Width 44 cm, Length 58 cm (Age 14)
+  - `16`: Width 46 cm, Length 60 cm (Age 16)
+- **Validation**:
+  - `VALID_TSHIRT_SIZES = Set(["2", "4", "6", "8", "10", "12", "14", "16", "S", "M", "L", "XL", "XXL"])` (with case-insensitive normalization).
+
+### 7.3 Visual & Interactive Customizer Experience
+- **Category Switcher / Segmented Tabs**:
+  - Clear tabs for "مقاسات الكبار (S - XXL)" and "مقاسات الأطفال (سن ٢ - ١٦)".
+  - Active category seamlessly renders the appropriate size pills with width indicators.
+- **Bilingual Size Guide Modal**:
+  - Dual tabs for Adults and Children with verified measurement tables and authentic chart assets (`adult-size-chart.jpeg`, `children-size-chart.jpeg`).
+  - Visual measurement guide diagram (`measurement-guide-diagram.jpeg`).
+- **Catalog, Marquee, & Admin Order Synchronization**:
+  - Product names, badges, features, and descriptions updated to celebrate both Adults and Children.
+  - Admin orders table clearly displays whether the ordered size is for an adult or child.

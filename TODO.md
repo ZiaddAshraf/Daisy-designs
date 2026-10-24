@@ -223,3 +223,10 @@
 
 
 
+
+- [x] Phase 32: Expand T-Shirts to Adult & Children Sizes (كبار وأطفال)
+  - [x] Task 32.1: Update `src/data/tshirt-product.json` & `src/lib/customization-validation.ts` with verified adult sizes (S, M, L, XL, XXL) & case-normalization
+  - [x] Task 32.2: Enhance `src/components/tshirt-size-guide-modal.tsx` with adult/children tabs & authentic charts
+  - [x] Task 32.3: Upgrade `src/components/tshirt-preview.tsx` with segmented adult/children size selector & updated copywriting
+  - [x] Task 32.4: Synchronize catalog, filters, categories, and admin orders table (`products/page.tsx`, `store-categories.ts`, `ensure-catalog-product.ts`, `admin-orders-table.tsx`, `messages.ts`)
+  - [x] Task 32.5: Update `tests/tshirt-product.test.ts` to assert adult sizes acceptance and run full Ralph Loop verification (tsc, lint, tests, build)

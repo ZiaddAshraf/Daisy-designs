@@ -30,10 +30,10 @@ test("printed-t-shirts category has valid English and Arabic content and typogra
   assert.equal(tshirts.letter, "T");
   assert.equal(categoryNameForLocale(tshirts, "en"), "Printed T-Shirts");
   assert.equal(categoryNameForLocale(tshirts, "ar"), "تيشيرتات مطبوعة");
-  assert.equal(categoryTaglineForLocale(tshirts, "en"), "Plain children's T-shirts customized with your artwork on the center chest");
-  assert.equal(categoryTaglineForLocale(tshirts, "ar"), "تيشيرتات أطفال سادة مخصصة بطباعة تصميمك الخاص على منتصف الصدر");
-  assert.equal(categoryDescriptionForLocale(tshirts, "en"), "High-quality plain children's cotton T-shirts customized with your uploaded artwork or written idea. Printed on the center chest, reviewed by our team via WhatsApp, and prepared in 2–3 business days.");
-  assert.equal(categoryDescriptionForLocale(tshirts, "ar"), "تيشيرتات أطفال قطن سادة عالية الجودة، مخصصة بطباعة رسمتك أو فكرتك على منتصف الصدر. تتم مراجعة كل طلب يدويًا وتأكيده عبر الواتساب، وتستغرق مدة التجهيز من يومين إلى ٣ أيام عمل قبل الشحن.");
+  assert.equal(categoryTaglineForLocale(tshirts, "en"), "Plain cotton T-shirts for adults and kids customized with your artwork on the center chest");
+  assert.equal(categoryTaglineForLocale(tshirts, "ar"), "تيشيرتات قطن سادة للكبار والأطفال مخصصة بطباعة تصميمك الخاص على منتصف الصدر");
+  assert.equal(categoryDescriptionForLocale(tshirts, "en"), "High-quality plain cotton T-shirts for adults and kids customized with your uploaded artwork or written idea. Printed on the center chest, reviewed by our team via WhatsApp, and prepared in 2–3 business days.");
+  assert.equal(categoryDescriptionForLocale(tshirts, "ar"), "تيشيرتات قطن سادة عالية الجودة للكبار والأطفال، مخصصة بطباعة رسمتك أو فكرتك على منتصف الصدر. تتم مراجعة كل طلب يدويًا وتأكيده عبر الواتساب، وتستغرق مدة التجهيز من يومين إلى ٣ أيام عمل قبل الشحن.");
   assert.ok(categoryNoticeForLocale(tshirts, "en"));
   assert.ok(categoryNoticeForLocale(tshirts, "ar"));
 });

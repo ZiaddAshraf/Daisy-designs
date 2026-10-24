@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { Locale } from "@/lib/locale";
-import { X, Ruler, Info, Check } from "lucide-react";
+import { X, Ruler, Info, Check, Users, Baby } from "lucide-react";
 
 type TShirtSizeGuideModalProps = {
   isOpen: boolean;
@@ -11,6 +11,15 @@ type TShirtSizeGuideModalProps = {
   locale: Locale;
   activeSize?: string;
 };
+
+// Exact source measurements from D:\esssam\Size chart\WhatsApp Image 2026-10-17 at 2.46.25 AM (2).jpeg
+export const ADULT_SIZES = [
+  { size: "S", widthCm: 50, lengthCm: 70 },
+  { size: "M", widthCm: 52, lengthCm: 72 },
+  { size: "L", widthCm: 54, lengthCm: 74 },
+  { size: "XL", widthCm: 56, lengthCm: 76 },
+  { size: "XXL", widthCm: 58, lengthCm: 78 },
+] as const;
 
 // Exact source measurements from D:\esssam\Size chart\WhatsApp Image 2026-10-17 at 2.46.25 AM (1).jpeg
 export const CHILDREN_SIZES = [
@@ -32,6 +41,12 @@ export function TShirtSizeGuideModal({
 }: TShirtSizeGuideModalProps) {
   const isAr = locale === "ar";
   const modalRef = useRef<HTMLDivElement>(null);
+
+  const isAdultActive = Boolean(
+    activeSize && ["S", "M", "L", "XL", "XXL"].includes(activeSize.toUpperCase())
+  );
+  const [selectedCategory, setSelectedCategory] = useState<"adults" | "children" | null>(null);
+  const sizeCategory = selectedCategory ?? (isAdultActive ? "adults" : "children");
 
   // Close on Escape key & trap focus
   useEffect(() => {
@@ -55,6 +70,8 @@ export function TShirtSizeGuideModal({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const currentSizes = sizeCategory === "adults" ? ADULT_SIZES : CHILDREN_SIZES;
 
   return (
     <div
@@ -86,7 +103,7 @@ export function TShirtSizeGuideModal({
                 id="size-guide-title"
                 className="text-base sm:text-lg font-bold text-slate-900 dark:text-neutral-100"
               >
-                {isAr ? "دليل مقاسات تيشيرت الأطفال" : "Children's T-Shirt Size Guide"}
+                {isAr ? "دليل مقاسات التيشيرت (كبار وأطفال)" : "T-Shirt Size Guide (Adults & Kids)"}
               </h2>
               <p className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
                 {isAr
@@ -107,6 +124,34 @@ export function TShirtSizeGuideModal({
 
         {/* Modal Scrollable Body */}
         <div className="overflow-y-auto p-5 sm:p-7 space-y-6">
+          {/* Segmented Category Switcher (Adults vs Children) */}
+          <div className="flex rounded-2xl bg-slate-100 p-1.5 dark:bg-neutral-800/70 border border-slate-200/60 dark:border-neutral-700/60">
+            <button
+              type="button"
+              onClick={() => setSelectedCategory("adults")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                sizeCategory === "adults"
+                  ? "bg-white text-teal-700 shadow-xs dark:bg-neutral-900 dark:text-teal-300 ring-1 ring-slate-200/80 dark:ring-neutral-700"
+                  : "text-slate-600 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-neutral-200"
+              }`}
+            >
+              <Users size={16} />
+              <span>{isAr ? "مقاسات الكبار (S - XXL)" : "Adult Sizes (S - XXL)"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedCategory("children")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                sizeCategory === "children"
+                  ? "bg-white text-teal-700 shadow-xs dark:bg-neutral-900 dark:text-teal-300 ring-1 ring-slate-200/80 dark:ring-neutral-700"
+                  : "text-slate-600 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-neutral-200"
+              }`}
+            >
+              <Baby size={16} />
+              <span>{isAr ? "مقاسات الأطفال (سن ٢ - ١٦)" : "Children Sizes (2 - 16)"}</span>
+            </button>
+          </div>
+
           {/* Measurement Visual Diagram & Terminology */}
           <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 sm:p-5 dark:border-neutral-800/80 dark:bg-neutral-800/40">
             <div className="grid gap-4 sm:grid-cols-12 sm:items-center">
@@ -157,12 +202,27 @@ export function TShirtSizeGuideModal({
             </div>
           </div>
 
-          {/* Exact Children's Size Table */}
+          {/* Dynamic Size Table (Adults or Children) */}
           <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-neutral-800 shadow-xs">
+            <div className="bg-slate-100/70 dark:bg-neutral-800/60 px-4 py-2.5 border-b border-slate-200 dark:border-neutral-800 flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-900 dark:text-neutral-100 flex items-center gap-1.5">
+                {sizeCategory === "adults" ? <Users size={14} /> : <Baby size={14} />}
+                {sizeCategory === "adults"
+                  ? isAr
+                    ? "جدول مقاسات الكبار المعتمد"
+                    : "Verified Adult Measurements"
+                  : isAr
+                  ? "جدول مقاسات الأطفال المعتمد"
+                  : "Verified Children Measurements"}
+              </span>
+              <span className="text-[11px] font-medium text-slate-500 dark:text-neutral-400">
+                {isAr ? "قطن مصري أصلي ١٠٠٪" : "100% Egyptian Cotton"}
+              </span>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-right text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-100/80 text-slate-700 dark:border-neutral-800 dark:bg-neutral-800/80 dark:text-neutral-200 font-bold">
+                  <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 dark:border-neutral-800 dark:bg-neutral-800/80 dark:text-neutral-200 font-bold">
                     <th className="px-4 py-3 sm:px-6 text-start">
                       {isAr ? "المقاس (Size)" : "Size"}
                     </th>
@@ -175,8 +235,8 @@ export function TShirtSizeGuideModal({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-neutral-800/60 font-medium">
-                  {CHILDREN_SIZES.map((row) => {
-                    const isSelected = activeSize === row.size;
+                  {currentSizes.map((row) => {
+                    const isSelected = activeSize?.toUpperCase() === row.size;
                     return (
                       <tr
                         key={row.size}
@@ -188,10 +248,18 @@ export function TShirtSizeGuideModal({
                       >
                         <td className="px-4 py-3 sm:px-6 text-start">
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-slate-200/70 dark:bg-neutral-800 text-xs font-bold text-slate-800 dark:text-neutral-200">
+                            <span className="inline-flex min-w-[28px] h-7 px-2 items-center justify-center rounded-lg bg-slate-200/70 dark:bg-neutral-800 text-xs font-bold text-slate-800 dark:text-neutral-200">
                               {row.size}
                             </span>
-                            <span>{isAr ? `مقاس ${row.size}` : `Size ${row.size}`}</span>
+                            <span>
+                              {sizeCategory === "children"
+                                ? isAr
+                                  ? `مقاس ${row.size} (سن ${row.size} سنوات)`
+                                  : `Size ${row.size} (Age ${row.size})`
+                                : isAr
+                                ? `مقاس ${row.size} (كبار)`
+                                : `Size ${row.size} (Adult)`}
+                            </span>
                             {isSelected && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-teal-600 px-2 py-0.5 text-[10px] font-semibold text-white">
                                 <Check size={10} />
@@ -219,8 +287,8 @@ export function TShirtSizeGuideModal({
             <Info size={16} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               {isAr
-                ? "نصيحة مهمة: للحصول على أفضل مقاس مناسب لطفلك، يُفضل قياس تيشيرت قطني مريح لديه وهو مفرود تماماً على سطح مستوٍ ومقارنة عرضه وطوله بالجدول أعلاه."
-                : "Helpful Tip: To ensure the best fit for your child, measure a comfortable cotton T-shirt laid flat on a smooth surface and compare width and length with the table above."}
+                ? "نصيحة مهمة: للحصول على أفضل مقاس مناسب، يُفضل قياس تيشيرت قطني مريح لديك وهو مفرود تماماً على سطح مستوٍ ومقارنة عرضه وطوله بالجدول أعلاه."
+                : "Helpful Tip: To ensure the best fit, measure a comfortable cotton T-shirt laid flat on a smooth surface and compare width and length with the table above."}
             </p>
           </div>
         </div>
@@ -239,4 +307,3 @@ export function TShirtSizeGuideModal({
     </div>
   );
 }
-

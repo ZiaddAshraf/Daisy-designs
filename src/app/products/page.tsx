@@ -174,25 +174,25 @@ export default async function ProductsPage() {
     themeGroup: isRtl ? design.arabicThemeGroup : design.themeGroup,
   }));
 
-  // 4. Custom Printed Children's T-Shirt Product
+  // 4. Custom Printed T-Shirt Product (Adults & Kids)
   const tshirtProduct: CatalogProductItem = {
     id: "custom-printed-tshirt",
     slug: "custom-printed-tshirt",
     href: "/products/custom-printed-tshirt",
-    title: isRtl ? "تيشيرت أطفال قطن مطبوع مخصص" : "Custom Printed Children's T-Shirt",
-    subtitle: isRtl ? "طباعة رسمتك أو فكرتك بأعلى ثبات ألوان - مقاسات ٢ لـ ١٦ سنة" : "Custom Artwork Print - Kids Sizes 2 to 16",
+    title: isRtl ? "تيشيرت قطن مطبوع مخصص (كبار وأطفال)" : "Custom Printed T-Shirt (Adults & Kids)",
+    subtitle: isRtl ? "طباعة رسمتك أو فكرتك بأعلى ثبات ألوان - مقاسات من سن سنتين حتى XXL" : "Custom Artwork Print - Sizes 2 Years to Adult XXL",
     category: isRtl ? "تيشيرتات مطبوعة" : "Printed T-Shirts",
     categoryId: "printed-t-shirts",
     price: 500,
     priceUnit: isRtl ? "للقطعة الواحدة" : "per shirt",
-    badge: isRtl ? "جديد للأطفال" : "New for Kids",
+    badge: isRtl ? "كبار وأطفال" : "Adults & Kids",
     image: "/products/t-shirts/white-tshirt.svg",
     description: isRtl
-      ? "تيشيرت أطفال قطن مصري ١٠٠٪ مريح وناعم، متاح بالأبيض والأسود والرمادي، بنطبع عليه تصميمك الخاص في منتصف الصدر ومقاساته مظبوطة من سنتين لـ ١٦ سنة."
-      : "High-quality comfortable plain kids T-shirt in white, black, or gray, customized with your own artwork printed at center chest. Exact fit sizes 2 to 16.",
+      ? "تيشيرت قطن مصري ١٠٠٪ مريح وناعم للكبار والأطفال، متاح بالأبيض والأسود والرمادي، بنطبع عليه تصميمك الخاص في منتصف الصدر ومقاساته شاملة من سنتين لـ XXL."
+      : "High-quality comfortable plain cotton T-shirt for adults and kids in white, black, or gray, customized with your own artwork printed at center chest. Sizes from 2 years to adult XXL.",
     features: isRtl
-      ? ["قطن مصري ناعم ومريح للأطفال", "طباعة ثابتة على منتصف الصدر بألوان زاهية", "مقاسات دقيقة ومريحة من سن ٢ لـ ١٦ سنة"]
-      : ["Premium Soft Cotton", "Center Chest Custom Print", "Verified Sizes 2 to 16"],
+      ? ["قطن مصري ناعم ومريح للكبار والأطفال", "طباعة ثابتة على منتصف الصدر بألوان زاهية", "مقاسات شاملة من سن سنتين ومقاسات كبار حتى XXL"]
+      : ["Premium Soft Egyptian Cotton", "Center Chest Custom Print", "Sizes 2 Years up to Adult XXL"],
     ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
@@ -242,7 +242,7 @@ export default async function ProductsPage() {
     stickersFilter: isRtl ? "استيكرات مدرسية" : "School Stickers",
     storiesFilter: isRtl ? "قصص مخصصة" : "Customized Stories",
     cardsFilter: isRtl ? "كروت التشجيع" : "Reward Cards",
-    tshirtsFilter: isRtl ? "تيشيرتات أطفال" : "Children's T-Shirts",
+    tshirtsFilter: isRtl ? "تيشيرتات (كبار وأطفال)" : "T-Shirts (Adults & Kids)",
     noResultsTitle: isRtl ? "لم يتم العثور على منتجات مطابقة" : "No matching products found",
     noResultsHint: isRtl
       ? "جرب البحث بكلمات أخرى أو أعد ضبط الفلاتر لتصفح كامل المجموعة."

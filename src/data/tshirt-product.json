@@ -6,15 +6,15 @@
     "slug": "printed-t-shirts",
     "name": "Printed T-Shirts",
     "arabicName": "تيشيرتات مطبوعة",
-    "description": "Custom printed children's T-shirts featuring your personalized artwork and designs on premium blank cotton garments.",
-    "arabicDescription": "تيشيرتات أطفال بطباعة مخصصة لتصميماتكم ورسوماتكم المفضلة على تيشيرتات قطنية سادة عالية الجودة."
+    "description": "Custom printed cotton T-shirts for adults and kids featuring your personalized artwork and designs on premium blank garments.",
+    "arabicDescription": "تيشيرتات قطنية للكبار والأطفال بطباعة مخصصة لتصميماتكم ورسوماتكم المفضلة على تيشيرتات سادة عالية الجودة."
   },
   "product": {
     "slug": "custom-printed-tshirt",
-    "name": "Custom Printed Children's T-Shirt",
-    "arabicName": "تيشيرت أطفال بطباعة مخصصة",
-    "format": "Physical Printed Cotton Children's T-Shirt",
-    "arabicFormat": "تيشيرت أطفال قطن مطبوع فاخر",
+    "name": "Custom Printed Cotton T-Shirt (Adults & Kids)",
+    "arabicName": "تيشيرت قطن بطباعة مخصصة (كبار وأطفال)",
+    "format": "Physical Printed Cotton T-Shirt for Adults & Kids",
+    "arabicFormat": "تيشيرت قطن مصري فاخر للكبار والأطفال",
     "customizable": true,
     "available": true,
     "price": 500,
@@ -27,8 +27,8 @@
     "arabicPrintPlacement": "منتصف الصدر",
     "preparationTimeDays": "2-3",
     "arabicPreparationTime": "من يومين إلى 3 أيام عمل (قبل الشحن)",
-    "description": "High-quality plain children's T-shirt customized with your custom-requested artwork or written idea. Printed on the center chest with premium vibrant colors. Each order is individually reviewed and confirmed by our team before production.",
-    "arabicDescription": "تيشيرت أطفال سادة عالي الجودة ومريح، مخصص بطباعة تصميمك الخاص أو فكرتك المكتوبة على منتصف الصدر. تتم مراجعة وتأكيد كل طلب يدوياً من قِبل فريق العمل عبر الواتساب لضمان أفضل جودة قبل بدء الطباعة.",
+    "description": "High-quality plain cotton T-shirt for adults and kids, customized with your custom-requested artwork or written idea. Printed on the center chest with premium vibrant colors. Each order is individually reviewed and confirmed by our team via WhatsApp before production.",
+    "arabicDescription": "تيشيرت قطن مصري سادة عالي الجودة ومريح للكبار والأطفال، مخصص بطباعة تصميمك الخاص أو فكرتك المكتوبة على منتصف الصدر. تتم مراجعة وتأكيد كل طلب يدوياً من قِبل فريق العمل عبر الواتساب لضمان أفضل جودة قبل بدء الطباعة.",
     "colors": [
       {
         "id": "white",
@@ -53,44 +53,49 @@
       }
     ],
     "sizes": [
-      { "id": "2", "label": "2", "widthCm": 32, "lengthCm": 45 },
-      { "id": "4", "label": "4", "widthCm": 34, "lengthCm": 47 },
-      { "id": "6", "label": "6", "widthCm": 36, "lengthCm": 49 },
-      { "id": "8", "label": "8", "widthCm": 38, "lengthCm": 52 },
-      { "id": "10", "label": "10", "widthCm": 40, "lengthCm": 54 },
-      { "id": "12", "label": "12", "widthCm": 42, "lengthCm": 56 },
-      { "id": "14", "label": "14", "widthCm": 44, "lengthCm": 58 },
-      { "id": "16", "label": "16", "widthCm": 46, "lengthCm": 60 }
+      { "id": "2", "label": "2", "widthCm": 32, "lengthCm": 45, "group": "children", "arabicGroup": "سن سنتين" },
+      { "id": "4", "label": "4", "widthCm": 34, "lengthCm": 47, "group": "children", "arabicGroup": "سن 4 سنوات" },
+      { "id": "6", "label": "6", "widthCm": 36, "lengthCm": 49, "group": "children", "arabicGroup": "سن 6 سنوات" },
+      { "id": "8", "label": "8", "widthCm": 38, "lengthCm": 52, "group": "children", "arabicGroup": "سن 8 سنوات" },
+      { "id": "10", "label": "10", "widthCm": 40, "lengthCm": 54, "group": "children", "arabicGroup": "سن 10 سنوات" },
+      { "id": "12", "label": "12", "widthCm": 42, "lengthCm": 56, "group": "children", "arabicGroup": "سن 12 سنة" },
+      { "id": "14", "label": "14", "widthCm": 44, "lengthCm": 58, "group": "children", "arabicGroup": "سن 14 سنة" },
+      { "id": "16", "label": "16", "widthCm": 46, "lengthCm": 60, "group": "children", "arabicGroup": "سن 16 سنة" },
+      { "id": "S", "label": "S", "widthCm": 50, "lengthCm": 70, "group": "adults", "arabicGroup": "كبار (S)" },
+      { "id": "M", "label": "M", "widthCm": 52, "lengthCm": 72, "group": "adults", "arabicGroup": "كبار (M)" },
+      { "id": "L", "label": "L", "widthCm": 54, "lengthCm": 74, "group": "adults", "arabicGroup": "كبار (L)" },
+      { "id": "XL", "label": "XL", "widthCm": 56, "lengthCm": 76, "group": "adults", "arabicGroup": "كبار (XL)" },
+      { "id": "XXL", "label": "XXL", "widthCm": 58, "lengthCm": 78, "group": "adults", "arabicGroup": "كبار (XXL)" }
     ],
     "sizeChart": {
       "tableImage": "/size-charts/children-size-chart.jpeg",
+      "adultTableImage": "/size-charts/adult-size-chart.jpeg",
       "diagramImage": "/size-charts/measurement-guide-diagram.jpeg",
       "unit": "cm",
       "arabicUnit": "سم"
     },
     "primaryImage": {
       "url": "/products/t-shirts/white-tshirt.svg",
-      "alt": "Daisy Designs Custom Printed Children's T-Shirt",
-      "arabicAlt": "تيشيرت أطفال بطباعة مخصصة من Daisy Designs",
+      "alt": "Daisy Designs Custom Printed Cotton T-Shirt (Adults & Kids)",
+      "arabicAlt": "تيشيرت قطن بطباعة مخصصة للكبار والأطفال من Daisy Designs",
       "dimensions": { "width": 800, "height": 800 }
     },
     "gallery": [
       {
         "colorId": "white",
         "url": "/products/t-shirts/white-tshirt.svg",
-        "alt": "White Children's T-Shirt / تيشيرت أطفال أبيض"
+        "alt": "White T-Shirt (Adults & Kids) / تيشيرت أبيض (كبار وأطفال)"
       },
       {
         "colorId": "black",
         "url": "/products/t-shirts/black-tshirt.svg",
-        "alt": "Black Children's T-Shirt / تيشيرت أطفال أسود"
+        "alt": "Black T-Shirt (Adults & Kids) / تيشيرت أسود (كبار وأطفال)"
       },
       {
         "colorId": "gray",
         "url": "/products/t-shirts/gray-tshirt.svg",
-        "alt": "Gray Children's T-Shirt / تيشيرت أطفال رمادي"
+        "alt": "Gray T-Shirt (Adults & Kids) / تيشيرت رمادي (كبار وأطفال)"
       }
     ]
   }
 }
-

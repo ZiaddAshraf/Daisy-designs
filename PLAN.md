@@ -368,3 +368,35 @@ The following items are documented for store owner alignment before or during im
 - Full lint (`npm run lint`), typecheck (`tsc --noEmit`), unit test suite (90/90 pass), and production build (41/41 routes clean).
 - Browser inspection and visual verification on mobile viewports.
 
+
+
+---
+
+## 9. Phase 32: Adult & Children Sizes Expansion Plan
+
+### Step 1: Data Model & Customization Validation
+- Update `src/data/tshirt-product.json`:
+  - Add adult sizes (S, M, L, XL, XXL) with verified measurements (Width: 50, 52, 54, 56, 58 cm; Length: 70, 72, 74, 76, 78 cm).
+  - Update product & category copywriting to reflect both Adults and Children ("كبار وأطفال").
+- Update `src/lib/customization-validation.ts`:
+  - Expand `VALID_TSHIRT_SIZES` to accept `["2", "4", "6", "8", "10", "12", "14", "16", "S", "M", "L", "XL", "XXL"]` with case-insensitive normalization.
+
+### Step 2: Customizer Component UI & Segmented Size Selector
+- Update `src/components/tshirt-preview.tsx`:
+  - Add segmented control / category selector: `مقاسات الكبار (S - XXL)` and `مقاسات الأطفال (سن ٢ - ١٦)`.
+  - Dynamically render relevant size pills with their exact width in centimeters.
+  - Update copywriting, guarantees, and breadcrumbs to reflect both Adults and Children.
+
+### Step 3: Size Guide Modal Enhancement
+- Update `src/components/tshirt-size-guide-modal.tsx`:
+  - Export `ADULT_SIZES` alongside `CHILDREN_SIZES`.
+  - Add tabs for Adults table (S to XXL with `adult-size-chart.jpeg`), Children table (2 to 16 with `children-size-chart.jpeg`), and the measurement diagram.
+
+### Step 4: Catalog, Marquee, Storefront & Admin Table Updates
+- Update `src/app/products/page.tsx` and filter pills to display "تيشيرتات (كبار وأطفال)" and highlight comprehensive sizing.
+- Update `src/lib/store-categories.ts`, `src/lib/ensure-catalog-product.ts`, and `src/lib/i18n/messages.ts`.
+- Update `src/components/admin-orders-table.tsx` to display whether the size is for adults or children.
+
+### Step 5: Test Suite & Ralph Loop Verification
+- Update `tests/tshirt-product.test.ts` to test all 13 valid sizes (both children and adults) and ensure invalid sizes are properly rejected.
+- Execute full Ralph Loop verification: typecheck, lint, 90/90 tests, 41/41 build.

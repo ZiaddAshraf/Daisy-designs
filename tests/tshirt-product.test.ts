@@ -10,6 +10,7 @@ import {
 } from "../src/lib/tshirt-artwork-storage";
 import {
   CHILDREN_SIZES,
+  ADULT_SIZES,
 } from "../src/components/tshirt-size-guide-modal";
 import {
   validateTshirtCustomization,
@@ -41,14 +42,18 @@ test("T-Shirt fixture has confirmed 500 EGP price, center chest placement, and D
   assert.deepEqual(product.colors.map((c) => c.id).sort(), ["black", "gray", "white"]);
   assert.deepEqual(Array.from(VALID_TSHIRT_COLORS).sort(), ["black", "gray", "white"]);
 
-  // Check all 8 children sizes in product fixture
-  assert.equal(product.sizes.length, 8);
-  assert.deepEqual(product.sizes.map((s) => s.id), ["2", "4", "6", "8", "10", "12", "14", "16"]);
-  assert.deepEqual(Array.from(VALID_TSHIRT_SIZES), ["2", "4", "6", "8", "10", "12", "14", "16"]);
+  // Check all 13 sizes (8 children + 5 adults) in product fixture
+  assert.equal(product.sizes.length, 13);
+  assert.deepEqual(product.sizes.map((s) => s.id), [
+    "2", "4", "6", "8", "10", "12", "14", "16", "S", "M", "L", "XL", "XXL"
+  ]);
+  assert.deepEqual(Array.from(VALID_TSHIRT_SIZES), [
+    "2", "4", "6", "8", "10", "12", "14", "16", "S", "M", "L", "XL", "XXL"
+  ]);
 });
 
-test("Exact source size-chart measurements match sizes 2 through 16 with exact Width/Length numbers", () => {
-  const expectedSizes = [
+test("Exact source size-chart measurements match children (2-16) and adults (S-XXL) with exact Width/Length numbers", () => {
+  const expectedChildrenSizes = [
     { size: "2", widthCm: 32, lengthCm: 45 },
     { size: "4", widthCm: 34, lengthCm: 47 },
     { size: "6", widthCm: 36, lengthCm: 49 },
@@ -59,11 +64,28 @@ test("Exact source size-chart measurements match sizes 2 through 16 with exact W
     { size: "16", widthCm: 46, lengthCm: 60 },
   ];
 
-  assert.equal(CHILDREN_SIZES.length, 8);
+  const expectedAdultSizes = [
+    { size: "S", widthCm: 50, lengthCm: 70 },
+    { size: "M", widthCm: 52, lengthCm: 72 },
+    { size: "L", widthCm: 54, lengthCm: 74 },
+    { size: "XL", widthCm: 56, lengthCm: 76 },
+    { size: "XXL", widthCm: 58, lengthCm: 78 },
+  ];
 
-  for (let i = 0; i < expectedSizes.length; i++) {
-    const expected = expectedSizes[i];
+  assert.equal(CHILDREN_SIZES.length, 8);
+  assert.equal(ADULT_SIZES.length, 5);
+
+  for (let i = 0; i < expectedChildrenSizes.length; i++) {
+    const expected = expectedChildrenSizes[i];
     const actual = CHILDREN_SIZES[i];
+    assert.equal(actual.size, expected.size);
+    assert.equal(actual.widthCm, expected.widthCm);
+    assert.equal(actual.lengthCm, expected.lengthCm);
+  }
+
+  for (let i = 0; i < expectedAdultSizes.length; i++) {
+    const expected = expectedAdultSizes[i];
+    const actual = ADULT_SIZES[i];
     assert.equal(actual.size, expected.size);
     assert.equal(actual.widthCm, expected.widthCm);
     assert.equal(actual.lengthCm, expected.lengthCm);
@@ -73,6 +95,7 @@ test("Exact source size-chart measurements match sizes 2 through 16 with exact W
 test("Size chart images and vector garment mockups exist on disk", () => {
   const chartFiles = [
     path.join(process.cwd(), "public", "size-charts", "children-size-chart.jpeg"),
+    path.join(process.cwd(), "public", "size-charts", "adult-size-chart.jpeg"),
     path.join(process.cwd(), "public", "size-charts", "measurement-guide-diagram.jpeg"),
   ];
 
@@ -141,14 +164,23 @@ test("T-Shirt customization validation satisfies flexible OR gate", () => {
   });
   assert.equal(shortText.success, false);
 
-  // 6. Invalid: adult size rejected (Children ONLY rule)
+  // 6. Valid: adult sizes are accepted (Adults & Kids rule)
   const adultSize = validateTshirtCustomization({
     garment_color: "white",
     garment_size: "XL",
     custom_design_text: "تصميم تي شيرت",
   });
-  assert.equal(adultSize.success, false);
-  assert.equal(adultSize.reason, "INVALID_GARMENT_SIZE");
+  assert.equal(adultSize.success, true);
+  assert.equal(adultSize.data?.garment_size, "XL");
+
+  // 6b. Invalid: non-existent size rejected
+  const nonExistentSize = validateTshirtCustomization({
+    garment_color: "white",
+    garment_size: "XXXL",
+    custom_design_text: "تصميم تي شيرت",
+  });
+  assert.equal(nonExistentSize.success, false);
+  assert.equal(nonExistentSize.reason, "INVALID_GARMENT_SIZE");
 
   // 7. Invalid: unconfirmed color rejected
   const invalidColor = validateTshirtCustomization({
@@ -412,8 +444,8 @@ test("Multiple T-shirts with different sizes, colors, and artwork aggregate into
 });
 
 test("Customization validation rejects invalid size, invalid color, malformed data, and unsupported keys", () => {
-  // 1. Invalid size: adult sizes or non-existent numbers
-  for (const badSize of ["XL", "L", "S", "18", "0", "adult-10", ""]) {
+  // 1. Invalid size: unsupported sizes or non-existent numbers
+  for (const badSize of ["XXXL", "18", "0", "adult-10", "", "XS-INVALID"]) {
     const res = validateTshirtCustomization({
       garment_color: "white",
       garment_size: badSize,

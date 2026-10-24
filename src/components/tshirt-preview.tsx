@@ -46,6 +46,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
   // Active color object
   const [selectedColor, setSelectedColor] = useState<GarmentColor>("white");
   const [selectedSize, setSelectedSize] = useState<string>("6");
+  const [sizeCategory, setSizeCategory] = useState<"adults" | "children">("children");
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
 
   const activeColorObj =
@@ -335,7 +336,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
           {/* Header Info */}
           <div>
             <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400 text-xs font-bold tracking-wider uppercase mb-1">
-              <span>DAISY DESIGNS / {isAr ? "تيشيرتات أطفال" : "CHILDREN APPAREL"}</span>
+              <span>DAISY DESIGNS / {isAr ? "تيشيرتات كبار وأطفال" : "ADULT & KIDS APPAREL"}</span>
               <TinyDaisyDoodle size={13} />
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-neutral-100 tracking-tight">
@@ -371,10 +372,10 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
           </div>
 
           {/* Size Selector with Inline Size Guide Link */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-neutral-800 dark:bg-neutral-900 space-y-3">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-neutral-800 dark:bg-neutral-900 space-y-3.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-900 dark:text-neutral-100">
-                {isAr ? "اختيار مقاس الطفل:" : "Select Child's Size:"}
+                {isAr ? "اختيار المقاس (كبار وأطفال):" : "Select Size (Adults & Kids):"}
               </span>
               <button
                 type="button"
@@ -386,26 +387,64 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
               </button>
             </div>
 
-            {/* 8 Children's Sizes Pills */}
-            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-              {product.sizes.map((s) => {
-                const isSelected = selectedSize === s.id;
-                return (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setSelectedSize(s.id)}
-                    className={`flex h-11 flex-col items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      isSelected
-                        ? "bg-teal-600 text-white shadow-xs scale-102 ring-2 ring-teal-500/50"
-                        : "bg-slate-50 text-slate-700 hover:bg-slate-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700/60"
-                    }`}
-                  >
-                    <span>{s.label}</span>
-                    <span className="text-[10px] font-normal opacity-75">{s.widthCm}cm</span>
-                  </button>
-                );
-              })}
+            {/* Segmented Category Buttons (Adults vs Kids) */}
+            <div className="flex rounded-xl bg-slate-100 p-1 dark:bg-neutral-800/80 border border-slate-200/50 dark:border-neutral-700/50">
+              <button
+                type="button"
+                onClick={() => {
+                  setSizeCategory("adults");
+                  if (!["S", "M", "L", "XL", "XXL"].includes(selectedSize)) {
+                    setSelectedSize("L");
+                  }
+                }}
+                className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  sizeCategory === "adults"
+                    ? "bg-white text-teal-700 shadow-xs dark:bg-neutral-900 dark:text-teal-300 ring-1 ring-slate-200/80 dark:ring-neutral-700"
+                    : "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-200"
+                }`}
+              >
+                {isAr ? "مقاسات الكبار (S - XXL)" : "Adult Sizes (S - XXL)"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSizeCategory("children");
+                  if (["S", "M", "L", "XL", "XXL"].includes(selectedSize)) {
+                    setSelectedSize("6");
+                  }
+                }}
+                className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  sizeCategory === "children"
+                    ? "bg-white text-teal-700 shadow-xs dark:bg-neutral-900 dark:text-teal-300 ring-1 ring-slate-200/80 dark:ring-neutral-700"
+                    : "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-200"
+                }`}
+              >
+                {isAr ? "مقاسات الأطفال (سن ٢ - ١٦)" : "Kids Sizes (2 - 16)"}
+              </button>
+            </div>
+
+            {/* Size Pills for Active Category */}
+            <div className={`grid gap-2 ${sizeCategory === "adults" ? "grid-cols-5" : "grid-cols-4 sm:grid-cols-8"}`}>
+              {product.sizes
+                .filter((s) => ((s as { group?: string }).group ?? "children") === sizeCategory)
+                .map((s) => {
+                  const isSelected = selectedSize === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setSelectedSize(s.id)}
+                      className={`flex h-12 flex-col items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        isSelected
+                          ? "bg-teal-600 text-white shadow-xs scale-102 ring-2 ring-teal-500/50"
+                          : "bg-slate-50 text-slate-700 hover:bg-slate-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700/60 border border-slate-200/60 dark:border-neutral-700/40"
+                      }`}
+                    >
+                      <span className="font-extrabold">{s.label}</span>
+                      <span className="text-[10px] font-normal opacity-80">{s.widthCm} سم</span>
+                    </button>
+                  );
+                })}
             </div>
           </div>
 
@@ -652,7 +691,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
           <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-slate-600 dark:text-neutral-400">
             <div className="flex items-center gap-2">
               <ShieldCheck size={15} className="text-teal-600 dark:text-teal-400 shrink-0" />
-              <span>{isAr ? "قطن مصري ناعم ومريح للأطفال" : "Soft 100% Cotton"}</span>
+              <span>{isAr ? "قطن مصري ناعم ومريح للكبار والأطفال" : "Soft 100% Egyptian Cotton"}</span>
             </div>
             <div className="flex items-center gap-2">
               <Palette size={15} className="text-teal-600 dark:text-teal-400 shrink-0" />

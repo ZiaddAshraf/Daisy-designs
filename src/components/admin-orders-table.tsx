@@ -440,7 +440,7 @@ export function AdminOrdersTable({ orders }: AdminOrdersTableProps) {
                                       <div className="flex items-center gap-2">
                                         <span className="text-[var(--muted-foreground)]">المقاس:</span>
                                         <span className="font-bold text-[var(--foreground)] bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 px-2 py-0.5 rounded border border-teal-200/50 dark:border-teal-800/50">
-                                          مقاس {cust.garment_size} للأطفال
+                                          مقاس {cust.garment_size} {["S", "M", "L", "XL", "XXL"].includes(cust.garment_size.toUpperCase()) ? "(كبار)" : "(أطفال)"}
                                         </span>
                                       </div>
                                     )}
