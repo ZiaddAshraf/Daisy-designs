@@ -1083,7 +1083,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
             className="h-11 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-bold shadow-md flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
           >
             <Zap size={14} className="fill-current text-amber-100" />
-            <span>{isAr ? "صممي واطلبي" : "Customize Now"}</span>
+            <span>{isAr ? "اشتري الآن" : "Buy Now"}</span>
           </button>
         </div>
       </aside>

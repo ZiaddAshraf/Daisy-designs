@@ -299,7 +299,7 @@ export function ProductsCatalogClient({
                     </div>
 
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 group-hover:bg-amber-600 dark:group-hover:bg-amber-400 dark:group-hover:text-black transition-all shadow-xs">
-                      <span>{prod.ctaText || (isRtl ? (prod.categoryId === "reward-cards" ? "أضيفي للسلة" : "صممي واشتري") : "Customize")}</span>
+                      <span>{prod.ctaText || (isRtl ? "اشتري الآن" : "Buy Now")}</span>
                       {isRtl ? <ArrowLeft size={13} /> : <ArrowRight size={13} />}
                     </span>
                   </div>

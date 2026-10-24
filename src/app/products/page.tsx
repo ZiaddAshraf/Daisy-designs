@@ -39,7 +39,7 @@ export default async function ProductsPage() {
     features: isRtl
       ? ["كتاب ورقي مطبوع بيوصلك لباب البيت", "بصورة واسم طفلك الشخصية", "رسومات ملهمة بألوان مبهجة"]
       : ["Physical Printed Storybook", "Personalized Child Photo", "Inspiring Full-Color Art"],
-    ctaText: isRtl ? "اطلبي القصة لطفلك" : "Order Story",
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
   const storyRedBallProduct: CatalogProductItem = {
@@ -60,7 +60,7 @@ export default async function ProductsPage() {
     features: isRtl
       ? ["كتاب ورقي مطبوع فاخر", "باسم وصورة طفلك الشخصية", "ألوان زاهية تناسب الأعمار الصغيرة"]
       : ["Physical Printed Storybook", "Personalized Name & Photo", "Vibrant Early Years Colors"],
-    ctaText: isRtl ? "اطلبي القصة لطفلك" : "Order Story",
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
   const storyCatsProduct: CatalogProductItem = {
@@ -81,7 +81,7 @@ export default async function ProductsPage() {
     features: isRtl
       ? ["كتاب ورقي مطبوع بالكامل", "باسم وصورة طفلك الشخصية", "يعلم الرفق بالحيوان بطريقة مرحة"]
       : ["Physical Printed Storybook", "Personalized Name & Photo", "Kindness to Animals"],
-    ctaText: isRtl ? "اطلبي القصة لطفلك" : "Order Story",
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
   const storyMinecraftProduct: CatalogProductItem = {
@@ -102,7 +102,7 @@ export default async function ProductsPage() {
     features: isRtl
       ? ["كتاب ورقي مطبوع فاخر", "صورة واسم طفلك بطل القصة", "عالم ماينكرافت ثلاثي الأبعاد"]
       : ["Physical Printed Storybook", "Child as the Hero", "Minecraft-Themed Artwork"],
-    ctaText: isRtl ? "اطلبي القصة لطفلك" : "Order Story",
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
   // 1b. Bespoke "Design Your Story" Product
@@ -124,7 +124,7 @@ export default async function ProductsPage() {
     features: isRtl
       ? ["اختاري موضوع القصة أو فكرة حرة", "باسم وصور طفلك وإهداء مطبوع", "كتاب ورقي فاخر ١٠ صفحات ملونة"]
       : ["Custom Theme & Plot", "Child's Name & Photos", "10 Full-Color Pages"],
-    ctaText: isRtl ? "صممي قصتك دلوقتي" : "Design Story",
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
   // 2. Reward Cards Box Set Product
@@ -146,7 +146,7 @@ export default async function ProductsPage() {
     features: isRtl
       ? ["علبة هدايا تذكارية أنيقة", "١٠ كروت تشجيع مختلفة ومبهجة", "ورق كوشيه سميك بطبقة حماية من المية"]
       : ["Luxury Keepsake Gift Box", "10 Unique Affirmation Cards", "Thick Coated Finish"],
-    ctaText: isRtl ? "اطلبي العلبة دلوقتي" : "Order Box",
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
   // 3. All 24 Individual School Sticker Designs
@@ -170,7 +170,7 @@ export default async function ProductsPage() {
     features: isRtl
       ? ["فينيل ألماني أصلي ضد المية والغسيل", "طباعة الاسم والمدرسة والفصل بالطلب", `تصميم ${design.arabicTitle}`]
       : ["100% German Waterproof Vinyl", "Personalized Name, School & Class", `${design.title} Artwork`],
-    ctaText: isRtl ? "اطلبي الشيت بالاسم" : "Personalize & Order",
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
     themeGroup: isRtl ? design.arabicThemeGroup : design.themeGroup,
   }));
 
@@ -193,7 +193,7 @@ export default async function ProductsPage() {
     features: isRtl
       ? ["قطن مصري ناعم ومريح للأطفال", "طباعة ثابتة على منتصف الصدر بألوان زاهية", "مقاسات دقيقة ومريحة من سن ٢ لـ ١٦ سنة"]
       : ["Premium Soft Cotton", "Center Chest Custom Print", "Verified Sizes 2 to 16"],
-    ctaText: isRtl ? "فصّلي التيشيرت دلوقتي" : "Customize T-Shirt",
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
   // 5. Deterministic Interleaved / "عشوائي متناسق" Shuffle
