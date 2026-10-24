@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, type ChangeEvent, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import SiteImage from "@/components/site-image";
 import type { Locale } from "@/lib/locale";
 import stickersData from "@/data/stickers-product.json";
@@ -33,6 +34,7 @@ import {
   GraduationCap,
   School,
   Hash,
+  Zap,
 } from "lucide-react";
 
 type StickersPreviewProps = {
@@ -96,6 +98,7 @@ const CRAFTSMANSHIP = [
 ];
 
 export function StickersPreview({ locale, inStock: inStockProp }: StickersPreviewProps) {
+  const router = useRouter();
   const isAr = locale === "ar";
   const { product } = stickersData;
   const inStock = inStockProp ?? (product.stock !== null ? product.stock > 0 : true);
@@ -284,8 +287,8 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
   };
 
   // Add to cart with full validation
-  const handleAddToCart = (e: FormEvent) => {
-    e.preventDefault();
+  const handleAddToCart = (e?: FormEvent, andCheckout?: boolean) => {
+    if (e) e.preventDefault();
     if (!inStock || customizingIndex === null) return;
 
     const trimmedName = childName.trim();
@@ -345,13 +348,17 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
 
     setAdded(true);
     setCustomizingIndex(null);
+
+    if (andCheckout) {
+      router.push("/checkout");
+    }
   };
 
   const activeDesign = customizingIndex !== null ? product.designs[customizingIndex] : null;
   const currentLightboxDesign = lightboxIndex !== null ? product.designs[lightboxIndex] : null;
 
   return (
-    <div className="daisy-stickers-container max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <div className="daisy-stickers-container max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-20 md:pb-12">
       {/* 1. Hero Overview Section */}
       <section className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-14 items-center pb-12 md:pb-16 border-b border-[var(--border)]">
         {/* Media Column */}
@@ -1021,20 +1028,65 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                 </div>
               </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={!inStock || isUploadingPhoto}
-                className="w-full py-3.5 px-6 rounded-xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 font-extrabold text-sm shadow-md hover:opacity-95 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"
-              >
-                <ShoppingBag size={16} />
-                <span>{isAr ? "أضيفي للسلة" : "Add to Cart"}</span>
-                {isAr ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-              </button>
+              {/* Action Buttons: Add to Cart & Instant Checkout */}
+              <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => handleAddToCart(undefined, false)}
+                  disabled={!inStock || isUploadingPhoto}
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--surface-hover)] text-[var(--foreground)] font-bold text-xs sm:text-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ShoppingBag size={16} />
+                  <span>{isAr ? "أضيفي للسلة" : "Add to Cart"}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleAddToCart(undefined, true)}
+                  disabled={!inStock || isUploadingPhoto}
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs sm:text-sm shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <Zap size={16} className="fill-current text-amber-200" />
+                  <span>{isAr ? "اشتري الآن (دفع عند الاستلام)" : "Buy Now (Cash on Delivery)"}</span>
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
+
+      {/* Mobile Sticky Quick-Action Bar for Stickers */}
+      <aside
+        aria-label={isAr ? "شريط الطلب السريع للستيكرز" : "Quick action bar"}
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+      >
+        <div className="flex items-center justify-between gap-2.5 max-w-[500px] mx-auto">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative w-10 h-10 rounded-md overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200 dark:border-zinc-700">
+              <SiteImage
+                src={product.designs[0].url}
+                alt={isAr ? product.arabicName : product.name}
+                width={40}
+                height={40}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">{isAr ? "ستيكرز مدرسية مقاومة للماء" : "Custom Waterproof Stickers"}</p>
+              <p className="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5">{formatPrice(product.price, locale)} {isAr ? "للفرخ" : "per sheet"}</p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => handleOpenCustomize(0)}
+            className="h-11 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-bold shadow-md flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
+          >
+            <Zap size={14} className="fill-current text-amber-100" />
+            <span>{isAr ? "صممي واطلبي" : "Customize Now"}</span>
+          </button>
+        </div>
+      </aside>
 
       {/* 6. Success Notification Pill */}
       {added && (

@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "@/components/site-image";
-import { Search, Layers, X, Heart } from "lucide-react";
+import { Search, Layers, X, Heart, ArrowLeft, ArrowRight } from "lucide-react";
 import { useWishlist } from "@/components/storefront";
 import { getProductImageUrl } from "@/lib/product-image";
 import type { Locale } from "@/lib/locale";
@@ -285,16 +285,21 @@ export function ProductsCatalogClient({
                     </div>
                   </div>
 
-                  {/* Line 4: Price at bottom */}
-                  <div className="px-4 pb-5 sm:px-6 sm:pb-6 pt-1 text-start">
-                    <div className="flex items-baseline justify-start gap-1">
+                  {/* Line 4: Price & Clear Direct CTA Button */}
+                  <div className="px-4 pb-5 sm:px-6 sm:pb-6 pt-2 border-t border-[var(--border)]/50 flex items-center justify-between gap-2">
+                    <div className="flex items-baseline gap-1">
                       <span className="catalog-card__price text-xl sm:text-2xl font-black transition-colors">
-                        {prod.price.toFixed(2)}
+                        {prod.price.toFixed(0)}
                       </span>
-                      <span className="catalog-card__price text-sm sm:text-base font-bold opacity-80 transition-colors">
+                      <span className="catalog-card__price text-xs sm:text-sm font-bold opacity-80 transition-colors">
                         {isRtl ? "ج.م" : "EGP"}
                       </span>
                     </div>
+
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 group-hover:bg-amber-600 dark:group-hover:bg-amber-400 dark:group-hover:text-black transition-all shadow-xs">
+                      <span>{prod.ctaText || (isRtl ? (prod.categoryId === "reward-cards" ? "أضيفي للسلة" : "صممي واشتري") : "Customize")}</span>
+                      {isRtl ? <ArrowLeft size={13} /> : <ArrowRight size={13} />}
+                    </span>
                   </div>
                 </Link>
               </article>

@@ -22,7 +22,7 @@ type CategoryCardProps = {
 };
 
 const CATEGORY_IMAGES: Record<string, string> = {
-  "stickers": "/products/stickers/sticker-01-kpop-demon-hunters.jpeg",
+  "stickers": "/products/stickers/custom-sticker-design.svg",
   "reward-cards": "/products/reward-cards/reward-cards-box-set.jpeg",
   "customized-stories": "/products/customized-stories/first-year-at-school/cover.jpeg",
   "printed-t-shirts": "/products/t-shirts/white-tshirt.svg",

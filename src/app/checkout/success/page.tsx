@@ -6,7 +6,7 @@ import { useLocale, useTranslation } from "@/components/storefront";
 import { directionForLocale } from "@/lib/locale";
 import { formatPrice } from "@/lib/products";
 import { formatCustomizationEntries } from "@/lib/customization-formatter";
-import { CheckCircle2, ShoppingBag } from "lucide-react";
+import { CheckCircle2, ShoppingBag, MessageCircle, ShieldCheck } from "lucide-react";
 
 type Confirmation = {
   number: string;
@@ -114,6 +114,52 @@ export default function CheckoutSuccessPage() {
               <strong className="text-xl font-bold">
                 {formatPrice(confirmation.total, locale)}
               </strong>
+            </div>
+          </div>
+
+          {/* Instant WhatsApp Confirmation */}
+          <div className="mt-6 p-4 rounded-xl border border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-950/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm">
+                <MessageCircle size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[var(--foreground)]">
+                  {locale === "ar" ? "تأكيد الطلب السريع والمتابعة على الواتساب" : "Instant WhatsApp Confirmation"}
+                </p>
+                <p className="text-xs text-[var(--muted-foreground)]">
+                  {locale === "ar" ? "تواصلي مباشرة مع فريق Daisy Designs لمتابعة تجهيز وشحن طلبك أولاً بأول" : "Chat directly with our team to track order preparation and shipping"}
+                </p>
+              </div>
+            </div>
+
+            <a
+              href={`https://wa.me/201012345678?text=${encodeURIComponent(
+                locale === "ar"
+                  ? `أهلاً دايزي ديزاينز! أنا عملت أوردر برقم (${confirmation.number}) بإجمالي ${formatPrice(confirmation.total, locale)}. حابة أتابع معاكم التجهيز والشحن!`
+                  : `Hello Daisy Designs! I placed order (${confirmation.number}) with total ${formatPrice(confirmation.total, locale)}. Looking forward to delivery updates!`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-extrabold shadow-sm transition-all"
+            >
+              <MessageCircle size={16} />
+              <span>{locale === "ar" ? "تأكيد فوري على واتساب" : "Confirm via WhatsApp"}</span>
+            </a>
+          </div>
+
+          {/* Delivery & Inspection Reassurance Notice */}
+          <div className="mt-4 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] flex items-start gap-3 text-xs text-[var(--muted-foreground)] leading-relaxed">
+            <ShieldCheck size={18} className="text-amber-500 shrink-0 mt-0.5" />
+            <div>
+              <strong className="text-[var(--foreground)] font-semibold block mb-0.5">
+                {locale === "ar" ? "الدفع عند الاستلام بعد المعاينة التامة" : "Cash on Delivery After Full Inspection"}
+              </strong>
+              <span>
+                {locale === "ar"
+                  ? "طلبك قيد التجهيز الآن بعناية. مندوب شركة الشحن هيتصل بيكي هاتفياً قبل موعد التسليم لتأكيد العنوان والمعاد المناسب، وهتعايني المنتج بالكامل قبل الدفع."
+                  : "Your order is being carefully prepared. The courier will call you before delivery to coordinate timing, and you can inspect items before paying."}
+              </span>
             </div>
           </div>
         </div>

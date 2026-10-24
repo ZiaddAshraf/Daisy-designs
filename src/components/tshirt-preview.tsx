@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import type { Locale } from "@/lib/locale";
 import tshirtProductData from "@/data/tshirt-product.json";
 import { TinyDaisyDoodle } from "@/components/decorative-marks";
@@ -23,6 +24,7 @@ import {
   Minus,
   Palette,
   MessageCircle,
+  Zap,
 } from "lucide-react";
 
 type TShirtPreviewProps = {
@@ -33,6 +35,7 @@ type TShirtPreviewProps = {
 type GarmentColor = "white" | "black" | "gray";
 
 export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
+  const router = useRouter();
   const isAr = locale === "ar";
   const { add } = useCart();
   const { has, toggle } = useWishlist();
@@ -181,8 +184,23 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
     setAddedToCart(true);
   };
 
+  const handleDirectBuy = () => {
+    if (!canAddToCart) {
+      const el = document.getElementById("tshirt-artwork-section") || document.getElementById("tshirt-design-text");
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setUploadError(
+        isAr
+          ? "يرجى رفع تصميم أو كتابة وصف للطلب للمتابعة"
+          : "Please upload artwork or enter a design description"
+      );
+      return;
+    }
+    handleAddToCart();
+    router.push("/checkout");
+  };
+
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full min-w-0 pb-20 md:pb-0">
       {/* Main Studio Two-Column Grid */}
       <div className="grid gap-8 lg:grid-cols-12 lg:items-start min-w-0">
         {/* Left Column: Interactive Garment Mockup & Chest Overlay */}
@@ -586,6 +604,20 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
               </button>
             </div>
 
+            {/* Direct Buy CTA */}
+            <button
+              type="button"
+              onClick={handleDirectBuy}
+              className="w-full min-h-[48px] flex items-center justify-center gap-2 rounded-full py-3.5 px-6 font-extrabold text-xs sm:text-sm bg-amber-500 hover:bg-amber-600 text-white shadow-md transition-all cursor-pointer active:scale-[0.98]"
+            >
+              <Zap size={16} className="fill-current text-amber-200" />
+              <span>
+                {isAr
+                  ? `اشتري الآن (دفع عند الاستلام) — ${formatPrice(totalPrice, locale)}`
+                  : `Buy Now (Cash on Delivery) — ${formatPrice(totalPrice, locale)}`}
+              </span>
+            </button>
+
             {/* Validation helper when button is disabled */}
             {!hasValidArtwork && !hasValidText && (
               <p className="text-center text-[11px] text-slate-400 dark:text-neutral-500">
@@ -645,6 +677,53 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
         locale={locale}
         activeSize={selectedSize}
       />
+
+      {/* Mobile Sticky Quick-Purchase Bar */}
+      <aside
+        aria-label={isAr ? "شريط الشراء السريع" : "Quick purchase bar"}
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+      >
+        <div className="flex items-center justify-between gap-2.5 max-w-[500px] mx-auto">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative w-11 h-11 rounded-md overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200 dark:border-zinc-700">
+              <Image
+                src={activeColorObj.image}
+                alt={isAr ? activeColorObj.arabicName : activeColorObj.name}
+                width={44}
+                height={44}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                {isAr ? product.arabicName : product.name} ({activeColorObj.arabicName} - {selectedSize})
+              </p>
+              <p className="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5">{formatPrice(totalPrice, locale)}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="h-11 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold border border-zinc-300 dark:border-zinc-700 flex items-center gap-1 active:scale-95 transition-transform cursor-pointer"
+              title={isAr ? "أضيفي إلى السلة" : "Add to Cart"}
+            >
+              <ShoppingBag size={15} />
+              <span className="hidden xs:inline">{isAr ? "السلة" : "Cart"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDirectBuy}
+              className="h-11 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-bold shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <Zap size={14} className="fill-current text-amber-100" />
+              <span>{isAr ? "اشتري الآن" : "Buy Now"}</span>
+            </button>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }

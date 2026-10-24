@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SiteImage from "@/components/site-image";
 import type { Locale } from "@/lib/locale";
 import rewardCardsData from "@/data/reward-cards-product.json";
@@ -31,6 +32,7 @@ import {
   Truck,
   Plus,
   Minus,
+  Zap,
 } from "lucide-react";
 
 type RewardCardsPreviewProps = {
@@ -178,6 +180,7 @@ const CRAFTSMANSHIP = [
 const ALL_PREVIEW_INDEXES = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 
 export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCardsPreviewProps) {
+  const router = useRouter();
   const isAr = locale === "ar";
   const { product } = rewardCardsData;
   const inStock = inStockProp ?? (product.stock !== null ? product.stock > 0 : true);
@@ -217,6 +220,11 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
       quantity
     );
     setAdded(true);
+  };
+
+  const handleDirectBuy = () => {
+    handleAddToCart();
+    router.push("/checkout");
   };
 
   const productName = isAr ? product.arabicName : product.name;
@@ -452,7 +460,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
       : null;
 
   return (
-    <div className="rc-product-layout">
+    <div className="rc-product-layout pb-20 md:pb-0">
       {/* 1. Hero: Balanced Two-Column Editorial Product Hero */}
       <section className="rc-hero" aria-labelledby="rc-hero-heading">
         {/* Visual Column */}
@@ -700,6 +708,20 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
                     <span>{isWishlisted ? (isAr ? "محفوظ" : "Saved") : (isAr ? "المفضلة" : "Wishlist")}</span>
                   </button>
                 </div>
+
+                {/* Direct Buy Button (1-Click Checkout) */}
+                <button
+                  type="button"
+                  onClick={handleDirectBuy}
+                  className="w-full min-h-12 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer mt-2.5"
+                >
+                  <Zap size={16} className="fill-current text-amber-200" />
+                  <span>
+                    {isAr
+                      ? `اشتري الآن (دفع عند الاستلام) — ${formatPrice(totalPrice, locale)}`
+                      : `Buy Now (Cash on Delivery) — ${formatPrice(totalPrice, locale)}`}
+                  </span>
+                </button>
 
                 {added && (
                   <div className="rc-added-alert" role="status" aria-live="polite">
@@ -1034,6 +1056,51 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
           </div>
         </div>
       )}
+
+      {/* Mobile Sticky Quick-Purchase Bar */}
+      <aside
+        aria-label={isAr ? "شريط الشراء السريع" : "Quick purchase bar"}
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+      >
+        <div className="flex items-center justify-between gap-2.5 max-w-[500px] mx-auto">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative w-11 h-11 rounded-md overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200 dark:border-zinc-700">
+              <SiteImage
+                src={product.primaryImage.url}
+                alt={productName}
+                width={44}
+                height={44}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">{productName}</p>
+              <p className="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5">{formatPrice(totalPrice, locale)}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="h-11 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold border border-zinc-300 dark:border-zinc-700 flex items-center gap-1 active:scale-95 transition-transform cursor-pointer"
+              title={isAr ? "أضيفي إلى السلة" : "Add to Cart"}
+            >
+              <ShoppingBag size={15} />
+              <span className="hidden xs:inline">{isAr ? "السلة" : "Cart"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDirectBuy}
+              className="h-11 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-bold shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <Zap size={14} className="fill-current text-amber-100" />
+              <span>{isAr ? "اشتري الآن" : "Buy Now"}</span>
+            </button>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }

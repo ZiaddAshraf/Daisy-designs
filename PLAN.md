@@ -338,3 +338,33 @@ The following items are documented for store owner alignment before or during im
    - What is the expected preparation time before shipping? (e.g., 2–3 business days for custom printing vs 1 day for storybooks).
 6. **Customer Notification Preferences**:
    - Should proof confirmations be handled purely over WhatsApp by the store admin, or should an automated email status notification also be triggered?
+
+---
+
+## 9. Phase 30: Frictionless Purchase Flow & High-Conversion UX Execution Plan
+
+### Step 1: Egyptian Governorates Dropdown & Checkout Streamlining
+- Replace `<input name="governorate" />` in `src/app/checkout/page.tsx` with a curated `<select>` of all 27 Egyptian governorates with localized names and regional delivery estimates (القاهرة، الجيزة، الإسكندرية، ...).
+- Add real-time phone number format detection (`010`, `011`, `012`, `015`) and a visual validation indicator.
+- Add an optional courier note / WhatsApp backup phone field.
+- Highlight Cash on Delivery (COD) safety badge and delivery guarantee.
+
+### Step 2: Mobile Sticky Purchase Bar
+- Create or update responsive product viewers (`StoryBookPreview`, `StickersPreview`, `TShirtPreview`, `RewardCardsPreview`) to feature a sticky bottom checkout bar on mobile viewports (< 768px).
+- Provide dual action:
+  - `اشتري الآن (دفع عند الاستلام)` -> Adds to cart and redirects immediately to `/checkout`.
+  - `إضافة إلى السلة` -> Adds to cart and shows the slide-over cart drawer with haptic feedback.
+- If required fields (e.g., child photo) are missing, smoothly scroll and highlight the required input with friendly Egyptian Arabic guidance.
+
+### Step 3: Cart Drawer Transparency & Trust
+- Add dynamic free-shipping progress tracker in `CartDrawer`.
+- Display high-contrast total with COD badge.
+- Ensure 44×44px minimum tap zones for steppers and removal.
+
+### Step 4: WhatsApp Post-Purchase Confirmation
+- On `/checkout/success`, provide a prominent 1-click WhatsApp button with pre-filled order confirmation message to contact Daisy Designs directly.
+
+### Step 5: Verification & Ralph Loop
+- Full lint (`npm run lint`), typecheck (`tsc --noEmit`), unit test suite (90/90 pass), and production build (41/41 routes clean).
+- Browser inspection and visual verification on mobile viewports.
+

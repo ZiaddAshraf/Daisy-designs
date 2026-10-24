@@ -219,6 +219,43 @@ Implement the new physical printed customized storybook product **"أول سنة
   - 90/90 automated tests passed (`npm test`).
   - 41/41 routes built cleanly in production Turbopack build (`npm run build`).
 
+---
+
+## 6. Frictionless Purchase Flow & High-Conversion UX Specification
+
+### 6.1 Objective
+Transform the entire customer purchase journey into an effortless, intuitive, and reassuring experience tailored specifically for Egyptian families:
+"العميل اللي يخش يشتري يلاقي الدنيا سهلة ويعرف يشتري بسهولة"
+
+### 6.2 Key Requirements & Enhancements
+1. **Sticky Bottom Purchase Bar on Mobile (All Products)**:
+   - Always visible when scrolling past the main buy button on mobile screens (< 768px).
+   - Displays: Product thumbnail, name, formatted price (e.g., `٢٠٠ ج.م`).
+   - Primary action button: `إضافة للسلة 🛒` + `اشتري الآن ⚡`.
+   - Missing required field guidance: If child photo or required options are missing, tapping the button smoothly scrolls to the upload dropzone, focuses it, and displays an animated gentle pulse with a friendly Egyptian Arabic prompt.
+
+2. **Instant "اشتري الآن" (Direct Checkout) Flow**:
+   - Product pages provide a high-contrast direct buy button:
+     - `اشتري الآن (دفع عند الاستلام)` -> Adds product with selected customizations directly to cart and immediately routes to `/checkout`.
+     - Cuts checkout friction from 4 clicks down to 1 click.
+
+3. **Optimized 1-Page Checkout for Egyptian Customers (`/checkout`)**:
+   - **Governorates Dropdown `<select>`**: Replace free-text input with all 27 Egyptian Governorates (القاهرة، الجيزة، الإسكندرية، القليوبية، الشرقية، الدقهلية، الغربية، المنوفية، دمياط، بورسعيد، الإسماعيلية، السويس، كفر الشيخ، الفيوم، بني سويف، المنيا، أسيوط، سوهاج، قنا، الأقصر، أسوان، البحر الأحمر، الوادي الجديد، مطروح، شمال سيناء، جنوب سيناء).
+   - **Egyptian Phone Number Validation**: Auto-detects Egyptian mobile formats (010, 011, 012, 015) with instant green checkmark when 11 digits are reached.
+   - **Alternative Phone / WhatsApp Field**: Added optional backup phone field for delivery couriers (`رقم بديل أو واتساب لتسهيل التواصل`).
+   - **Prominent COD Reassurance**: Reassuring notice: "لن تدفع أي مبالغ الآن — الدفع نقداً عند استلام ومعاينة المنتج بالمنزل".
+   - **Mobile Order Summary Always Clear**: Transparent price breakdown (Subtotal, Shipping / Free Shipping, Total).
+
+4. **Cart Drawer Polish (`CartDrawer`)**:
+   - Live Free Shipping progress bar with dynamic remaining amount.
+   - Distinct badges for every customization attribute.
+   - Min 44px tap targets for steppers and removal actions.
+   - Reassurance footer: "الدفع عند الاستلام · شحن سريع لباب بيتك".
+
+5. **WhatsApp Instant Order Confirmation**:
+   - On the order success page (`/checkout/success`), provide a 1-tap WhatsApp button pre-filled with order details to connect directly with the Daisy Designs team.
+
+
 
 
 

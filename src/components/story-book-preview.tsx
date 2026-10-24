@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SiteImage from "@/components/site-image";
 import type { Locale } from "@/lib/locale";
 import storyProductData from "@/data/story-product.json";
@@ -27,6 +28,7 @@ import {
   PenTool,
   Maximize2,
   Sparkles,
+  Zap,
 } from "lucide-react";
 
 type StoryBookPreviewProps = {
@@ -163,6 +165,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Commerce controls
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const unitPrice = product.price ?? 200;
   const totalPrice = unitPrice * quantity;
@@ -171,6 +174,32 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
   const isWishlisted = inStoreWishlist("first-year-at-school");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoSectionRef = useRef<HTMLDivElement>(null);
+  const [highlightDropzone, setHighlightDropzone] = useState(false);
+
+  const scrollToPhotoUpload = () => {
+    if (photoSectionRef.current) {
+      photoSectionRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      setHighlightDropzone(true);
+      setTimeout(() => setHighlightDropzone(false), 2500);
+    } else if (fileInputRef.current) {
+      fileInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    setUploadError(
+      isAr
+        ? "يا ريت تختاري صورة أو أكثر لطفلك أولاً عشان نجهز القصة باسمه وصورته"
+        : "Please select your child's photo(s) first"
+    );
+  };
+
+  const handleDirectBuy = () => {
+    if (uploadedPhotos.length === 0) {
+      scrollToPhotoUpload();
+      return;
+    }
+    handleAddToCart();
+    router.push("/checkout");
+  };
 
   // Clean up blob URLs when component unmounts or photos change
   useEffect(() => {
@@ -299,7 +328,11 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
 
   // Add to Cart
   const handleAddToCart = () => {
-    if (!inStock || uploadedPhotos.length === 0) return;
+    if (!inStock) return;
+    if (uploadedPhotos.length === 0) {
+      scrollToPhotoUpload();
+      return;
+    }
 
     const summaryParts: string[] = [];
     if (childName.trim()) {
@@ -412,7 +445,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
     : activeStory.coverUrl;
 
   return (
-    <div className="sb-product-layout">
+    <div className="sb-product-layout pb-20 md:pb-0">
       {/* 1. Hero: Two-column editorial presentation */}
       <section className="sb-hero" aria-labelledby="sb-hero-heading">
         {/* Media Column (Left) - COVER ONLY PROTECTED VIEW */}
@@ -721,7 +754,13 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
             </div>
 
             {/* Multi-Photo Upload Zone (Supports 1 to 5 photos) */}
-            <div className="sb-upload-box">
+            <div
+              ref={photoSectionRef}
+              id="story-photo-section"
+              className={`sb-upload-box transition-all duration-300 ${
+                highlightDropzone ? "ring-4 ring-amber-500 shadow-xl scale-[1.01]" : ""
+              }`}
+            >
               <div className="sb-upload-box__header">
                 <div className="sb-upload-box__title">
                   <Upload size={16} />
@@ -865,90 +904,103 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
             </div>
 
             {/* Quantity & Add to Cart Controls */}
-            <div className="sb-purchase-controls">
-              <div className="sb-quantity" role="group" aria-label={isAr ? "الكمية" : "Quantity"}>
+            <div className="sb-purchase-controls flex flex-col gap-2.5">
+              <div className="flex items-center gap-2.5 w-full">
+                <div className="sb-quantity shrink-0" role="group" aria-label={isAr ? "الكمية" : "Quantity"}>
+                  <button
+                    type="button"
+                    className="sb-quantity__btn"
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    disabled={quantity <= 1}
+                    aria-label={isAr ? "تقليل الكمية" : "Decrease quantity"}
+                  >
+                    <Minus size={15} />
+                  </button>
+                  <span className="sb-quantity__value" aria-live="polite">
+                    {quantity.toLocaleString(isAr ? "ar-EG" : "en-US")}
+                  </span>
+                  <button
+                    type="button"
+                    className="sb-quantity__btn"
+                    onClick={() => setQuantity((q) => Math.min(10, q + 1))}
+                    disabled={quantity >= 10}
+                    aria-label={isAr ? "زيادة الكمية" : "Increase quantity"}
+                  >
+                    <Plus size={15} />
+                  </button>
+                </div>
+
                 <button
                   type="button"
-                  className="sb-quantity__btn"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  disabled={quantity <= 1}
-                  aria-label={isAr ? "تقليل الكمية" : "Decrease quantity"}
+                  className={`daisy-button daisy-button--dark sb-add-btn flex-1 cursor-pointer active:scale-[0.98] ${
+                    addedToCart ? "sb-add-btn--added" : ""
+                  }`}
+                  onClick={handleAddToCart}
+                  disabled={!inStock || isUploadingPhoto}
+                  title={
+                    uploadedPhotos.length === 0
+                      ? isAr
+                        ? "يرجى رفع صورة الطفل أولاً لإتمام الطلب"
+                        : "Please upload your child's photo first"
+                      : undefined
+                  }
                 >
-                  <Minus size={15} />
+                  {addedToCart ? (
+                    <>
+                      <Check size={18} />
+                      <span>{isAr ? "تمت الإضافة للسلة!" : "Added to Cart!"}</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag size={18} />
+                      <span>
+                        {uploadedPhotos.length === 0
+                          ? isAr
+                            ? "ارفعي صورة الطفل للإضافة"
+                            : "Upload photo to add"
+                          : isAr
+                          ? "أضيفي القصة للسلة"
+                          : "Add Story to Cart"}
+                      </span>
+                    </>
+                  )}
                 </button>
-                <span className="sb-quantity__value" aria-live="polite">
-                  {quantity.toLocaleString(isAr ? "ar-EG" : "en-US")}
-                </span>
+
                 <button
                   type="button"
-                  className="sb-quantity__btn"
-                  onClick={() => setQuantity((q) => Math.min(10, q + 1))}
-                  disabled={quantity >= 10}
-                  aria-label={isAr ? "زيادة الكمية" : "Increase quantity"}
+                  className={`sb-wishlist-btn shrink-0 cursor-pointer active:scale-90 transition-transform ${
+                    isWishlisted ? "sb-wishlist-btn--active" : ""
+                  }`}
+                  onClick={toggleWishlist}
+                  aria-label={
+                    isWishlisted
+                      ? isAr
+                        ? "إزالة من قائمة الرغبات"
+                        : "Remove from wishlist"
+                      : isAr
+                      ? "حفظ في قائمة الرغبات"
+                      : "Add to wishlist"
+                  }
+                  title={isAr ? "حفظ في المفضلة" : "Save to Wishlist"}
                 >
-                  <Plus size={15} />
+                  <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
+                  <span className="sr-only">{isAr ? "المفضلة" : "Wishlist"}</span>
                 </button>
               </div>
 
+              {/* Direct Buy Button (1-Click Instant Checkout) */}
               <button
                 type="button"
-                className={`daisy-button daisy-button--dark sb-add-btn cursor-pointer active:scale-[0.98] ${
-                  addedToCart ? "sb-add-btn--added" : ""
-                }`}
-                onClick={handleAddToCart}
-                disabled={!inStock || uploadedPhotos.length === 0 || isUploadingPhoto}
-                title={
-                  uploadedPhotos.length === 0
-                    ? isAr
-                      ? "يرجى رفع صورة الطفل أولاً لإتمام الطلب"
-                      : "Please upload your child's photo first"
-                    : undefined
-                }
+                onClick={handleDirectBuy}
+                disabled={!inStock || isUploadingPhoto}
+                className="w-full min-h-12 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
-                {addedToCart ? (
-                  <>
-                    <Check size={18} />
-                    <span>{isAr ? "تمت الإضافة للسلة!" : "Added to Cart!"}</span>
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag size={18} />
-                    <span>
-                      {uploadedPhotos.length === 0
-                        ? isAr
-                          ? "ارفعي صورة الطفل للإضافة"
-                          : "Upload photo to add"
-                        : quantity > 1
-                        ? isAr
-                          ? `أضيفي القصة للسلة — ${formatPrice(totalPrice, locale)}`
-                          : `Add Story to Cart — ${formatPrice(totalPrice, locale)}`
-                        : isAr
-                        ? "أضيفي القصة للسلة"
-                        : "Add Story to Cart"}
-                    </span>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                className={`sb-wishlist-btn cursor-pointer active:scale-90 transition-transform ${
-                  isWishlisted ? "sb-wishlist-btn--active" : ""
-                }`}
-                onClick={toggleWishlist}
-                aria-label={
-                  isWishlisted
-                    ? isAr
-                      ? "إزالة من قائمة الرغبات"
-                      : "Remove from wishlist"
-                    : isAr
-                    ? "حفظ في قائمة الرغبات"
-                    : "Add to wishlist"
-                }
-                title={isAr ? "حفظ في المفضلة" : "Save to Wishlist"}
-              >
-                <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
-                <span className="sr-only">{isAr ? "المفضلة" : "Wishlist"}</span>
+                <Zap size={16} className="fill-current text-amber-200" />
+                <span>
+                  {isAr
+                    ? `اشتري الآن (دفع عند الاستلام) — ${formatPrice(totalPrice, locale)}`
+                    : `Buy Now (Cash on Delivery) — ${formatPrice(totalPrice, locale)}`}
+                </span>
               </button>
             </div>
 
@@ -1163,6 +1215,53 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
           </div>
         </div>
       )}
+
+      {/* Mobile Sticky Quick-Purchase Bar */}
+      <aside
+        aria-label={isAr ? "شريط الشراء السريع" : "Quick purchase bar"}
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+      >
+        <div className="flex items-center justify-between gap-2.5 max-w-[500px] mx-auto">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative w-10 h-13 rounded-md overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200 dark:border-zinc-700">
+              <SiteImage
+                src={displayedCoverUrl}
+                alt={displayedTitle}
+                width={40}
+                height={52}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">{displayedTitle}</p>
+              <p className="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5">{formatPrice(totalPrice, locale)}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={isUploadingPhoto}
+              className="h-11 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold border border-zinc-300 dark:border-zinc-700 flex items-center gap-1 active:scale-95 transition-transform cursor-pointer"
+              title={isAr ? "أضيفي إلى السلة" : "Add to Cart"}
+            >
+              <ShoppingBag size={15} />
+              <span className="hidden xs:inline">{isAr ? "السلة" : "Cart"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDirectBuy}
+              disabled={isUploadingPhoto}
+              className="h-11 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-bold shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <Zap size={14} className="fill-current text-amber-100" />
+              <span>{isAr ? "اشتري الآن" : "Buy Now"}</span>
+            </button>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }

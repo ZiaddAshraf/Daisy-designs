@@ -22,6 +22,36 @@ import {
     Truck,
 } from "lucide-react";
 
+export const EGYPTIAN_GOVERNORATES = [
+    { id: "cairo", nameAr: "القاهرة", nameEn: "Cairo", etaAr: "توصيل سريع خلال ٢٤ - ٤٨ ساعة", etaEn: "Fast delivery within 24-48 hours" },
+    { id: "giza", nameAr: "الجيزة", nameEn: "Giza", etaAr: "توصيل سريع خلال ٢٤ - ٤٨ ساعة", etaEn: "Fast delivery within 24-48 hours" },
+    { id: "alexandria", nameAr: "الإسكندرية", nameEn: "Alexandria", etaAr: "توصيل خلال ٢ - ٣ أيام عمل", etaEn: "Delivery within 2-3 business days" },
+    { id: "qalyubia", nameAr: "القليوبية", nameEn: "Qalyubia", etaAr: "توصيل خلال ٢ - ٣ أيام عمل", etaEn: "Delivery within 2-3 business days" },
+    { id: "sharqia", nameAr: "الشرقية", nameEn: "Sharqia", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "dakahlia", nameAr: "الدقهلية (المنصورة)", nameEn: "Dakahlia (Mansoura)", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "gharbia", nameAr: "الغربية (طنطا / المحلة)", nameEn: "Gharbia (Tanta / Mahalla)", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "monufia", nameAr: "المنوفية", nameEn: "Monufia", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "damietta", nameAr: "دمياط", nameEn: "Damietta", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "port_said", nameAr: "بورسعيد", nameEn: "Port Said", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "ismailia", nameAr: "الإسماعيلية", nameEn: "Ismailia", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "suez", nameAr: "السويس", nameEn: "Suez", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "kafr_el_sheikh", nameAr: "كفر الشيخ", nameEn: "Kafr El-Sheikh", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "beheira", nameAr: "البحيرة", nameEn: "Beheira", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
+    { id: "fayoum", nameAr: "الفيوم", nameEn: "Fayoum", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "beni_suef", nameAr: "بني سويف", nameEn: "Beni Suef", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "minya", nameAr: "المنيا", nameEn: "Minya", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "asyut", nameAr: "أسيوط", nameEn: "Asyut", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "sohag", nameAr: "سوهاج", nameEn: "Sohag", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "qena", nameAr: "قنا", nameEn: "Qena", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "luxor", nameAr: "الأقصر", nameEn: "Luxor", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "aswan", nameAr: "أسوان", nameEn: "Aswan", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "red_sea", nameAr: "البحر الأحمر (الغردقة)", nameEn: "Red Sea (Hurghada)", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "matrouh", nameAr: "مطروح والساحل الشمالي", nameEn: "Matrouh & North Coast", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
+    { id: "new_valley", nameAr: "الوادي الجديد", nameEn: "New Valley", etaAr: "توصيل خلال ٤ - ٦ أيام عمل", etaEn: "Delivery within 4-6 business days" },
+    { id: "north_sinai", nameAr: "شمال سيناء", nameEn: "North Sinai", etaAr: "توصيل خلال ٤ - ٦ أيام عمل", etaEn: "Delivery within 4-6 business days" },
+    { id: "south_sinai", nameAr: "جنوب سيناء (شرم الشيخ)", nameEn: "South Sinai (Sharm El-Sheikh)", etaAr: "توصيل خلال ٤ - ٦ أيام عمل", etaEn: "Delivery within 4-6 business days" },
+] as const;
+
 type OrderConfirmation = {
     number: string;
     total: number;
@@ -44,6 +74,12 @@ export default function CheckoutPage() {
     const [showMobileSummary, setShowMobileSummary] = useState(false);
 
     const defaultPhone = items.find(item => item.customization?.parent_phone)?.customization?.parent_phone ?? "";
+    const [selectedGov, setSelectedGov] = useState<string>("cairo");
+    const [phone, setPhone] = useState(defaultPhone);
+
+    const currentGov = EGYPTIAN_GOVERNORATES.find(g => g.id === selectedGov) || EGYPTIAN_GOVERNORATES[0];
+    const cleanedPhone = phone.trim().replace(/^(\+20|0020)/, "0");
+    const isEgyptianMobile = /^01[0125][0-9]{8}$/.test(cleanedPhone);
 
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : STANDARD_SHIPPING_FEE;
@@ -69,6 +105,15 @@ export default function CheckoutPage() {
         const rawCoupon = (form.get("couponCode") as string | null)?.trim();
         const rawEmail = (form.get("email") as string | null)?.trim();
         const rawNotes = (form.get("notes") as string | null)?.trim();
+        const rawBackupPhone = (form.get("backupPhone") as string | null)?.trim();
+
+        let combinedNotes = rawNotes || "";
+        if (rawBackupPhone) {
+            const backupText = locale === "ar" ? `رقم بديل/واتساب: ${rawBackupPhone}` : `Backup/WhatsApp: ${rawBackupPhone}`;
+            combinedNotes = combinedNotes ? `${backupText} | ${combinedNotes}` : backupText;
+        }
+
+        const govValue = locale === "ar" ? currentGov.nameAr : currentGov.nameEn;
 
         try {
             const response = await fetch("/api/orders", {
@@ -78,10 +123,10 @@ export default function CheckoutPage() {
                     fullName: form.get("fullName"),
                     phone: form.get("phone"),
                     email: rawEmail || undefined,
-                    governorate: form.get("governorate"),
+                    governorate: govValue,
                     city: form.get("city"),
                     address: form.get("address"),
-                    notes: rawNotes || undefined,
+                    notes: combinedNotes || undefined,
                     couponCode: rawCoupon || undefined,
                     paymentMethod: "COD",
                     requestId: requestId.current,
@@ -307,7 +352,8 @@ export default function CheckoutPage() {
                                         </span>
                                         <input
                                             name="phone"
-                                            defaultValue={defaultPhone}
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
                                             required
                                             minLength={8}
                                             maxLength={30}
@@ -317,12 +363,37 @@ export default function CheckoutPage() {
                                             placeholder="01012345678"
                                             className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                         />
-                                        <span className="text-xs text-[var(--muted-foreground)]">
-                                            {t("egyptPhoneHelp")}
-                                        </span>
+                                        {isEgyptianMobile ? (
+                                            <span className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
+                                                <CheckCircle2 size={13} />
+                                                <span>{locale === "ar" ? "رقم محمول مصري صحيح ومكتمل ✓" : "Valid Egyptian mobile number"}</span>
+                                            </span>
+                                        ) : phone.length > 0 ? (
+                                            <span className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                                                {locale === "ar" ? "رقم المحمول المصري يبدأ بـ 010 أو 011 أو 012 أو 015 ومكون من ١١ رقم" : "Egyptian mobile must be 11 digits starting with 010, 011, 012, or 015"}
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs text-[var(--muted-foreground)]">
+                                                {t("egyptPhoneHelp")}
+                                            </span>
+                                        )}
                                     </label>
 
-                                    <label className="grid gap-1.5 text-sm font-medium text-[var(--foreground)] sm:col-span-2">
+                                    <label className="grid gap-1.5 text-sm font-medium text-[var(--foreground)]">
+                                        <span>
+                                            {locale === "ar" ? "رقم بديل أو واتساب (اختياري لمساعدة المندوب)" : "Backup / WhatsApp (Optional for courier)"}
+                                        </span>
+                                        <input
+                                            name="backupPhone"
+                                            type="tel"
+                                            inputMode="tel"
+                                            autoComplete="tel"
+                                            placeholder={locale === "ar" ? "مثال: 01123456789" : "e.g. 01123456789"}
+                                            className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
+                                        />
+                                    </label>
+
+                                    <label className="grid gap-1.5 text-sm font-medium text-[var(--foreground)]">
                                         <span>{t("checkoutEmailOptional")}</span>
                                         <input
                                             name="email"
@@ -351,15 +422,22 @@ export default function CheckoutPage() {
                                         <span>
                                             {t("checkoutGovernorate")} <strong className="text-red-500">*</strong>
                                         </span>
-                                        <input
+                                        <select
                                             name="governorate"
-                                            required
-                                            minLength={2}
-                                            maxLength={80}
-                                            autoComplete="address-level1"
-                                            placeholder={locale === "ar" ? "مثال: القاهرة / الجيزة / الإسكندرية" : "e.g. Cairo / Giza / Alexandria"}
-                                            className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
-                                        />
+                                            value={selectedGov}
+                                            onChange={(e) => setSelectedGov(e.target.value)}
+                                            className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden cursor-pointer"
+                                        >
+                                            {EGYPTIAN_GOVERNORATES.map((gov) => (
+                                                <option key={gov.id} value={gov.id}>
+                                                    {locale === "ar" ? gov.nameAr : gov.nameEn}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40 mt-1">
+                                            <Truck size={13} className="shrink-0" />
+                                            <span>{locale === "ar" ? currentGov.etaAr : currentGov.etaEn}</span>
+                                        </div>
                                     </label>
 
                                     <label className="grid gap-1.5 text-sm font-medium text-[var(--foreground)]">
@@ -414,11 +492,23 @@ export default function CheckoutPage() {
                                         </div>
                                         <div className="flex-1">
                                             <p className="font-semibold text-sm text-[var(--foreground)]">
-                                                {t("paymentMethodCod")}
+                                                {locale === "ar" ? "الدفع نقداً عند الاستلام بعد المعاينة الكاملة" : t("paymentMethodCod")}
                                             </p>
                                             <p className="mt-1 text-xs text-[var(--muted-foreground)] leading-relaxed">
-                                                {t("paymentMethodCodDesc")}
+                                                {locale === "ar"
+                                                    ? "مش هتدفعي أي مبالغ مسبقاً! افتحي الشحنة وعايني جودة المنتج والتفاصيل قبل سداد المبلغ لمندوب التوصيل."
+                                                    : t("paymentMethodCodDesc")}
                                             </p>
+                                            <div className="mt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+                                                <span className="flex items-center gap-1.5">
+                                                    <CheckCircle2 size={13} />
+                                                    <span>{locale === "ar" ? "معاينة مجانية كاملة قبل الدفع" : "Free inspection before pay"}</span>
+                                                </span>
+                                                <span className="flex items-center gap-1.5">
+                                                    <Truck size={13} />
+                                                    <span>{locale === "ar" ? "شحن آمن ومباشر لباب بيتك" : "Doorstep courier delivery"}</span>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -470,7 +560,11 @@ export default function CheckoutPage() {
                                         <span>{t("checkoutSubmitting")}</span>
                                     ) : (
                                         <>
-                                            <span>{t("checkoutConfirmButton")}</span>
+                                            <span>
+                                                {locale === "ar"
+                                                    ? "تأكيد الطلب الآن — الدفع عند الاستلام"
+                                                    : t("checkoutConfirmButton")}
+                                            </span>
                                             {direction === "rtl" ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
                                         </>
                                     )}

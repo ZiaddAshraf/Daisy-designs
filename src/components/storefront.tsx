@@ -3,7 +3,7 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, Heart, Menu, Minus, Plus, Search, ShoppingBag, ShoppingCart, UserRound, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, Camera, Heart, Menu, Minus, Music2, Plus, Search, ShoppingBag, ShoppingCart, UsersRound, UserRound, X } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import type { Product } from "@/lib/products";
@@ -383,5 +383,44 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
 
 function Footer({ locale }: { locale: Locale }) {
   const t = (key: TranslationKey) => getTranslation(locale, key);
-  return <footer className="daisy-footer" data-scroll-reveal suppressHydrationWarning><div className="daisy-footer__main"><div className="daisy-footer__brand"><Link href="/" className="daisy-wordmark daisy-wordmark--footer" aria-label={t("brandHome")}><BrandLogo variant="full" /></Link><p>{t("footerIntro")}<br />{t("footerIntroSecond")}</p></div><div className="daisy-footer__links"><div><h2>{t("discover")}</h2><Link href="/categories">{t("categories")}</Link><Link href="/products">{t("products")}</Link><Link href="/about">{t("ourStory")}</Link><Link href="/faq">{t("help")}</Link></div><div><h2>{t("hereForYou")}</h2><Link href="/faq">{t("frequentlyAskedQuestions")}</Link><Link href="/shipping">{t("shippingDelivery")}</Link><Link href="/returns">{t("returns")}</Link><Link href="/contact">{t("contactUs")}</Link></div><div><h2>{t("followUs")}</h2><a href="https://www.instagram.com/daisydesign23" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/share/1PwXqKfKAq/" target="_blank" rel="noreferrer">Facebook</a><a href="https://tiktok.com" target="_blank" rel="noreferrer">TikTok</a></div></div></div><div className="daisy-footer__bottom"><span>{t("copyright")}</span><span>{t("madeWithLove")}</span><Link href="/privacy">{t("privacyTerms")}</Link></div></footer>;
+  return (
+    <footer className="daisy-footer" data-scroll-reveal suppressHydrationWarning>
+      <div className="daisy-footer__main">
+        <div className="daisy-footer__brand">
+          <Link href="/" className="daisy-wordmark daisy-wordmark--footer" aria-label={t("brandHome")}>
+            <BrandLogo variant="full" />
+          </Link>
+          <p>{t("footerIntro")}<br />{t("footerIntroSecond")}</p>
+          <span className="daisy-footer__signature">✳&nbsp; DAISY DESIGNS</span>
+        </div>
+        <nav className="daisy-footer__links" aria-label={t("mainNavigation")}>
+          <div>
+            <h2>{t("discover")}</h2>
+            <Link href="/categories">{t("categories")}</Link>
+            <Link href="/products">{t("products")}</Link>
+            <Link href="/about">{t("ourStory")}</Link>
+            <Link href="/faq">{t("help")}</Link>
+          </div>
+          <div>
+            <h2>{t("hereForYou")}</h2>
+            <Link href="/faq">{t("frequentlyAskedQuestions")}</Link>
+            <Link href="/shipping">{t("shippingDelivery")}</Link>
+            <Link href="/returns">{t("returns")}</Link>
+            <Link href="/contact">{t("contactUs")}</Link>
+          </div>
+          <div className="daisy-footer__social">
+            <h2>{t("followUs")}</h2>
+            <a href="https://www.instagram.com/daisydesign23" target="_blank" rel="noreferrer"><Camera aria-hidden="true" />Instagram<ArrowUpRight aria-hidden="true" /></a>
+            <a href="https://www.facebook.com/share/1PwXqKfKAq/" target="_blank" rel="noreferrer"><UsersRound aria-hidden="true" />Facebook<ArrowUpRight aria-hidden="true" /></a>
+            <a href="https://tiktok.com" target="_blank" rel="noreferrer"><Music2 aria-hidden="true" />TikTok<ArrowUpRight aria-hidden="true" /></a>
+          </div>
+        </nav>
+      </div>
+      <div className="daisy-footer__bottom">
+        <span>{t("copyright")}</span>
+        <span className="daisy-footer__made-with-love">{t("madeWithLove")}</span>
+        <Link href="/privacy">{t("privacyTerms")}</Link>
+      </div>
+    </footer>
+  );
 }
