@@ -400,3 +400,36 @@ The following items are documented for store owner alignment before or during im
 ### Step 5: Test Suite & Ralph Loop Verification
 - Update `tests/tshirt-product.test.ts` to test all 13 valid sizes (both children and adults) and ensure invalid sizes are properly rejected.
 - Execute full Ralph Loop verification: typecheck, lint, 90/90 tests, 41/41 build.
+
+
+---
+
+## 10. Implementation Plan: Category Rename to "تيكت وليبل وميدالية" & Keychain Products Integration
+
+### Step 1: Update Category Metadata Across the Store
+- `src/lib/store-categories.ts`:
+  - `arabicName: "تيكت وليبل وميدالية"`
+  - `name: "Tickets, Labels & Keychains"`
+  - Update tagline and description to mention personalized acrylic keychains.
+- `src/components/category-card.tsx`:
+  - Update `SHORT_TAGLINES` for `stickers`.
+- `src/data/stickers-product.json`:
+  - Update `category.arabicName` to `"تيكت وليبل وميدالية"` and `category.name` to `"Tickets, Labels & Keychains"`.
+- `src/lib/ensure-catalog-product.ts`:
+  - Update `stickers` category name.
+- `src/components/stickers-catalog-client.tsx` & `src/components/stickers-preview.tsx`:
+  - Update header labels.
+- `src/app/products/page.tsx`:
+  - Update filter label and product card category badges.
+
+### Step 2: Database Synchronization
+- Run script to update `Category` record in PostgreSQL (`arabicName: "تيكت وليبل وميدالية"`, `name: "Tickets, Labels & Keychains"`).
+- Upsert the 3 keychain products with stock, pricing (70 EGP), images, and customization fields.
+
+### Step 3: Catalog & Storefront Integration
+- Add the 3 keychain products to `src/app/products/page.tsx` with high-resolution imagery and direct purchase flow.
+- Ensure `/products/[slug]` correctly displays and customizes each keychain.
+
+### Step 4: Verification Loop
+- Run tests (`store-categories.test.ts`, `business-catalog.test.ts`).
+- Execute Ralph Loop (`tsc`, `lint`, `test`, `build`).

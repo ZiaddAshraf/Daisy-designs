@@ -12,8 +12,8 @@ const galleryImages = [
     alt: index === 0 ? "You can do it reward card" : `Reward card design ${index + 1}`,
     arabicAlt: index === 0 ? "بطاقة تشجيع: يمكنك فعلها" : `تصميم بطاقة تشجيع ${index + 1}`,
   })),
-  { src: "/products/stickers/custom-sticker-design.svg", href: "/products/custom-waterproof-stickers", alt: "Custom sticker design", arabicAlt: "استيكر بتصميم مخصص" },
-  { src: "/products/t-shirts/white-tshirt.svg", href: "/products/custom-printed-tshirt", alt: "White printed T-shirt", arabicAlt: "تيشيرت أبيض للطباعة" },
+  { src: "/products/stickers/tickets-labels-studio.jpeg", href: "/products/custom-waterproof-stickers", alt: "Tickets and Labels package", arabicAlt: "باقة تيكت وليبل المدرسية" },
+  { src: "/products/t-shirts/kids-tshirt-studio.jpeg", href: "/products/custom-printed-tshirt", alt: "Custom printed cotton T-shirt", arabicAlt: "تيشيرت قطن بطباعة مخصصة" },
 ];
 
 function ProductTile({ image, locale }: { image: (typeof galleryImages)[number]; locale: Locale }) {

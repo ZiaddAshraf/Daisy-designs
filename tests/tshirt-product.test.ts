@@ -27,11 +27,11 @@ import { checkoutSchema } from "../src/lib/order-validation";
 import { calculateShipping } from "../src/lib/commerce-rules";
 import { GET as getAdminTshirtArtwork } from "../src/app/api/admin/orders/[id]/tshirt-artwork/route";
 
-test("T-Shirt fixture has confirmed 500 EGP price, center chest placement, and DD-TS-001 SKU", () => {
+test("T-Shirt fixture has confirmed 450 EGP price, center chest placement, and DD-TS-001 SKU", () => {
   const { product, category } = tshirtProductData;
   assert.equal(category.slug, "printed-t-shirts");
   assert.equal(product.slug, "custom-printed-tshirt");
-  assert.equal(product.price, 500);
+  assert.equal(product.price, 450);
   assert.equal(product.sku, "DD-TS-001");
   assert.equal(product.customizable, true);
   assert.equal(product.published, true);
@@ -351,14 +351,14 @@ test("Adding customized T-shirt to cart and submitting valid COD order schema su
   assert.equal(validation.data?.garment_size, "6");
   assert.equal(validation.data?.print_placement, "center_chest");
 
-  // 4. Server calculation: 500 EGP unit price, subtotal 1000, shipping 60, total 1060
-  const unitPrice = tshirtProductData.product.price; // 500
+  // 4. Server calculation: 450 EGP unit price, subtotal 900, shipping 60, total 960
+  const unitPrice = tshirtProductData.product.price; // 450
   const subtotal = unitPrice * linePayload.quantity;
-  assert.equal(subtotal, 1000);
+  assert.equal(subtotal, 900);
   const shipping = calculateShipping(subtotal, 60, 2500);
   assert.equal(shipping, 60);
   const total = subtotal + shipping;
-  assert.equal(total, 1060);
+  assert.equal(total, 960);
 });
 
 test("Multiple T-shirts with different sizes, colors, and artwork aggregate into single inventory target", () => {
@@ -411,9 +411,9 @@ test("Multiple T-shirts with different sizes, colors, and artwork aggregate into
 
   // Order items mapped without variantId
   const pricedItems = [
-    { item: shirt1, unitPrice: 500, productId: "prod-tshirt" },
-    { item: shirt2, unitPrice: 500, productId: "prod-tshirt" },
-    { item: shirt3, unitPrice: 500, productId: "prod-tshirt" },
+    { item: shirt1, unitPrice: 450, productId: "prod-tshirt" },
+    { item: shirt2, unitPrice: 450, productId: "prod-tshirt" },
+    { item: shirt3, unitPrice: 450, productId: "prod-tshirt" },
   ];
 
   // Aggregate quantities by inventory target (matching POST /api/orders logic)
@@ -512,8 +512,8 @@ test("Customization validation rejects invalid size, invalid color, malformed da
   assert.equal(emptyCustomization.reason, "MISSING_CUSTOMIZATION");
 });
 
-test("Server enforces 500 EGP price and ignores client-supplied price or modified fields", () => {
-  const productPrice = 500; // From server product catalog
+test("Server enforces 450 EGP price and ignores client-supplied price or modified fields", () => {
+  const productPrice = 450; // From server product catalog
 
   // Client attempts to pass a modified price of 50 EGP in the checkout body
   const clientItem = {
@@ -532,11 +532,11 @@ test("Server enforces 500 EGP price and ignores client-supplied price or modifie
   // Server orders route extracts price ONLY from product record:
   // const unitPrice = variant?.price ?? product.price;
   const verifiedUnitPrice = productPrice; // strictly server product.price
-  assert.equal(verifiedUnitPrice, 500, "Server must enforce 500 EGP regardless of client input");
+  assert.equal(verifiedUnitPrice, 450, "Server must enforce 450 EGP regardless of client input");
   assert.notEqual(verifiedUnitPrice, clientItem.unitPrice);
 
   const subtotal = verifiedUnitPrice * clientItem.quantity;
-  assert.equal(subtotal, 500);
+  assert.equal(subtotal, 450);
 });
 
 test("Insufficient stock boundary guard rejects ordering exceeding aggregate stock pool", () => {

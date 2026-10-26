@@ -1,7 +1,29 @@
 import { PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
 import { formatLocaleNumber, type Locale } from "@/lib/locale";
 
-export type Product = { slug: string; name: string; category: string; price: number; compareAtPrice?: number; image: string; description: string; customizable?: boolean; hasVariants?: boolean; badge?: string };
+export type ProductColor = {
+  id: string;
+  name: string;
+  arabicName?: string;
+  hex: string;
+  image?: string;
+};
+
+export type Product = {
+  slug: string;
+  name: string;
+  category: string;
+  price: number;
+  compareAtPrice?: number;
+  image: string;
+  description: string;
+  customizable?: boolean;
+  hasVariants?: boolean;
+  badge?: string;
+  colors?: ProductColor[];
+  subtitle?: string;
+  customizationTag?: string;
+};
 export const products: Product[] = [
     { slug: "name-labels-classic", name: "ملصقات الاسم | Classic", category: "استيكرات مدرسية", price: 149, compareAtPrice: 189, image: PRODUCT_IMAGE_PLACEHOLDER, description: "مجموعة ملصقات متينة باسم طفلك، مناسبة للأدوات والكتب.", customizable: true, badge: "الأكثر مبيعًا" },
     { slug: "daily-bottle", name: "زجاجة يومية | Mono", category: "أدوات الشرب", price: 485, image: PRODUCT_IMAGE_PLACEHOLDER, description: "زجاجة خفيفة وآمنة للاستخدام اليومي، بتصميم هادئ.", customizable: true },

@@ -73,5 +73,37 @@ export function toStorefrontProduct(product: { slug: string; name: string; arabi
     const categoryName = product.category ? selectLocalizedText(locale, product.category.name, product.category.arabicName) : "";
     const visibleCategory = categoryName.replace(/^DEMO — /, "");
     const badge = product.badge ?? (demo && product.bestSeller ? getTranslation(locale, "demoPick") : undefined);
-    return { slug: product.slug, name: visibleName, category: visibleCategory || getTranslation(locale, "customProducts"), price: product.price, compareAtPrice: product.compareAtPrice ?? undefined, image: getProductImageUrl(product.images[0]?.url), description: selectLocalizedText(locale, product.description, product.arabicDescription), customizable: product.customizable, hasVariants: Boolean(product.variants?.length), badge };
+
+    const isTshirt = product.slug === "custom-printed-tshirt";
+    const colors = isTshirt ? [
+      { id: "white", name: "White", arabicName: "أبيض", hex: "#FFFFFF", image: "/products/t-shirts/kids-tshirt-studio.jpeg" },
+      { id: "black", name: "Black", arabicName: "أسود", hex: "#18181B", image: "/products/t-shirts/black-tshirt.svg" },
+      { id: "gray", name: "Gray", arabicName: "رمادي", hex: "#9CA3AF", image: "/products/t-shirts/gray-tshirt.svg" },
+    ] : undefined;
+
+    const subtitle = isTshirt
+      ? (locale === "ar" ? "قطن مصري ١٠٠٪ • طباعة على الصدر" : "100% Egyptian Cotton • Center Chest Print")
+      : undefined;
+
+    const customizationTag = product.customizable
+      ? (isTshirt
+          ? (locale === "ar" ? "كبار وأطفال" : "Adults & Kids")
+          : (locale === "ar" ? "مخصص بالكامل" : "Customizable"))
+      : undefined;
+
+    return {
+      slug: product.slug,
+      name: visibleName,
+      category: visibleCategory || getTranslation(locale, "customProducts"),
+      price: product.price,
+      compareAtPrice: product.compareAtPrice ?? undefined,
+      image: getProductImageUrl(product.images[0]?.url),
+      description: selectLocalizedText(locale, product.description, product.arabicDescription),
+      customizable: product.customizable,
+      hasVariants: Boolean(product.variants?.length),
+      badge,
+      colors,
+      subtitle,
+      customizationTag,
+    };
 }

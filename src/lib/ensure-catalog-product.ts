@@ -100,7 +100,7 @@ export async function ensureCatalogProductInTransaction(
         arabicName: "تيشيرت قطن بطباعة مخصصة (كبار وأطفال)",
         description: "High-quality plain cotton T-shirt for adults and kids customized with your requested artwork or written idea.",
         arabicDescription: "تيشيرت قطن سادة عالي الجودة ومريح للكبار والأطفال، مخصص بطباعة تصميمك الخاص.",
-        price: 500,
+        price: 450,
         sku: "DD-TS-001",
         stock: 100,
         lowStockThreshold: 5,
@@ -178,9 +178,9 @@ export async function ensureCatalogProductInTransaction(
       cat = await tx.category.create({
         data: {
           slug: "stickers",
-          name: "Stickers",
-          arabicName: "استيكرات وملصقات",
-          description: "High-quality, durable waterproof stickers.",
+          name: "Tickets, Labels & Keychains",
+          arabicName: "تيكت وليبل وميدالية",
+          description: "High-quality, durable waterproof stickers, clothing labels & personalized acrylic keychains.",
           image: "/products/stickers/sticker-02-super-cool-dino.jpeg",
           published: true,
         },
@@ -197,7 +197,7 @@ export async function ensureCatalogProductInTransaction(
         arabicName: "استيكرات مدرسية مخصصة مقاومة للماء",
         description: "High-quality, durable waterproof stickers personalized with your child's name, school, and class.",
         arabicDescription: "استيكرات مدرسية عالية الجودة ومقاومة للماء مخصصة باسم طفلك ومدرسته وفصله.",
-        price: 50,
+        price: stickersData.product.price,
         sku: "DD-STK-050",
         stock: 500,
         lowStockThreshold: 20,
@@ -284,5 +284,118 @@ export async function ensureCatalogProductInTransaction(
     });
     return;
   }
-}
 
+  if (slug === "custom-acrylic-name-keychain" || slug === "keychain-lamine-yamal" || slug === "keychain-cristiano-ronaldo") {
+    let cat = await tx.category.findUnique({ where: { slug: "stickers" } });
+    if (!cat) {
+      cat = await tx.category.create({
+        data: {
+          slug: "stickers",
+          name: "Tickets, Labels & Keychains",
+          arabicName: "تيكت وليبل وميدالية",
+          description: "High-quality, durable waterproof stickers, clothing labels & personalized acrylic keychains.",
+          image: "/products/stickers/sticker-02-super-cool-dino.jpeg",
+          published: true,
+        },
+      });
+    }
+
+    if (slug === "custom-acrylic-name-keychain") {
+      await tx.product.create({
+        data: {
+          slug: "custom-acrylic-name-keychain",
+          name: "Daisy Designs Custom Acrylic Name Keychain",
+          arabicName: "ميدالية اسم مخصصة (أشكال متعددة)",
+          description: "Durable waterproof custom acrylic keychain with your child's name for school backpacks and keys.",
+          arabicDescription: "ميدالية أكريليك متينة ومقاومة للماء مخصصة باسم طفلك والشخصية المفضلة للحقائب المدرسية والمفاتيح.",
+          price: 70,
+          sku: "DD-KC-001",
+          stock: 100,
+          lowStockThreshold: 10,
+          featured: false,
+          customizable: true,
+          published: true,
+          categoryId: cat.id,
+          tags: ["keychains", "ميداليات", "Daisy Designs", "أطفال"],
+          images: {
+            create: [
+              { position: 0, url: "/products/keychains/keychains-collection.jpeg", alt: "Custom Acrylic Keychain Collection" },
+            ],
+          },
+          customizationFields: {
+            create: [
+              { position: 0, label: "اسم الطفل المكتوب على الميدالية", key: "child_name", type: "TEXT", required: true, maxLength: 80 },
+              { position: 1, label: "الشخصية أو التصميم المطلوب (سبايدرمان، باربي، ستيتش، سونيك، موانا)", key: "design_theme", type: "TEXT", required: false, maxLength: 100 },
+            ],
+          },
+        },
+      });
+      return;
+    }
+
+    if (slug === "keychain-lamine-yamal") {
+      await tx.product.create({
+        data: {
+          slug: "keychain-lamine-yamal",
+          name: "Lamine Yamal FC Barcelona Custom Name Keychain",
+          arabicName: "ميدالية لامين يامال - برشلونة مخصصة بالاسم",
+          description: "Custom acrylic keychain featuring Lamine Yamal (Barcelona #19) personalized with your child's name.",
+          arabicDescription: "ميدالية أكريليك مميزة بتصميم لامين يامال ونادي برشلونة رقم 19، مخصصة باسم طفلك بجودة طباعة فائقة ومقاومة للماء.",
+          price: 70,
+          sku: "DD-KC-002",
+          stock: 100,
+          lowStockThreshold: 10,
+          featured: false,
+          customizable: true,
+          published: true,
+          categoryId: cat.id,
+          tags: ["keychains", "ميداليات", "Daisy Designs", "برشلونة", "يامال"],
+          images: {
+            create: [
+              { position: 0, url: "/products/keychains/keychain-lamine-yamal.jpeg", alt: "Lamine Yamal Keychain" },
+            ],
+          },
+          customizationFields: {
+            create: [
+              { position: 0, label: "اسم الطفل المكتوب على الميدالية", key: "child_name", type: "TEXT", required: true, maxLength: 80 },
+            ],
+          },
+        },
+      });
+      return;
+    }
+
+    if (slug === "keychain-cristiano-ronaldo") {
+      await tx.product.create({
+        data: {
+          slug: "keychain-cristiano-ronaldo",
+          name: "Cristiano Ronaldo Real Madrid Ballon d'Or Custom Name Keychain",
+          arabicName: "ميدالية كريستيانو رونالدو - الكرة الذهبية مخصصة بالاسم",
+          description: "Luxury custom acrylic keychain featuring Cristiano Ronaldo with Ballon d'Or and Real Madrid logo, personalized with child's name.",
+          arabicDescription: "ميدالية أكريليك فاخرة للأسطورة كريستيانو رونالدو بشعار ريال مدريد والكرة الذهبية، مخصصة باسم طفلك.",
+          price: 70,
+          sku: "DD-KC-003",
+          stock: 100,
+          lowStockThreshold: 10,
+          featured: false,
+          customizable: true,
+          published: true,
+          categoryId: cat.id,
+          tags: ["keychains", "ميداليات", "Daisy Designs", "ريال مدريد", "رونالدو"],
+          images: {
+            create: [
+              { position: 0, url: "/products/keychains/keychain-cristiano-ronaldo.jpeg", alt: "Cristiano Ronaldo Keychain" },
+            ],
+          },
+          customizationFields: {
+            create: [
+              { position: 0, label: "اسم الطفل المكتوب على الميدالية", key: "child_name", type: "TEXT", required: true, maxLength: 80 },
+            ],
+          },
+        },
+      });
+      return;
+    }
+  }
+
+}

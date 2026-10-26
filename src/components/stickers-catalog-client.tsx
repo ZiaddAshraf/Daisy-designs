@@ -1,4 +1,6 @@
 "use client";
+import { PackageSelector } from "@/components/package-selector";
+import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
 
 import { useState, useMemo, useEffect, useRef, useCallback, type ChangeEvent, type FormEvent } from "react";
 import SiteImage from "@/components/site-image";
@@ -34,6 +36,7 @@ import type { Locale } from "@/lib/locale";
 
 type StickersCatalogClientProps = {
   locale: Locale;
+  catalog: { price: number; stock: number; variants: PricedVariant[] };
 };
 
 // Design badges for the bottom-left arched cutout tab
@@ -70,10 +73,12 @@ type SortOption = "newest" | "price-asc" | "price-desc" | "alpha";
 type StickerDesign = (typeof stickersData.product.designs)[0];
 
 export function StickersCatalogClient({
-  locale,
+  locale, catalog,
 }: StickersCatalogClientProps) {
   const isAr = locale === "ar";
-  const { product } = stickersData;
+  const [selectedPackageId, setSelectedPackageId] = useState("");
+  const selectedPackage = catalog.variants.find(v => v.id === selectedPackageId);
+  const product = { ...stickersData.product, price: selectedPackage?.price ?? catalog.price };
   const { toggle, has } = useWishlist();
   const { add } = useCart();
 
@@ -304,19 +309,20 @@ export function StickersCatalogClient({
     if (className.trim()) customizationPayload.class_name = className.trim();
     if (photoUrl) customizationPayload.child_photo = photoUrl;
 
+    if (!selectedPackage || catalog.stock < quantity) return;
     add(
       {
         slug: product.slug, // "custom-waterproof-stickers"
         name: isAr ? product.arabicName : product.name,
         category: isAr ? stickersData.category.arabicName : stickersData.category.name,
-        price: product.price, // 50
+        price: product.price,
         image: customizingDesign.url,
         description: isAr ? product.arabicDescription : product.description,
         customizable: true,
-        hasVariants: false,
+        hasVariants: true,
       },
       customizationPayload,
-      undefined,
+      selectedPackage ? { id: selectedPackage.id, name: variantLabel(selectedPackage, locale), stock: catalog.stock } : undefined,
       quantity
     );
 
@@ -335,11 +341,11 @@ export function StickersCatalogClient({
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 dark:text-teal-400 mb-1.5">
             <TinyDaisyDoodle size={13} className="text-teal-600 dark:text-teal-400" />
-            <span>DAISY DESIGNS / {isAr ? "استيكرات مدرسية" : "CUSTOM STICKERS"}</span>
+            <span>DAISY DESIGNS / {isAr ? "تيكت وليبل وميدالية" : "TICKETS, LABELS & KEYCHAINS"}</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[var(--foreground)]">
-            {isAr ? "استيكرات مدرسية مخصصة" : "Personalized School Stickers"}
+            {isAr ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains"}
           </h1>
 
           <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 max-w-xl">
@@ -355,7 +361,7 @@ export function StickersCatalogClient({
             <Tag size={14} className="shrink-0" />
             <strong className="text-sm sm:text-base">{formatPrice(product.price, locale)}</strong>
             <span className="font-normal text-teal-100 text-[11px] sm:text-xs">
-              {isAr ? "للشيت" : "/ sheet"}
+              {isAr ? "للباقة" : "/ sheet"}
             </span>
           </div>
 
@@ -592,10 +598,10 @@ export function StickersCatalogClient({
 
                 {/* Card Action & Price Footer */}
                 <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-2 border-t border-[var(--border)]/70 flex items-center justify-between gap-3">
-                  {/* Price: 50.00 EGP */}
+                  {/* Database package price */}
                   <div className="text-start">
                     <span className="text-[11px] text-[var(--muted-foreground)] block">
-                      {isAr ? "سعر الشيت" : "Sheet Price"}
+                      {isAr ? "سعر الباقة" : "Sheet Price"}
                     </span>
                     <strong className="text-base sm:text-lg font-black text-teal-700 dark:text-teal-400">
                       {formatPrice(product.price, locale)}
@@ -686,7 +692,7 @@ export function StickersCatalogClient({
                 <div className="p-4 rounded-2xl bg-[var(--surface-soft)] border border-[var(--border)] space-y-2.5 text-xs">
                   <div className="flex items-center gap-2 text-teal-800 dark:text-teal-300 font-bold">
                     <ShieldCheck size={16} className="text-teal-600 dark:text-teal-400 shrink-0" />
-                    <span>{isAr ? "مواصفات الشيت المعتمدة:" : "Sticker Specifications:"}</span>
+                    <span>{isAr ? "مواصفات الباقة المعتمدة:" : "Sticker Specifications:"}</span>
                   </div>
                   <ul className="space-y-1.5 text-[var(--muted-foreground)] ps-6 list-disc">
                     <li>{isAr ? "فينيل أصلي مقاوم للماء والحرارة والغسيل" : "100% Waterproof and dishwasher-safe vinyl"}</li>
@@ -698,6 +704,8 @@ export function StickersCatalogClient({
 
               {/* Right Column: Interactive Customization Form */}
               <form onSubmit={handleAddToCart} className="space-y-4">
+<PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={setSelectedPackageId} locale={locale} basePrice={catalog.price} />
+
                 {/* 1. Custom Design Idea Description (Required for Design ID 0) */}
                 {customizingDesign.id === 0 && (
                   <div className="p-3.5 rounded-2xl bg-teal-50/70 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/50 space-y-2">
@@ -729,7 +737,7 @@ export function StickersCatalogClient({
                     )}
                     <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium">
                       {isAr
-                        ? "صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية تحبها وسيقوم فريق Daisy Designs بتصميم الشيت بالكامل وفق طلبك."
+                        ? "صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية تحبها وسيقوم فريق Daisy Designs بتصميم الباقة بالكامل وفق طلبك."
                         : "Create any sticker you want: describe any character, and we'll craft the sheet for you."}
                     </p>
                   </div>
@@ -926,7 +934,7 @@ export function StickersCatalogClient({
                   <div className="p-3 sm:p-4 rounded-2xl bg-[var(--surface-soft)] border border-[var(--border)] flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-bold text-[var(--foreground)]">
-                        {isAr ? "عدد الشيتات:" : "Sheets:"}
+                        {isAr ? "عدد الباقات:" : "Packages:"}
                       </span>
                       <div className="flex items-center border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--card)] shadow-xs">
                         <button
@@ -942,7 +950,7 @@ export function StickersCatalogClient({
                         </span>
                         <button
                           type="button"
-                          onClick={() => setQuantity((q) => Math.min(50, q + 1))}
+                          onClick={() => setQuantity((q) => Math.min(50, catalog.stock, q + 1))}
                           className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 text-sm font-bold transition-all cursor-pointer"
                           aria-label={isAr ? "زيادة الكمية" : "Increase quantity"}
                         >
@@ -953,7 +961,7 @@ export function StickersCatalogClient({
 
                     <div className="text-end">
                       <span className="text-[11px] text-[var(--muted-foreground)] block">
-                        {isAr ? "الإجمالي لهذا الشيت" : "Line Total"}
+                        {isAr ? "الإجمالي لهذا الباقة" : "Line Total"}
                       </span>
                       <strong className="text-lg sm:text-xl font-black text-teal-700 dark:text-teal-400">
                         {formatPrice(product.price * quantity, locale)}
@@ -964,7 +972,7 @@ export function StickersCatalogClient({
                   {/* Primary Action Button: "أضف للسلة" */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || isUploadingPhoto}
+                    disabled={isSubmitting || isUploadingPhoto || !selectedPackage || catalog.stock < quantity}
                     className="w-full py-3.5 px-6 rounded-2xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-extrabold text-sm sm:text-base shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-h-[48px]"
                   >
                     <ShoppingBag size={18} />
@@ -994,11 +1002,11 @@ export function StickersCatalogClient({
           <div className="text-xs text-start">
             <p className="font-bold">
               {isAr
-                ? `تمت إضافة شيت "${successToast.designName}" بنجاح إلى سلتك!`
+                ? `تمت إضافة باقة "${successToast.designName}" بنجاح إلى سلتك!`
                 : `Added "${successToast.designName}" to cart!`}
             </p>
             <p className="text-[11px] text-neutral-300">
-              {isAr ? `الكمية: ${successToast.quantity} شيت` : `Qty: ${successToast.quantity}`}
+              {isAr ? `الكمية: ${successToast.quantity} باقة` : `Qty: ${successToast.quantity}`}
             </p>
           </div>
         </div>

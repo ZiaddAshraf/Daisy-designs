@@ -87,13 +87,13 @@ test("cartLineId isolates stickers by design and child name", () => {
   assert.equal(line1, line1Duplicate, "Identical configurations must share the same line ID");
 });
 
-test("sticker unit price is strictly 50 EGP and calculates total correctly", () => {
+test("sticker unit price is 300 EGP for the combined package and calculates total correctly", () => {
   const unitPrice = stickersData.product.price;
-  assert.equal(unitPrice, 50, "Sticker unit price must be 50 EGP");
+  assert.equal(unitPrice, 300, "Sticker unit price must be 300 EGP");
 
   const qty = 3;
   const lineTotal = unitPrice * qty;
-  assert.equal(lineTotal, 150, "3 sheets must equal 150 EGP");
+  assert.equal(lineTotal, 900, "3 combined packages must equal 900 EGP");
 });
 
 test("custom sticker design at index 0 validates custom design text correctly", () => {

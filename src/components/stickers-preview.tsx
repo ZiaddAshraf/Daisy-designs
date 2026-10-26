@@ -1,6 +1,8 @@
 "use client";
+import { PackageSelector } from "@/components/package-selector";
+import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
 
-import { useState, useEffect, useCallback, useRef, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import SiteImage from "@/components/site-image";
 import type { Locale } from "@/lib/locale";
@@ -39,6 +41,7 @@ import {
 
 type StickersPreviewProps = {
   locale: Locale;
+  catalog: { price: number; stock: number; variants: PricedVariant[] };
   inStock?: boolean;
 };
 
@@ -90,18 +93,20 @@ const CRAFTSMANSHIP = [
   },
   {
     icon: Palette,
-    titleAr: "شيت متكامل (تيكت + شريط نحيف)",
-    titleEn: "Complete Two-in-One Sheet",
-    descAr: "يحتوي كل شيت على ملصق كبير للدفاتر والكتب + شريط نحيف للأقلام والزجاجات.",
-    descEn: "Includes generous notebook cover labels plus slim strips for stationery and bottles.",
+    titleAr: "اختاري محتويات الباقة",
+    titleEn: "Choose your package",
+    descAr: "٢٥ تيكت + ٣٠ ليبل، أو ٢٥ تيكت فقط، أو ٣٠ ليبل فقط.",
+    descEn: "25 tickets + 30 labels, 25 tickets only, or 30 labels only.",
   },
 ];
 
-export function StickersPreview({ locale, inStock: inStockProp }: StickersPreviewProps) {
+export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
   const router = useRouter();
   const isAr = locale === "ar";
-  const { product } = stickersData;
-  const inStock = inStockProp ?? (product.stock !== null ? product.stock > 0 : true);
+  const [selectedPackageId, setSelectedPackageId] = useState("");
+  const selectedPackage = catalog.variants.find(v => v.id === selectedPackageId);
+  const product = { ...stickersData.product, price: selectedPackage?.price ?? catalog.price };
+  const inStock = catalog.stock > 0;
   const { add } = useCart();
 
   // State
@@ -167,7 +172,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
       image: product.primaryImage.url,
       description: isAr ? product.arabicDescription : product.description,
       customizable: true,
-      hasVariants: false,
+      hasVariants: true,
     });
   };
 
@@ -204,15 +209,14 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
   }, [lightboxIndex, customizingIndex]);
 
   // Keyboard navigation for Lightbox
-  const handlePrevDesign = useCallback(() => {
-    if (lightboxIndex === null) return;
-    setLightboxIndex((prev) => (prev === null || prev === 0 ? product.designs.length - 1 : prev - 1));
-  }, [lightboxIndex, product.designs.length]);
+  const totalDesigns = stickersData.product.designs.length;
+  const handlePrevDesign = () => {
+    setLightboxIndex((prev) => (prev === null || prev === 0 ? totalDesigns - 1 : prev - 1));
+  };
 
-  const handleNextDesign = useCallback(() => {
-    if (lightboxIndex === null) return;
-    setLightboxIndex((prev) => (prev === null || prev === product.designs.length - 1 ? 0 : prev + 1));
-  }, [lightboxIndex, product.designs.length]);
+  const handleNextDesign = () => {
+    setLightboxIndex((prev) => (prev === null || prev === totalDesigns - 1 ? 0 : prev + 1));
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -221,17 +225,17 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
         setCustomizingIndex(null);
       } else if (lightboxIndex !== null) {
         if (e.key === "ArrowLeft") {
-          if (isAr) handleNextDesign();
-          else handlePrevDesign();
+          const step = isAr ? 1 : -1;
+          setLightboxIndex((prev) => (prev === null ? null : (prev + step + totalDesigns) % totalDesigns));
         } else if (e.key === "ArrowRight") {
-          if (isAr) handlePrevDesign();
-          else handleNextDesign();
+          const step = isAr ? -1 : 1;
+          setLightboxIndex((prev) => (prev === null ? null : (prev + step + totalDesigns) % totalDesigns));
         }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxIndex, isAr, handleNextDesign, handlePrevDesign]);
+  }, [lightboxIndex, isAr, totalDesigns]);
 
   // Handle Photo File Selection & Upload
   const handlePhotoChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -330,6 +334,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
     if (className.trim()) customizationPayload.class_name = className.trim();
     if (photoUrl) customizationPayload.child_photo = photoUrl;
 
+    if (!selectedPackage || catalog.stock < quantity) return;
     add(
       {
         slug: product.slug,
@@ -339,10 +344,10 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
         image: chosenDesign.url,
         description: isAr ? product.arabicDescription : product.description,
         customizable: true,
-        hasVariants: false,
+        hasVariants: true,
       },
       customizationPayload,
-      undefined,
+      selectedPackage ? { id: selectedPackage.id, name: variantLabel(selectedPackage, locale), stock: catalog.stock } : undefined,
       quantity
     );
 
@@ -369,7 +374,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
             role="button"
             tabIndex={0}
             onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setLightboxIndex(1)}
-            title={isAr ? "معاينة تصميم الشيت بالتفصيل" : "Explore sticker sheet details"}
+            title={isAr ? "معاينة تصميم الباقة بالتفصيل" : "Explore sticker sheet details"}
           >
             <SiteImage
               src={product.primaryImage.url}
@@ -388,7 +393,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
           </div>
           <p className="mt-2 text-xs text-[var(--muted-foreground)] text-start">
             {isAr
-              ? "نموذج شيت الاستيكرات المتكامل: يشمل ملصق كبير للدفاتر والكتب + شريط اسم نحيف للأقلام والزجاجات."
+              ? "نموذج باقة الاستيكرات المتكامل: يشمل ملصق كبير للدفاتر والكتب + شريط اسم نحيف للأقلام والزجاجات."
               : "Authentic two-in-one sticker sheet featuring notebook label and pencil/bottle strip."}
           </p>
         </div>
@@ -397,7 +402,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
         <div className="flex flex-col text-start">
           <div className="inline-flex items-center gap-2 self-start bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 px-3 py-1 rounded-full text-xs font-semibold text-amber-800 dark:text-amber-300 mb-4">
             <TinyDaisyDoodle size={14} className="text-amber-500" />
-            <span>DAISY DESIGNS / {isAr ? "استيكرات مدرسية مخصصة" : "CUSTOM STICKERS"}</span>
+            <span>DAISY DESIGNS / {isAr ? "تيكت وليبل وميدالية" : "TICKETS, LABELS & KEYCHAINS"}</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--foreground)] mb-2">
@@ -422,7 +427,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                   {formatPrice(product.price, locale)}
                 </strong>
                 <span className="text-xs font-medium text-[var(--muted-foreground)]">
-                  {isAr ? "لكل شيت متكامل" : "per complete sheet"}
+                  {isAr ? "لكل باقة" : "per package"}
                 </span>
               </div>
             </div>
@@ -592,7 +597,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
 
                   <div className="pt-2 border-t border-[var(--border)]/60 flex items-center justify-between gap-2">
                     <strong className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
-                      50 {isAr ? "ج.م" : "EGP"}
+                      {formatPrice(catalog.price, locale)}
                     </strong>
                     <button
                       type="button"
@@ -719,13 +724,13 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                 </div>
                 <div>
                   <span className="text-[11px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider block">
-                    {isAr ? "تخصيص شيت استيكر" : "Personalize Sticker Sheet"} (#{activeDesign.id})
+                    {isAr ? "تخصيص باقة استيكر" : "Personalize Sticker Sheet"} (#{activeDesign.id})
                   </span>
                   <h3 className="text-sm sm:text-base font-extrabold text-[var(--foreground)] line-clamp-1">
                     {isAr ? activeDesign.arabicTitle : activeDesign.title}
                   </h3>
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                    50 {isAr ? "جنيه مصري للشيت" : "EGP per sheet"}
+                    {formatPrice(product.price, locale)}
                   </span>
                 </div>
               </div>
@@ -743,6 +748,8 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
 
             {/* Customization Form */}
             <form onSubmit={handleAddToCart} className="p-4 sm:p-6 space-y-4 text-start">
+<PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={setSelectedPackageId} locale={locale} basePrice={catalog.price} />
+
               {/* Custom Design Idea / Character (Shown for Custom Sticker) */}
               {activeDesign.id === 0 && (
                 <div className="p-4 rounded-2xl border-2 border-teal-500/40 bg-teal-50/60 dark:bg-teal-950/30 space-y-2">
@@ -774,7 +781,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                   )}
                   <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium leading-relaxed">
                     {isAr
-                      ? "صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية أو رسمة تحبها وسيقوم فريق Daisy Designs بتصميم الشيت بالكامل وفق طلبك."
+                      ? "صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية أو رسمة تحبها وسيقوم فريق Daisy Designs بتصميم الباقة بالكامل وفق طلبك."
                       : "Create any sticker you want: describe any character or artwork, and Daisy Designs will custom-craft the sheet for you."}
                   </p>
                 </div>
@@ -991,7 +998,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
               <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-bold text-[var(--foreground)]">
-                    {isAr ? "عدد الشيتات:" : "Sheets:"}
+                    {isAr ? "عدد الباقات:" : "Packages:"}
                   </span>
                   <div className="flex items-center border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--background)]">
                     <button
@@ -1007,7 +1014,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                     </span>
                     <button
                       type="button"
-                      onClick={() => setQuantity((q) => Math.min(50, q + 1))}
+                      onClick={() => setQuantity((q) => Math.min(50, catalog.stock, q + 1))}
                       className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--surface-hover)] active:scale-90 text-sm font-bold transition-all cursor-pointer"
                       aria-label={isAr ? "زيادة الكمية" : "Increase quantity"}
                     >
@@ -1018,7 +1025,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
 
                 <div className="text-end">
                   <span className="text-[11px] text-[var(--muted-foreground)] block">
-                    {isAr ? "الإجمالي لهذا الشيت" : "Line Total"}
+                    {isAr ? "الإجمالي لهذا الباقة" : "Line Total"}
                   </span>
                   <div className="flex items-baseline gap-1 justify-end">
                     <strong className="text-xl font-black text-[var(--foreground)]">
@@ -1033,7 +1040,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                 <button
                   type="button"
                   onClick={() => handleAddToCart(undefined, false)}
-                  disabled={!inStock || isUploadingPhoto}
+                  disabled={!inStock || !selectedPackage || quantity > catalog.stock || isUploadingPhoto}
                   className="w-full sm:flex-1 py-3 px-4 rounded-xl border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--surface-hover)] text-[var(--foreground)] font-bold text-xs sm:text-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <ShoppingBag size={16} />
@@ -1043,7 +1050,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
                 <button
                   type="button"
                   onClick={() => handleAddToCart(undefined, true)}
-                  disabled={!inStock || isUploadingPhoto}
+                  disabled={!inStock || !selectedPackage || quantity > catalog.stock || isUploadingPhoto}
                   className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs sm:text-sm shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <Zap size={16} className="fill-current text-amber-200" />
@@ -1073,7 +1080,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">{isAr ? "ستيكرز مدرسية مقاومة للماء" : "Custom Waterproof Stickers"}</p>
-              <p className="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5">{formatPrice(product.price, locale)} {isAr ? "للفرخ" : "per sheet"}</p>
+              <p className="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5">{formatPrice(product.price, locale)} {isAr ? "للباقة" : "per package"}</p>
             </div>
           </div>
 
@@ -1099,7 +1106,7 @@ export function StickersPreview({ locale, inStock: inStockProp }: StickersPrevie
           </div>
           <span className="text-xs font-bold">
             {isAr
-              ? "تمت إضافة شيت الاستيكرات بنجاح إلى سلتك!"
+              ? "تمت إضافة باقة الاستيكرات بنجاح إلى سلتك!"
               : "Sticker sheet added to cart successfully!"}
           </span>
         </div>

@@ -1,7 +1,7 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, BookOpen } from "lucide-react";
-import { HomeProductCarousel } from "@/components/home-product-carousel";
+import { HomeFeaturedGrid } from "@/components/home-featured-grid";
 import { HomeProductMarquee } from "@/components/home-product-marquee";
 import { StaggerCategoryGrid } from "@/components/home-motion";
 import { CategoryCard } from "@/components/category-card";
@@ -34,11 +34,8 @@ export default async function Home() {
 
   const featuredRecords = records.filter((product) => product.featured);
   const featured = (featuredRecords.length ? featuredRecords : records).slice(0, 4).map((product) => toStorefrontProduct(product, locale));
-  // Daisy picks: show non-featured or remaining catalog items to avoid repeating the exact same products twice
-  const remainingRecords = records.filter((p) => !featuredRecords.some((f) => f.id === p.id));
-  const popularRecords = remainingRecords.length > 0 ? remainingRecords : [...records].reverse();
-  const popular = popularRecords.slice(0, 4).map((product) => toStorefrontProduct(product, locale));
-  const categoryOrder = ["customized-stories", "stickers", "reward-cards"];
+  
+  const categoryOrder = ["customized-stories", "stickers", "reward-cards", "printed-t-shirts"];
   const homepageCategories = categoryOrder
     .map((slug) => storeCategories.find((category) => category.slug === slug))
     .filter((category): category is (typeof storeCategories)[number] => Boolean(category));
@@ -61,11 +58,7 @@ export default async function Home() {
           <div className="daisy-home-hero__copy">
             <span className="daisy-home-hero__eyebrow">DAISY DESIGNS</span>
             <h1>{isRtl ? "تفاصيل صغيرة، ذكريات كبيرة" : "Little details, lasting memories"}</h1>
-            <p className="daisy-home-hero__desc">
-              {isRtl
-                ? "منتجات وهدايا مخصصة للأطفال بجودة عالية وتفاصيل تصنع ذكريات لا تُنسى 🚚"
-                : "Joyful personalized products and keepsakes crafted to celebrate childhood moments."}
-            </p>
+            
             <div className="daisy-home-hero__actions">
               <Link href="/products" className="daisy-button daisy-button--light shadow-xl">
                 <span>{isRtl ? "تسوقي الآن" : "Shop now"}</span>
@@ -81,7 +74,7 @@ export default async function Home() {
           <h2 id="featured-title">{isRtl ? "المنتجات المميزة" : "Featured products"}</h2>
           <span aria-hidden="true" />
         </header>
-        {featured.length ? <HomeProductCarousel products={featured} /> : (
+        {featured.length ? <HomeFeaturedGrid products={featured} /> : (
           <p className="daisy-empty" role={productsUnavailable ? "status" : undefined}>
             {productsUnavailable ? t("homeProductsUnavailable") : t("noPublishedProducts")}
           </p>
@@ -96,20 +89,9 @@ export default async function Home() {
         </header>
         <StaggerCategoryGrid className="store-category-grid daisy-home-category-grid" data-scroll-reveal-stagger>
           {homepageCategories.map((category, index) => (
-            <CategoryCard key={category.id} category={category} locale={locale} index={index} showDescription={false} headingTag="h3" />
+            <CategoryCard key={category.id} category={category} locale={locale} index={index} showDescription={false} headingTag="h3" clearPhotography />
           ))}
         </StaggerCategoryGrid>
-      </section>
-
-      <section className="daisy-featured daisy-home-products daisy-home-popular" aria-labelledby="popular-title">
-        <header className="daisy-home-heading" data-scroll-reveal suppressHydrationWarning>
-          <h2 id="popular-title">{isRtl ? "اختيارات دايزي" : "Daisy picks"}</h2>
-          <span aria-hidden="true" />
-        </header>
-        {popular.length ? <HomeProductCarousel products={popular} /> : (
-          <p className="daisy-empty">{isRtl ? "اختياراتنا المفضلة هتظهر هنا قريبًا." : "Our customer favorites will appear here soon."}</p>
-        )}
-        <Link href="/products" className="daisy-home-all-link">{isRtl ? "عرض الكل" : "View all"}</Link>
       </section>
 
       <section className="daisy-home-story" aria-labelledby="home-story-title" data-scroll-reveal suppressHydrationWarning>

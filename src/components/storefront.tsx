@@ -3,7 +3,7 @@
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, Camera, Heart, Menu, Minus, Music2, Plus, Search, ShoppingBag, ShoppingCart, UsersRound, UserRound, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Camera, Heart, Menu, Minus, Music2, Plus, Search, ShoppingBag, ShoppingCart, UsersRound, UserRound, X } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import type { Product } from "@/lib/products";
@@ -21,7 +21,8 @@ import { formatCustomizationEntries } from "@/lib/customization-formatter";
 
 type CartVariant = { id: string; name: string; stock: number };
 type CartItem = Product & { lineId: string; quantity: number; customization?: Record<string, string>; variantId?: string; variantName?: string };
-type CartContextType = { items: CartItem[]; demoMode: boolean; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
+type CartQuote = { subtotal: number; discount: number; shipping: number; total: number; fee: number; threshold: number };
+type CartContextType = { quote: CartQuote | null; pricingError: string; pricingPending: boolean; couponCode: string; setCouponCode: (value: string) => void; items: CartItem[]; demoMode: boolean; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
 const CartContext = createContext<CartContextType | null>(null);
 export function useCart() { const context = useContext(CartContext); if (!context) throw new Error("useCart must be used inside StoreShell"); return context; }
 type WishlistContextType = { items: Product[]; demoMode: boolean; toggle: (product: Product) => void; has: (slug: string) => boolean };
@@ -36,6 +37,12 @@ export function useTranslation() {
 
 export function StoreShell({ children, demoMode = false, locale = "ar" }: { children: ReactNode; demoMode?: boolean; locale?: Locale }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [quote, setQuote] = useState<CartQuote | null>(null);
+  const [pricingError, setPricingError] = useState("");
+  const [pricedKey, setPricedKey] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const quoteKey = JSON.stringify({ locale, couponCode, items: items.map(checkoutLinePayload) });
+  const pricingPending = !demoMode && pricedKey !== quoteKey;
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartLoaded, setCartLoaded] = useState(demoMode);
@@ -65,6 +72,20 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
   }, [demoMode, cartLoaded, status, items, wishlist]);
   useEffect(() => { if (!demoMode && cartLoaded) localStorage.setItem("stitch-wishlist", JSON.stringify(wishlist)); }, [demoMode, cartLoaded, wishlist]);
   useEffect(() => { if (!demoMode && cartLoaded) localStorage.setItem("stitch-cart", JSON.stringify(items)); }, [demoMode, cartLoaded, items]);
+
+  useEffect(() => {
+    if (demoMode || !cartLoaded) return;
+    const controller = new AbortController();
+    fetch("/api/cart/quote", { method: "POST", headers: { "Content-Type": "application/json" }, body: quoteKey, signal: controller.signal })
+      .then(async response => {
+        const result = await response.json();
+        if (controller.signal.aborted) return;
+        if (!response.ok) { setPricingError(result.error); setQuote(null); setPricedKey(quoteKey); return; }
+        setItems(current => current.map((item, index) => normalizeStoredCartLine({ ...item, ...result.lines[index] })));
+        setQuote(result); setPricingError(""); setPricedKey(quoteKey);
+      }).catch(() => { if (!controller.signal.aborted) { setPricingError("QUOTE_UNAVAILABLE"); setQuote(null); setPricedKey(quoteKey); } });
+    return () => controller.abort();
+  }, [demoMode, cartLoaded, quoteKey]);
 
   const add = (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity = 1) => {
     if (demoMode) return;
@@ -110,7 +131,7 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
 
   return <LocaleContext.Provider value={locale}>
     <WishlistContext.Provider value={{ items: wishlist, demoMode, toggle, has: slug => wishlist.some(item => item.slug === slug) }}>
-      <CartContext.Provider value={{ items, demoMode, add, update, remove, clear }}>
+      <CartContext.Provider value={{ items, demoMode, add, update, remove, clear, quote, pricingError, pricingPending, couponCode, setCouponCode }}>
         <ScrollReveal />
         <Header count={items.reduce((sum, item) => sum + item.quantity, 0)} wishlistCount={wishlist.length} onCart={() => setCartOpen(true)} locale={locale} />
         {demoMode && <div className="daisy-demo-notice" role="status" dir={directionForLocale(locale)}><strong>{getTranslation(locale, "previewBannerTitle")}</strong><span>{getTranslation(locale, "previewBannerDescription")}</span></div>}
@@ -238,11 +259,15 @@ function Header({ count, wishlistCount, onCart, locale }: { count: number; wishl
   </>;
 }
 
-export function ProductCard({ product, editorial = false }: { product: Product; editorial?: boolean }) {
+export function ProductCard({ product, editorial = false, compact = false }: { product: Product; editorial?: boolean; compact?: boolean }) {
   const { add, demoMode } = useCart();
   const t = useTranslation();
   const locale = useLocale();
-  const image = getProductImageUrl(product.image);
+  const isAr = locale === "ar";
+  const defaultImage = getProductImageUrl(product.image);
+  const [activeImage, setActiveImage] = useState<string | null>(null);
+  const [failedImage, setFailedImage] = useState<string | null>(null);
+  const image = activeImage || defaultImage;
   const hasDiscount = Boolean(product.compareAtPrice && product.compareAtPrice > product.price);
   const discountPercent = hasDiscount ? Math.max(1, Math.round((1 - product.price / product.compareAtPrice!) * 100)) : 0;
 
@@ -252,20 +277,144 @@ export function ProductCard({ product, editorial = false }: { product: Product; 
     const designId = match ? match[1] : "0";
     productHref = `/products/custom-waterproof-stickers?design=${designId}`;
   }
-  return <article data-scroll-reveal suppressHydrationWarning className={`daisy-product ${editorial ? "daisy-product--editorial" : ""}`}>
-    <div className="daisy-product__media">
-      <Link href={productHref} aria-label={formatMessage(t("viewProduct"), { name: product.name })} className="daisy-product__image-link"><Image src={image} alt={product.name} fill sizes="(max-width: 760px) 50vw, 25vw" className={`daisy-image daisy-product__image ${image === PRODUCT_IMAGE_PLACEHOLDER ? "daisy-product__image--placeholder" : ""}`} /></Link>
-      {!demoMode && <WishlistButton product={product} />}
-      {hasDiscount && editorial && <span className="daisy-product__badge">{locale === "ar" ? `خصم ${discountPercent}٪` : `${discountPercent}% off`}</span>}
-      {!hasDiscount && product.badge && <span className="daisy-product__badge">{product.badge}</span>}
-      {editorial && <Link href={productHref} className="daisy-product__quick">{t("customizeNow")} {locale === "ar" ? <ArrowUpLeft size={15} /> : <ArrowUpRight size={15} />}</Link>}
-      {editorial && (!product.customizable && !product.hasVariants && !demoMode
-        ? <button type="button" className="daisy-product__quick-add" onClick={() => add(product)} aria-label={`${t("addToCart")}: ${product.name}`}><ShoppingCart size={17} strokeWidth={1.5} /></button>
-        : <Link href={productHref} className="daisy-product__quick-add" aria-label={`${t("chooseDetails")}: ${product.name}`}><ShoppingCart size={17} strokeWidth={1.5} /></Link>)}
-    </div>
-    <div className="daisy-product__meta"><div><p className="daisy-product__category">{product.category}</p><Link href={productHref} className="daisy-product__name">{product.name}</Link>{editorial && product.customizable && <span className="daisy-product__personalized">{t("customizable")}</span>}</div><span className="daisy-product__price">{formatPrice(product.price, locale)}{hasDiscount && editorial && <del className="daisy-product__compare-price">{formatPrice(product.compareAtPrice!, locale)}</del>}</span></div>
-      {!editorial && (demoMode ? <span className="daisy-product__add daisy-product__demo-label">{t("previewOnly")}</span> : product.customizable || product.hasVariants ? <Link href={productHref} className="daisy-product__add">{t("chooseDetails")} {locale === "ar" ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}</Link> : <button onClick={() => add(product)} className="daisy-product__add">{t("addToCart")} <Plus size={14} /></button>)}
-  </article>;
+
+  const isCustomizable = Boolean(product.customizable || product.hasVariants);
+  const ctaLabel = isCustomizable
+    ? (isAr ? "اختاري التفاصيل" : "Choose Details")
+    : (isAr ? "أضيفي للسلة" : "Add to Cart");
+
+  if (compact) {
+    const missingImage = image === PRODUCT_IMAGE_PLACEHOLDER || failedImage === image;
+    return <article className="home-featured-card">
+      <div className="home-featured-media">
+        <Link href={productHref} aria-label={formatMessage(t("viewProduct"), { name: product.name })}>
+          {missingImage ? <span className="home-picks-image-unavailable">
+            <Camera size={28} strokeWidth={1.2} aria-hidden="true" />
+            <span>{isAr ? "الصورة غير متاحة" : "Image unavailable"}</span>
+          </span> : <Image src={image} alt={product.name} fill sizes="(max-width: 700px) 50vw, 33vw" className="home-featured-image" onError={() => setFailedImage(image)} />}
+        </Link>
+        <WishlistButton product={product} />
+      </div>
+      <div className="home-featured-details">
+        <h3 className="home-featured-name"><Link href={productHref} title={product.name}>{product.name}</Link></h3>
+        <p className="home-featured-price">{formatPrice(product.price, locale)}</p>
+        {demoMode ? <span className="home-featured-action">{t("previewOnly")}</span> : isCustomizable ?
+          <Link href={productHref} className="home-featured-action">{ctaLabel}</Link> :
+          <button type="button" className="home-featured-action" onClick={() => add(product)}>{ctaLabel}</button>}
+      </div>
+    </article>;
+  }
+
+  return (
+    <article
+      data-scroll-reveal
+      suppressHydrationWarning
+      className={`daisy-product ${editorial ? "daisy-product--editorial" : ""} group`}
+    >
+      <div className="daisy-product__media">
+        <Link
+          href={productHref}
+          aria-label={formatMessage(t("viewProduct"), { name: product.name })}
+          className="daisy-product__image-link"
+        >
+          <Image
+            src={image}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className={`daisy-image daisy-product__image ${
+              image === PRODUCT_IMAGE_PLACEHOLDER ? "daisy-product__image--placeholder" : ""
+            }`}
+          />
+        </Link>
+        {!demoMode && <WishlistButton product={product} />}
+        {hasDiscount && (
+          <span className="daisy-product__badge daisy-product__badge--discount">
+            {isAr ? `خصم ${discountPercent}٪` : `${discountPercent}% off`}
+          </span>
+        )}
+        {!hasDiscount && product.badge && (
+          <span className="daisy-product__badge">{product.badge}</span>
+        )}
+      </div>
+
+      <div className="daisy-product__meta">
+        <div className="daisy-product__eyebrow-row">
+          <p className="daisy-product__category">{product.category}</p>
+          {product.customizationTag && (
+            <span className="daisy-product__personalized">{product.customizationTag}</span>
+          )}
+        </div>
+
+        <Link href={productHref} className="daisy-product__name">
+          {product.name}
+        </Link>
+
+        {product.colors && product.colors.length > 0 && (
+          <div
+            className="daisy-product__colors"
+            role="group"
+            aria-label={isAr ? "الألوان المتاحة" : "Available colors"}
+          >
+            <div className="daisy-product__color-list">
+              {product.colors.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onMouseEnter={() => c.image && setActiveImage(c.image)}
+                  onMouseLeave={() => setActiveImage(null)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (c.image) setActiveImage(c.image);
+                  }}
+                  className={`daisy-product__color-dot ${
+                    c.hex.toLowerCase() === "#ffffff" ? "daisy-product__color-dot--light" : ""
+                  }`}
+                  style={{ backgroundColor: c.hex }}
+                  aria-label={isAr ? c.arabicName || c.name : c.name}
+                  title={isAr ? c.arabicName || c.name : c.name}
+                />
+              ))}
+            </div>
+            <span className="daisy-product__colors-count">
+              {isAr ? `${product.colors.length} ألوان` : `${product.colors.length} colors`}
+            </span>
+          </div>
+        )}
+
+        {product.subtitle && (
+          <p className="daisy-product__subtitle">{product.subtitle}</p>
+        )}
+      </div>
+
+      <div className="daisy-product__footer">
+        <div className="daisy-product__price-wrap">
+          <span className="daisy-product__price">{formatPrice(product.price, locale)}</span>
+          {hasDiscount && (
+            <del className="daisy-product__compare-price">{formatPrice(product.compareAtPrice!, locale)}</del>
+          )}
+        </div>
+
+        {demoMode ? (
+          <span className="daisy-product__demo-label">{t("previewOnly")}</span>
+        ) : isCustomizable ? (
+          <Link href={productHref} className="daisy-product__cta-btn">
+            <span>{ctaLabel}</span>
+            {isAr ? <ArrowLeft size={13} /> : <ArrowRight size={13} />}
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={() => add(product)}
+            className="daisy-product__cta-btn daisy-product__cta-btn--add"
+          >
+            <ShoppingCart size={13} strokeWidth={2} />
+            <span>{ctaLabel}</span>
+          </button>
+        )}
+      </div>
+    </article>
+  );
 }
 
 export function WishlistButton({ product }: { product: Product }) {
@@ -276,15 +425,16 @@ export function WishlistButton({ product }: { product: Product }) {
   return <button type="button" onClick={event => { event.preventDefault(); event.stopPropagation(); toggle({ ...product, image: getProductImageUrl(product.image) }); }} aria-label={isFav ? t("removeFromWishlist") : t("addToWishlist")} className="daisy-wishlist-button cursor-pointer"><Heart size={17} strokeWidth={1.6} className={isFav ? "fill-rose-500 text-rose-500" : "text-[var(--muted-foreground)] hover:text-rose-500"} /></button>;
 }
 
-const FREE_SHIPPING_THRESHOLD = 700;
+
 
 function CartDrawer({ onClose }: { onClose: () => void }) {
-  const { items, update, remove, demoMode } = useCart();
+  const { items, update, remove, demoMode, quote } = useCart();
+  const FREE_SHIPPING_THRESHOLD = quote?.threshold ?? 0;
   const t = useTranslation();
   const locale = useLocale();
   const Arrow = locale === "ar" ? ArrowLeft : ArrowRight;
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const freeShippingProgress = Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
+  const freeShippingProgress = Math.min(100, Math.round((total / (FREE_SHIPPING_THRESHOLD || 1)) * 100));
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - total);
 
   return (

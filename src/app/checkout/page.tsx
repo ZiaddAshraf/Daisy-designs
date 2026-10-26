@@ -58,11 +58,12 @@ type OrderConfirmation = {
     items: { productName: string; quantity: number; unitPrice: number; customization?: Record<string, string> }[];
 };
 
-const FREE_SHIPPING_THRESHOLD = 700;
-const STANDARD_SHIPPING_FEE = 60;
+
+
 
 export default function CheckoutPage() {
-    const { items, clear, demoMode } = useCart();
+    const { items, clear, demoMode, quote, pricingError, pricingPending, couponCode, setCouponCode } = useCart();
+    const FREE_SHIPPING_THRESHOLD = quote?.threshold ?? 0;
     const locale = useLocale();
     const t = useTranslation();
     const direction = directionForLocale(locale);
@@ -73,6 +74,7 @@ export default function CheckoutPage() {
     const [message, setMessage] = useState("");
     const [showMobileSummary, setShowMobileSummary] = useState(false);
 
+    const priceMessage = pricingPending ? (locale === "ar" ? "جاري تحديث الأسعار…" : "Updating prices…") : pricingError ? (locale === "ar" ? "تعذر تأكيد الأسعار. راجعي الباقة المختارة في السلة وكود الخصم." : "Prices could not be confirmed. Check your package selection and coupon.") : "";
     const defaultPhone = items.find(item => item.customization?.parent_phone)?.customization?.parent_phone ?? "";
     const [selectedGov, setSelectedGov] = useState<string>("cairo");
     const [phone, setPhone] = useState(defaultPhone);
@@ -82,16 +84,17 @@ export default function CheckoutPage() {
     const isEgyptianMobile = /^01[0125][0-9]{8}$/.test(cleanedPhone);
 
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : STANDARD_SHIPPING_FEE;
-    const estimatedTotal = subtotal + shipping;
-    const freeShippingProgress = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
+    const shipping = quote?.shipping ?? 0;
+    const discount = quote?.discount ?? 0;
+    const estimatedTotal = subtotal - discount + shipping;
+    const freeShippingProgress = Math.min(100, Math.round((subtotal / (FREE_SHIPPING_THRESHOLD || 1)) * 100));
     const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
     const totalItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
     async function submit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (demoMode) return;
-        if (submitting.current || !items.length) return;
+        if (submitting.current || !items.length || pricingPending || pricingError || !quote) return;
         submitting.current = true;
         setLoading(true);
         setMessage("");
@@ -297,7 +300,7 @@ export default function CheckoutPage() {
                                         <span>{formatPrice(subtotal, locale)}</span>
                                     </div>
                                     <div className="flex justify-between text-[var(--muted-foreground)]">
-                                        <span>{t("shippingFee")}</span>
+                                        <span>{t("shippingFee")}{discount > 0 && <small className="block">{locale === "ar" ? "الخصم: " : "Discount: "}{formatPrice(discount, locale)}</small>}</span>
                                         <span>
                                             {shipping === 0 ? (
                                                 <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">{t("freeShipping")}</strong>
@@ -517,6 +520,8 @@ export default function CheckoutPage() {
                                             <span>{t("checkoutCouponOptional")}</span>
                                             <input
                                                 name="couponCode"
+                                                value={couponCode}
+                                                onChange={event => setCouponCode(event.target.value)}
                                                 maxLength={40}
                                                 autoComplete="off"
                                                 placeholder={locale === "ar" ? "اكتبي الكود لو معاكي كوبون" : "Enter code if available"}
@@ -539,13 +544,13 @@ export default function CheckoutPage() {
                             </div>
 
                             {/* Error Alert */}
-                            {message && (
+                            {(message || priceMessage) && (
                                 <div
                                     role="alert"
                                     aria-live="polite"
                                     className="rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-950/30 p-4 text-sm font-medium text-red-700 dark:text-red-400"
                                 >
-                                    {message}
+                                    {message || priceMessage}
                                 </div>
                             )}
 
@@ -553,7 +558,7 @@ export default function CheckoutPage() {
                             <div>
                                 <button
                                     type="submit"
-                                    disabled={loading}
+                                    disabled={pricingPending || Boolean(pricingError) || !quote || loading}
                                     className="min-h-14 w-full rounded-xl bg-neutral-950 dark:bg-white px-6 py-4 text-base font-bold text-white dark:text-neutral-950 shadow-md transition-all hover:opacity-95 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] disabled:cursor-wait disabled:opacity-50 disabled:hover:translate-y-0 flex items-center justify-center gap-3 cursor-pointer"
                                 >
                                     {loading ? (
@@ -667,7 +672,7 @@ export default function CheckoutPage() {
                                         <span className="font-medium text-[var(--foreground)]">{formatPrice(subtotal, locale)}</span>
                                     </div>
                                     <div className="flex justify-between text-[var(--muted-foreground)]">
-                                        <span>{t("shippingFee")}</span>
+                                        <span>{t("shippingFee")}{discount > 0 && <small className="block">{locale === "ar" ? "الخصم: " : "Discount: "}{formatPrice(discount, locale)}</small>}</span>
                                         <span>
                                             {shipping === 0 ? (
                                                 <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">

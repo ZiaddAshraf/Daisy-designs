@@ -30,7 +30,7 @@ const PRODUCT_PAYLOAD = {
     "High-quality plain children's T-shirt customized with your requested artwork or written idea. Printed on the center chest with premium vibrant colors. Each order is individually reviewed and confirmed by our team via WhatsApp before production.",
   arabicDescription:
     "تيشيرت أطفال سادة عالي الجودة ومريح، مخصص بطباعة تصميمك الخاص أو فكرتك المكتوبة على منتصف الصدر. تتم مراجعة وتأكيد كل طلب يدوياً من قِبل فريق العمل عبر الواتساب لضمان أفضل جودة قبل بدء الطباعة.",
-  price: 500,
+  price: 450,
   compareAtPrice: null,
   sku: "DD-TS-001",
   stock: 100,
@@ -87,7 +87,7 @@ async function main() {
     console.log(`  Category [${CATEGORY_PAYLOAD.slug}]: ${existingCategory ? "Update" : "Create"}`);
     console.log(`  Product  [${PRODUCT_PAYLOAD.slug}]: ${existingProduct ? "Update" : "Create"}`);
     console.log(`  Images   [3 mockups in public/products/t-shirts/]: Sync positions 0-2`);
-    console.log(`  Price:   500 EGP per custom printed children's T-shirt`);
+    console.log(`  Price:   450 EGP per custom printed children's T-shirt`);
     console.log(`  Stock:   100 units (shared aggregate pool)`);
     console.log(`  SKU:     DD-TS-001 (internal only)`);
     console.log(`  Customization: custom_design_file (IMAGE), custom_design_text (TEXT), garment_color (COLOR), garment_size (SIZE)`);

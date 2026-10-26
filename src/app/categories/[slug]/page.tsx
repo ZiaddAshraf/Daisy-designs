@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { CatalogControls, CatalogPagination } from "@/components/catalog-controls";
 import { ProductCard } from "@/components/storefront";
 import { DatabaseUnavailable } from "@/components/database-state";
-import { getCatalogCategory, getCatalogCollectionOptions, getCatalogPage, selectLocalizedText, toStorefrontProduct } from "@/lib/catalog";
+import { getPublishedProduct, getCatalogCategory, getCatalogCollectionOptions, getCatalogPage, selectLocalizedText, toStorefrontProduct } from "@/lib/catalog";
 import { formatMessage, getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import { formatLocaleNumber } from "@/lib/locale";
@@ -89,6 +89,12 @@ export default async function CategoryPage({ params, searchParams }: { params: P
     else throw error;
   }
 
+  let specialProduct: Awaited<ReturnType<typeof getPublishedProduct>> = null;
+  const specialSlug = ["stickers", "school-stickers"].includes(slug) ? "custom-waterproof-stickers" : ["printed-t-shirts", "t-shirts", "tshirts"].includes(slug) ? "custom-printed-tshirt" : null;
+  if (specialSlug) {
+    try { specialProduct = await getPublishedProduct(specialSlug); }
+    catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
+  }
   const categoryName = storeCat ? categoryNameForLocale(storeCat, locale) : selectLocalizedText(locale, category.name, category.arabicName);
   const categoryTagline = storeCat ? categoryTaglineForLocale(storeCat, locale) : null;
   const categoryDescription = storeCat ? categoryDescriptionForLocale(storeCat, locale) : category.description;
@@ -127,11 +133,11 @@ export default async function CategoryPage({ params, searchParams }: { params: P
       {slug === "reward-cards" ? (
         <RewardCardsPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
       ) : slug === "stickers" || slug === "school-stickers" ? (
-        <StickersCatalogClient locale={locale} />
+        specialProduct ? <StickersCatalogClient locale={locale} catalog={{ price: specialProduct.price, stock: specialProduct.stock, variants: specialProduct.variants }} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />
       ) : slug === "customized-stories" || slug === "stories" ? (
         <StoryBookPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} initialStoryId={(await searchParams).mode === 'custom' ? 'custom-story' : (await searchParams).collection || (await searchParams).story} />
       ) : slug === "printed-t-shirts" || slug === "t-shirts" || slug === "tshirts" ? (
-        <TShirtPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
+        specialProduct ? <TShirtPreview locale={locale} price={specialProduct.price} inStock={specialProduct.stock > 0} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />
       ) : hasProducts ? (
         <>
           <div className="catalog-result-line" data-scroll-reveal suppressHydrationWarning>

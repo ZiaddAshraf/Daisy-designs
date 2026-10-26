@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/admin-auth";
 import { handleApiError, parseJsonBody } from "@/lib/api-request";
 
 const updateSchema = z.object({
+  variants: z.array(z.object({ id: z.string(), price: z.number().int().positive().nullable() })).max(100).optional(),
   price: z.number().int().positive().optional(),
   stock: z.number().int().nonnegative().optional(),
   published: z.boolean().optional(),
@@ -31,7 +32,16 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (!parsed.success) return NextResponse.json({ error: "بيانات غير صالحة" }, { status: 400 });
 
   try {
-    const product = await prisma.product.update({ where: { id }, data: parsed.data });
+    const { variants, ...data } = parsed.data;
+    const product = await prisma.$transaction(async tx => {
+      if (variants) {
+        for (const variant of variants) {
+          const result = await tx.productVariant.updateMany({ where: { id: variant.id, productId: id }, data: { price: variant.price } });
+          if (result.count !== 1) throw new Error("INVALID_VARIANT");
+        }
+      }
+      return tx.product.update({ where: { id }, data });
+    });
     return NextResponse.json(product);
   } catch (error) {
     return handleApiError(error);

@@ -302,3 +302,45 @@ Expand the custom printed t-shirt line (`custom-printed-tshirt`) from kids-only 
 - **Catalog, Marquee, & Admin Order Synchronization**:
   - Product names, badges, features, and descriptions updated to celebrate both Adults and Children.
   - Admin orders table clearly displays whether the ordered size is for an adult or child.
+
+
+---
+
+## 9. Category Evolution: "تيكت وليبل وميدالية" (Tickets, Labels & Keychains)
+
+### 9.1 Category Renaming
+- **Arabic Name**: "تيكت وليبل وميدالية"
+- **English Name**: "Tickets, Labels & Keychains"
+- **Slug**: Preserved as `stickers` to maintain stable SEO and existing routing `/categories/stickers`.
+- **Arabic Tagline**: "استيكرات بتستحمل المية والغسيل، ليبل حراري، وميداليات أكريليك مخصصة بالاسم للمدرسة"
+- **English Tagline**: "Waterproof stickers, clothing labels & personalized acrylic keychains for school"
+
+### 9.2 Keychain Products Specifications
+1. **Custom Acrylic Name Keychain (Assorted Designs)**:
+   - **Slug**: `custom-acrylic-name-keychain`
+   - **SKU**: `DD-KC-001`
+   - **Arabic Name**: `ميدالية اسم مخصصة (تشكيلة أبطال وشخصيات)`
+   - **English Name**: `Custom Acrylic Name Keychain (Assorted Characters)`
+   - **Unit Price**: 70 EGP
+   - **Asset**: `/products/keychains/keychains-collection.jpeg`
+   - **Customization**:
+     - `child_name` (Text, required): اسم الطفل المكتوب على الميدالية
+     - `character_theme` (Text, optional): الشخصية المطلوبة (سبايدرمان، باربي، ستيتش، سونيك، موانا)
+2. **Lamine Yamal Barcelona Custom Name Keychain**:
+   - **Slug**: `keychain-lamine-yamal`
+   - **SKU**: `DD-KC-002`
+   - **Arabic Name**: `ميدالية لامين يامال - برشلونة مخصصة بالاسم`
+   - **English Name**: `Lamine Yamal FC Barcelona Custom Name Keychain`
+   - **Unit Price**: 70 EGP
+   - **Asset**: `/products/keychains/keychain-lamine-yamal.jpeg`
+   - **Customization**:
+     - `child_name` (Text, required): اسم الطفل المكتوب على الميدالية
+3. **Cristiano Ronaldo Ballon d'Or Custom Name Keychain**:
+   - **Slug**: `keychain-cristiano-ronaldo`
+   - **SKU**: `DD-KC-003`
+   - **Arabic Name**: `ميدالية كريستيانو رونالدو - الكرة الذهبية مخصصة بالاسم`
+   - **English Name**: `Cristiano Ronaldo Ballon d'Or Custom Name Keychain`
+   - **Unit Price**: 70 EGP
+   - **Asset**: `/products/keychains/keychain-cristiano-ronaldo.jpeg`
+   - **Customization**:
+     - `child_name` (Text, required): اسم الطفل المكتوب على الميدالية

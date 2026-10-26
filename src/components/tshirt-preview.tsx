@@ -29,12 +29,13 @@ import {
 
 type TShirtPreviewProps = {
   locale: Locale;
+  price: number;
   inStock?: boolean;
 };
 
 type GarmentColor = "white" | "black" | "gray";
 
-export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
+export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewProps) {
   const router = useRouter();
   const isAr = locale === "ar";
   const { add } = useCart();
@@ -56,7 +57,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
     slug: product.slug,
     name: isAr ? product.arabicName : product.name,
     category: isAr ? "تيشيرتات مطبوعة" : "Printed T-Shirts",
-    price: product.price ?? 500,
+    price: price,
     image: activeColorObj.image,
     description: isAr ? product.arabicDescription : product.description,
     customizable: true,
@@ -80,7 +81,7 @@ export function TShirtPreview({ locale, inStock = true }: TShirtPreviewProps) {
 
   // Quantity & Submission state
   const [quantity, setQuantity] = useState(1);
-  const unitPrice = product.price ?? 500;
+  const unitPrice = price;
   const totalPrice = unitPrice * quantity;
   const [addedToCart, setAddedToCart] = useState(false);
 

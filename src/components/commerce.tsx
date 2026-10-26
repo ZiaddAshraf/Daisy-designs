@@ -1,4 +1,5 @@
 "use client";
+import { usesProductStock, variantLabel } from "@/lib/product-pricing";
 
 import Image from "@/components/site-image";
 import Link from "next/link";
@@ -39,7 +40,7 @@ export function ProductDetail({ product, images = [], variants = [], customizati
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariantId, setSelectedVariantId] = useState("");
   const selectedVariant = variants.find(variant => variant.id === selectedVariantId);
-  const selectedStock = selectedVariant ? selectedVariant.stock : variants.length ? 0 : stock;
+  const selectedStock = selectedVariant ? usesProductStock(selectedVariant) ? stock : selectedVariant.stock : variants.length ? 0 : stock;
   const outOfStock = selectedStock <= 0;
   const needsVariant = variants.length > 0;
   const unsupportedRequiredField = customizationFields.some(field => field.required && (field.type === "IMAGE" || (["SELECT", "COLOR", "SIZE"].includes(field.type) && field.options.length === 0)));
@@ -78,7 +79,7 @@ export function ProductDetail({ product, images = [], variants = [], customizati
         <p className="product-detail-description">{product.description}</p>
 
         {demoMode ? <div className="product-demo-purchase" role="note">{t("demoProductNotice")}</div> : <form className="product-purchase-form" onSubmit={handleSubmit}>
-          {needsVariant && <fieldset className="product-variants"><legend>{t("selectVariant")}</legend><div className="product-variant-list">{variants.map(variant => <label key={variant.id} className={`product-variant-option ${selectedVariantId === variant.id ? "is-selected" : ""} ${variant.stock <= 0 ? "is-unavailable" : ""}`}><input type="radio" name="product-variant" value={variant.id} checked={selectedVariantId === variant.id} disabled={variant.stock <= 0} onChange={() => { setSelectedVariantId(variant.id); setQuantity(1); setAdded(false); }} /><span>{variant.name}</span><small>{variant.stock <= 0 ? t("outOfStock") : variant.price !== null && variant.price !== product.price ? formatPrice(variant.price, locale) : t("available")}</small></label>)}</div></fieldset>}
+          {needsVariant && <fieldset className="product-variants"><legend>{t("selectVariant")}</legend><div className="product-variant-list">{variants.map(variant => <label key={variant.id} className={`product-variant-option ${selectedVariantId === variant.id ? "is-selected" : ""} ${variant.stock <= 0 ? "is-unavailable" : ""}`}><input type="radio" name="product-variant" value={variant.id} checked={selectedVariantId === variant.id} disabled={variant.stock <= 0} onChange={() => { setSelectedVariantId(variant.id); setQuantity(1); setAdded(false); }} /><span>{variantLabel(variant, locale)}</span><small>{variant.stock <= 0 ? t("outOfStock") : formatPrice(variant.price ?? product.price, locale)}</small></label>)}</div></fieldset>}
           {product.customizable && customizationFields.length > 0 && <fieldset className="product-customization"><legend>{t("personalizeProduct")}</legend><p className="product-customization-hint">{t("customizationHint")}</p>
             {customizationFields.filter(field => field.type !== "IMAGE").map(field => <label key={field.key} className="product-custom-field" htmlFor={`custom-${field.key}`}><span>{field.label}{field.required && <b aria-label={t("required")}> *</b>}</span>
               {["SELECT", "COLOR", "SIZE"].includes(field.type) ? <select id={`custom-${field.key}`} required={field.required} value={customization[field.key] ?? ""} onChange={event => { setCustomization(current => ({ ...current, [field.key]: event.target.value })); setAdded(false); }}><option value="">{formatMessage(t("chooseFieldOption"), { label: field.label })}</option>{field.options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input id={`custom-${field.key}`} type="text" required={field.required} value={customization[field.key] ?? ""} onChange={event => { setCustomization(current => ({ ...current, [field.key]: event.target.value })); setAdded(false); }} placeholder={field.placeholder ?? t("writeHere")} maxLength={field.maxLength ?? undefined} />}
@@ -98,10 +99,11 @@ export function ProductDetail({ product, images = [], variants = [], customizati
   </main>;
 }
 
-const FREE_SHIPPING_THRESHOLD = 700;
+
 
 export function CartView() {
-  const { items, update, remove, demoMode } = useCart();
+  const { items, update, remove, demoMode, quote, pricingError } = useCart();
+  const FREE_SHIPPING_THRESHOLD = quote?.threshold ?? 0;
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const locale = useLocale();
   const t = useTranslation();
@@ -291,16 +293,17 @@ export function CartView() {
                         {t("freeShipping")}
                       </span>
                     ) : (
-                      <span className="text-xs text-[var(--muted-foreground)]">{locale === "ar" ? "يُحسب عند الدفع" : "Calculated at checkout"}</span>
+                      <span className="text-xs text-[var(--muted-foreground)]">{quote ? formatPrice(quote.shipping, locale) : locale === "ar" ? "يُحسب عند الدفع" : "Calculated at checkout"}</span>
                     )}
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-[var(--border)] pt-3 text-base font-bold text-[var(--foreground)]">
                   <span>{t("total")}</span>
-                  <span className="text-xl text-[var(--foreground)]">{formatPrice(total, locale)}</span>
+                  <span className="text-xl text-[var(--foreground)]">{formatPrice(quote?.total ?? total, locale)}</span>
                 </div>
               </div>
 
+              {pricingError && <p role="alert">{locale === "ar" ? "راجعي اختيار الباقة وكود الخصم قبل إتمام الطلب." : "Review your package selection and coupon before checkout."}</p>}
               {/* Checkout CTA */}
               <Link
                 href="/checkout"

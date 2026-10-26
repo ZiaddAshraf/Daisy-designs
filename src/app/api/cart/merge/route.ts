@@ -1,3 +1,4 @@
+import { resolveProductPrice } from "@/lib/product-pricing";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -40,10 +41,7 @@ export async function POST(request: Request) {
         for (const item of parsed.data.items) {
             const product = products.find(candidate => candidate.slug === item.slug);
             if (!product) continue;
-            const variant = item.variantId
-                ? product.variants.find(candidate => candidate.id === item.variantId)
-                : product.variants.length === 1 ? product.variants[0] : undefined;
-            if (item.variantId && !variant) return NextResponse.json({ error: "خيار المنتج غير صالح" }, { status: 400 });
+            const { variant, unitPrice } = resolveProductPrice(product, item.variantId);
             const customization = product.slug === "custom-printed-tshirt"
                 ? validateTshirtCustomization(item.customization)
                 : validateCustomization(product.customizationFields, item.customization);
@@ -52,7 +50,7 @@ export async function POST(request: Request) {
                 productId: product.id,
                 variantId: variant?.id,
                 quantity: item.quantity,
-                unitPrice: variant?.price ?? product.price,
+                unitPrice,
                 customization: customization.data,
             });
         }

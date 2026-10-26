@@ -162,7 +162,7 @@ async function main() {
     console.log(`  Product  [${PRODUCT_PAYLOAD.slug}]: ${existingProduct ? "Update" : "Create"}`);
     console.log(`  Images   [${IMAGES.length} assets in public/products/stickers/]: Sync positions 0-23`);
     console.log(`  Fields   [${CUSTOMIZATION_FIELDS.length} fields]: design_theme, child_name, school_name, grade, class_name, parent_phone, child_photo`);
-    console.log(`  Price:   50 EGP per sheet`);
+    console.log(`  Price:   ${stickersData.product.price} EGP per combined package`);
     console.log(`  Stock:   500 sheets (internal only)`);
     console.log(`  SKU:     DD-STK-050 (internal only)`);
 

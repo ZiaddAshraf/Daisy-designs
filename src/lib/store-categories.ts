@@ -22,14 +22,14 @@ export const STORE_CATEGORIES: StoreCategory[] = [
   {
     id: "stickers",
     slug: "stickers",
-    name: "Stickers",
-    arabicName: "استيكرات وملصقات",
-    tagline: "Waterproof stickers for notebooks, school bags & water bottles",
-    arabicTagline: "استيكرات بتستحمل المية والغسيل للدفاتر والزمزمية والشنط المدرسية",
-    description: "Durable, high-quality stickers crafted for school supplies, notebooks, backpacks, and water bottles. The store sells custom stickers, not the bottles or bags.",
-    arabicDescription: "استيكرات أطفال كواليتي عالي ومقاومة للمية والغسيل، معمولة مخصوص للأدوات المدرسية، الدفاتر، الشنط، وزجاجات المياه. المتجر بيوفر الاستيكرات المطبوعة فقط للتوضيح.",
-    surfaceNotice: "Daisy Designs sells custom stickers only (not the bottles or bags).",
-    arabicSurfaceNotice: "المتجر يوفر ويطبع الاستيكرات المخصصة فقط (الزجاجات والشنط المعروضة للتوضيح فقط).",
+    name: "Tickets, Labels & Keychains",
+    arabicName: "تيكت وليبل وميدالية",
+    tagline: "Waterproof stickers, clothing labels & custom acrylic keychains for school supplies",
+    arabicTagline: "استيكرات بتستحمل المية والغسيل، ليبل ملابس، وميداليات أكريليك مخصصة بالاسم للمدرسة",
+    description: "Durable, high-quality stickers, clothing labels, and personalized acrylic keychains crafted for school supplies, notebooks, backpacks, and water bottles.",
+    arabicDescription: "استيكرات أطفال كواليتي عالي مقاومة للمية، ليبل ملابس حراري، وميداليات أكريليك متينة مخصصة باسم طفلك للأدوات والشنط المدرسية.",
+    surfaceNotice: "Daisy Designs crafts personalized stickers, labels, and acrylic name keychains.",
+    arabicSurfaceNotice: "المتجر يوفر ويصمم الاستيكرات المخصصة، ليبل الملابس، وميداليات الاسم الأكريليك بالطلب.",
     letter: "S",
   },
   {
@@ -67,8 +67,8 @@ export const STORE_CATEGORIES: StoreCategory[] = [
     arabicTagline: "تيشيرتات قطن سادة للكبار والأطفال مخصصة بطباعة تصميمك الخاص على منتصف الصدر",
     description: "High-quality plain cotton T-shirts for adults and kids customized with your uploaded artwork or written idea. Printed on the center chest, reviewed by our team via WhatsApp, and prepared in 2–3 business days.",
     arabicDescription: "تيشيرتات قطن سادة عالية الجودة للكبار والأطفال، مخصصة بطباعة رسمتك أو فكرتك على منتصف الصدر. تتم مراجعة كل طلب يدويًا وتأكيده عبر الواتساب، وتستغرق مدة التجهيز من يومين إلى ٣ أيام عمل قبل الشحن.",
-    surfaceNotice: "Plain cotton T-shirt for adults and kids customized on the center chest (500 EGP). Preparation time: 2–3 business days.",
-    arabicSurfaceNotice: "تيشيرت قطن مصري للكبار والأطفال مخصص بطباعة على الصدر (٥٠٠ ج.م). مدة التجهيز: من ٢ لـ ٣ أيام عمل.",
+    surfaceNotice: "Plain cotton T-shirt for adults and kids customized on the center chest. Preparation time: 2–3 business days.",
+    arabicSurfaceNotice: "تيشيرت قطن مصري للكبار والأطفال مخصص بطباعة على الصدر. مدة التجهيز: من ٢ لـ ٣ أيام عمل.",
     letter: "T",
   },
 ];
@@ -103,4 +103,3 @@ export function categoryDescriptionForLocale(category: StoreCategory, locale: Lo
 export function categoryNoticeForLocale(category: StoreCategory, locale: Locale): string | undefined {
   return locale === "ar" ? category.arabicSurfaceNotice : category.surfaceNotice;
 }
-

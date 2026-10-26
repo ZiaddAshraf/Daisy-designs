@@ -230,3 +230,26 @@
   - [x] Task 32.3: Upgrade `src/components/tshirt-preview.tsx` with segmented adult/children size selector & updated copywriting
   - [x] Task 32.4: Synchronize catalog, filters, categories, and admin orders table (`products/page.tsx`, `store-categories.ts`, `ensure-catalog-product.ts`, `admin-orders-table.tsx`, `messages.ts`)
   - [x] Task 32.5: Update `tests/tshirt-product.test.ts` to assert adult sizes acceptance and run full Ralph Loop verification (tsc, lint, tests, build)
+
+- [x] Phase 33: Featured Products Workflow Verification & TypeScript Audit
+  - [x] Task 33.1: Investigate and verify TypeScript definitions in `src/lib/products.ts`, `src/lib/catalog.ts`, and `src/components/storefront.tsx`
+  - [x] Task 33.2: Verify database/catalog loading pipeline for featured products and audit admin panel capabilities (create, edit, publish, and featured toggle)
+  - [x] Task 33.3: Verify propagation of price, image, published status, and featured flag to homepage
+  - [x] Task 33.4: Run full verification suite (TypeScript, lint, tests, build) and compile verification report
+
+
+- [x] Phase 34: Streamline Homepage Featured Products Grid & Card Design
+  - [x] Task 34.1: Update SPEC.md and PLAN.md with design specifications for clean static featured product cards
+  - [x] Task 34.2: Implement clean `HomeFeaturedGrid` component (Image + Title + Price, full card link, no cluttered buttons)
+  - [x] Task 34.3: Update `src/app/page.tsx` to render the clean grid with the 4 featured products and "عرض الكل"
+  - [x] Task 34.4: Add polished CSS styling in `src/app/globals.css` with dark/light themes and responsive grid
+  - [x] Task 34.5: Update and run tests (`tests/home-carousel.test.ts`)
+  - [x] Task 34.6: Run Ralph Loop verification (tsc, lint, tests, build)
+
+- [x] Phase 35: Rename Category to "تيكت وليبل وميدالية" & Integrate Custom Keychain Products
+  - [x] Task 35.1: Document specifications in SPEC.md and PLAN.md for category rename and keychain products
+  - [x] Task 35.2: Update category metadata in `src/lib/store-categories.ts`, `src/data/stickers-product.json`, `src/components/category-card.tsx`, `src/components/stickers-catalog-client.tsx`, `src/components/stickers-preview.tsx`, and `src/app/products/page.tsx`
+  - [x] Task 35.3: Register the 3 custom keychain products (`custom-acrylic-name-keychain`, `keychain-lamine-yamal`, `keychain-cristiano-ronaldo`) with images, prices, customization fields, and stock in `ensure-catalog-product.ts` and sync database
+  - [x] Task 35.4: Integrate keychain products into `src/app/products/page.tsx` catalog client under category `stickers`
+  - [x] Task 35.5: Update tests (`tests/store-categories.test.ts`, `tests/business-catalog.test.ts`) to assert updated category name and keychain catalog presence
+  - [x] Task 35.6: Run Ralph Loop verification (tsc, lint, tests, build)

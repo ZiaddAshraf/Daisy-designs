@@ -9,7 +9,7 @@ import { calculateDiscount, calculateShipping } from "@/lib/commerce-rules";
 import { validateCustomization, validateTshirtCustomization } from "@/lib/customization-validation";
 import { isDemoCatalogProduct } from "@/lib/demo-preview-safety";
 import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
-import { ensureCatalogProductInTransaction } from "@/lib/ensure-catalog-product";
+import { resolveProductPrice, usesProductStock } from "@/lib/product-pricing";
 
 export const runtime = "nodejs";
 
@@ -30,29 +30,17 @@ export async function POST(request: Request) {
         const result = await prisma.$transaction(async transaction => {
             const existingOrder = await transaction.order.findUnique({ where: { number }, include: { items: true } });
             if (existingOrder) return { id: existingOrder.id, number: existingOrder.number, total: existingOrder.total, items: existingOrder.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) };
-            let products = await transaction.product.findMany({ where: { slug: { in: input.items.map(item => item.slug) }, published: true }, include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 }, customizationFields: { include: { options: true } } } });
-            const missingSlugs = input.items.map(i => i.slug).filter(s => !products.some(p => p.slug === s));
-            if (missingSlugs.length > 0) {
-                for (const slug of missingSlugs) {
-                    await ensureCatalogProductInTransaction(slug, transaction);
-                }
-                products = await transaction.product.findMany({ where: { slug: { in: input.items.map(item => item.slug) }, published: true }, include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 }, customizationFields: { include: { options: true } } } });
-            }
+            const products = await transaction.product.findMany({ where: { slug: { in: input.items.map(item => item.slug) }, published: true }, include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 }, customizationFields: { include: { options: true } } } });
             if (products.some(isDemoCatalogProduct)) throw new Error("PRODUCT_NOT_FOUND");
             if (products.length !== new Set(input.items.map(item => item.slug)).size) throw new Error("PRODUCT_NOT_FOUND");
             const pricedItems = input.items.map(item => {
                 const product = products.find(candidate => candidate.slug === item.slug);
                 if (!product) throw new Error("PRODUCT_NOT_FOUND");
-                const variant = item.variantId
-                    ? product.variants.find(candidate => candidate.id === item.variantId)
-                    : product.variants.length === 1 ? product.variants[0] : undefined;
-                if (item.variantId && !variant) throw new Error("INVALID_VARIANT");
-                if (product.variants.length > 1 && !variant) throw new Error("VARIANT_REQUIRED");
+                const { variant, unitPrice } = resolveProductPrice(product, item.variantId);
                 const customization = product.slug === "custom-printed-tshirt"
                     ? validateTshirtCustomization(item.customization)
                     : validateCustomization(product.customizationFields, item.customization);
                 if (!customization.success) throw new Error(customization.reason ?? "INVALID_CUSTOMIZATION");
-                const unitPrice = variant?.price ?? product.price;
                 return { item: { ...item, customization: customization.data }, product, variant, unitPrice };
             });
 
@@ -61,17 +49,18 @@ export async function POST(request: Request) {
             const inventoryTargets = new Map<string, InventoryTarget>();
 
             for (const entry of pricedItems) {
-                const key = entry.variant ? `variant:${entry.variant.id}` : `product:${entry.product.id}`;
+                const inventoryVariant = entry.variant && !usesProductStock(entry.variant) ? entry.variant : undefined;
+                const key = inventoryVariant ? `variant:${inventoryVariant.id}` : `product:${entry.product.id}`;
                 const existing = inventoryTargets.get(key);
                 if (existing) {
                     existing.requiredQty += entry.item.quantity;
                 } else {
                     inventoryTargets.set(key, {
-                        id: entry.variant ? entry.variant.id : entry.product.id,
-                        isVariant: Boolean(entry.variant),
+                        id: inventoryVariant ? inventoryVariant.id : entry.product.id,
+                        isVariant: Boolean(inventoryVariant),
                         productName: entry.product.name,
                         requiredQty: entry.item.quantity,
-                        availableStock: entry.variant ? entry.variant.stock : entry.product.stock,
+                        availableStock: inventoryVariant ? inventoryVariant.stock : entry.product.stock,
                     });
                 }
             }
@@ -116,8 +105,8 @@ export async function POST(request: Request) {
                     items: { create: pricedItems.map(entry => ({
                         productId: entry.product.id,
                         ...(entry.variant?.id ? { variantId: entry.variant.id } : {}),
-                        productName: entry.product.name,
-                        productSku: entry.product.sku,
+                        productName: entry.variant ? `${entry.product.name} — ${entry.variant.name}` : entry.product.name,
+                        productSku: entry.variant?.sku ?? entry.product.sku,
                         productSnapshot: { name: entry.product.name, arabicName: entry.product.arabicName, sku: entry.product.sku, price: entry.unitPrice, image: entry.product.images[0]?.url },
                         ...(entry.item.customization ? { customization: entry.item.customization } : {}),
                         quantity: entry.item.quantity,
@@ -144,6 +133,7 @@ export async function POST(request: Request) {
             : [
                 "INVALID_COUPON",
                 "INVALID_VARIANT",
+                "INVALID_PRICE",
                 "VARIANT_REQUIRED",
                 "INVALID_CUSTOMIZATION",
                 "UNSUPPORTED_CUSTOMIZATION",

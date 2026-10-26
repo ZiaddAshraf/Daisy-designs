@@ -200,7 +200,7 @@ export default async function ProductPage({
         else throw error;
     }
 
-    if (!product) {
+    if (!product && !["custom-waterproof-stickers", "custom-printed-tshirt"].includes(resolvedSlug)) {
         const fallback = getCoreFallbackProduct(resolvedSlug);
         if (fallback) {
             product = fallback;
@@ -239,7 +239,7 @@ export default async function ProductPage({
                 <span>/</span>
                 <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
             </nav>
-            <StickersPreview locale={locale} inStock={product.stock > 0} />
+            {"price" in product && <StickersPreview locale={locale} catalog={{ price: product.price, stock: product.stock, variants: product.variants }} />}
         </main>;
     }
 
@@ -279,7 +279,7 @@ export default async function ProductPage({
                 <span>/</span>
                 <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
             </nav>
-            <TShirtPreview locale={locale} inStock={product.stock > 0} />
+            {"price" in product && <TShirtPreview locale={locale} price={product.price} inStock={product.stock > 0} />}
         </main>;
     }
 

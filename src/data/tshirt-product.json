@@ -17,7 +17,7 @@
     "arabicFormat": "تيشيرت قطن مصري فاخر للكبار والأطفال",
     "customizable": true,
     "available": true,
-    "price": 500,
+    "price": 450,
     "compareAtPrice": null,
     "sku": "DD-TS-001",
     "stock": 100,
@@ -35,7 +35,7 @@
         "name": "White",
         "arabicName": "أبيض",
         "hex": "#FFFFFF",
-        "image": "/products/t-shirts/white-tshirt.svg"
+        "image": "/products/t-shirts/kids-tshirt-studio.jpeg"
       },
       {
         "id": "black",
@@ -75,7 +75,7 @@
       "arabicUnit": "سم"
     },
     "primaryImage": {
-      "url": "/products/t-shirts/white-tshirt.svg",
+      "url": "/products/t-shirts/kids-tshirt-studio.jpeg",
       "alt": "Daisy Designs Custom Printed Cotton T-Shirt (Adults & Kids)",
       "arabicAlt": "تيشيرت قطن بطباعة مخصصة للكبار والأطفال من Daisy Designs",
       "dimensions": { "width": 800, "height": 800 }
@@ -83,7 +83,7 @@
     "gallery": [
       {
         "colorId": "white",
-        "url": "/products/t-shirts/white-tshirt.svg",
+        "url": "/products/t-shirts/kids-tshirt-studio.jpeg",
         "alt": "White T-Shirt (Adults & Kids) / تيشيرت أبيض (كبار وأطفال)"
       },
       {

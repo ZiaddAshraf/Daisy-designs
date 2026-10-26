@@ -23,6 +23,17 @@ test("store categories contains exactly four confirmed categories in stable orde
   );
 });
 
+test("stickers category has updated Tickets, Labels & Keychains content in English and Arabic", () => {
+  const stickers = getStoreCategory("stickers");
+  assert.ok(stickers, "stickers category should exist");
+  assert.equal(stickers.id, "stickers");
+  assert.equal(stickers.letter, "S");
+  assert.equal(categoryNameForLocale(stickers, "en"), "Tickets, Labels & Keychains");
+  assert.equal(categoryNameForLocale(stickers, "ar"), "تيكت وليبل وميدالية");
+  assert.ok(categoryTaglineForLocale(stickers, "ar")?.includes("ميداليات"));
+  assert.ok(categoryTaglineForLocale(stickers, "en")?.includes("keychains"));
+});
+
 test("printed-t-shirts category has valid English and Arabic content and typographic mark", () => {
   const tshirts = getStoreCategory("printed-t-shirts");
   assert.ok(tshirts, "printed-t-shirts category should exist");
@@ -58,4 +69,3 @@ test("all store categories have complete bilingual content without empty fields"
     assert.ok(cat.letter.length === 1);
   }
 });
-

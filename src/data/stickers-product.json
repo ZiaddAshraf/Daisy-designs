@@ -4,8 +4,8 @@
   "category": {
     "id": "stickers",
     "slug": "stickers",
-    "name": "Stickers",
-    "arabicName": "استيكرات وملصقات"
+    "name": "Tickets, Labels & Keychains",
+    "arabicName": "تيكت وليبل وميدالية"
   },
   "product": {
     "slug": "custom-waterproof-stickers",
@@ -15,7 +15,7 @@
     "arabicSellingModel": "شيت استيكرات مخصص (تيكت كبير للدفاتر + ليبل نحيف للأقلام والزجاجات)",
     "customizable": true,
     "available": true,
-    "price": 50,
+    "price": 300,
     "compareAtPrice": null,
     "sku": "DD-STK-050",
     "stock": 500,
@@ -29,7 +29,10 @@
       "url": "/products/stickers/sticker-02-super-cool-dino.jpeg",
       "alt": "Daisy Designs Custom Waterproof Stickers",
       "arabicAlt": "استيكرات مدرسية مخصصة مقاومة للماء من Daisy Designs",
-      "dimensions": { "width": 855, "height": 1280 }
+      "dimensions": {
+        "width": 855,
+        "height": 1280
+      }
     },
     "designs": [
       {
@@ -40,7 +43,10 @@
         "themeGroup": "custom",
         "arabicThemeGroup": "تصميم مخصص بالكامل",
         "url": "/products/stickers/custom-sticker-design.svg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "صمم أي شخصية أو فكرة",
         "sampleGrade": "شيت استيكر مخصص",
         "isCustom": true
@@ -53,7 +59,10 @@
         "themeGroup": "anime",
         "arabicThemeGroup": "أنمي وموسيقى",
         "url": "/products/stickers/sticker-01-kpop-demon-hunters.jpeg",
-        "dimensions": { "width": 1057, "height": 1280 },
+        "dimensions": {
+          "width": 1057,
+          "height": 1280
+        },
         "sampleName": "Malak Khaled Elshaboury",
         "sampleGrade": "Grade 2"
       },
@@ -65,7 +74,10 @@
         "themeGroup": "cartoons",
         "arabicThemeGroup": "كرتون ومغامرات",
         "url": "/products/stickers/sticker-02-super-cool-dino.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Younis Mohamed Hafez",
         "sampleGrade": "Year fs2"
       },
@@ -77,7 +89,10 @@
         "themeGroup": "girls",
         "arabicThemeGroup": "شخصيات وبنات",
         "url": "/products/stickers/sticker-03-kuromi-sanrio.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Asya Ahmed El Hassan",
         "sampleSchool": "St. Joseph school"
       },
@@ -89,7 +104,10 @@
         "themeGroup": "superheroes",
         "arabicThemeGroup": "أبطال وخوارق",
         "url": "/products/stickers/sticker-04-superman-comic.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Ali Mohamed Gamal"
       },
       {
@@ -100,7 +118,10 @@
         "themeGroup": "girls",
         "arabicThemeGroup": "أميرات وبنات",
         "url": "/products/stickers/sticker-05-princess-castle.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Celia Mohamed Abdel Zaher",
         "sampleSchool": "New Heliopolis Modern School",
         "sampleGrade": "KG1"
@@ -113,7 +134,10 @@
         "themeGroup": "cartoons",
         "arabicThemeGroup": "حيوانات ومرح",
         "url": "/products/stickers/sticker-06-jungle-safari.jpeg",
-        "dimensions": { "width": 1024, "height": 1280 },
+        "dimensions": {
+          "width": 1024,
+          "height": 1280
+        },
         "sampleName": "Omar Ahmed Abdelhay",
         "sampleGrade": "KG1"
       },
@@ -125,7 +149,10 @@
         "themeGroup": "cartoons",
         "arabicThemeGroup": "ديزني ومرح",
         "url": "/products/stickers/sticker-07-stitch-sky.jpeg",
-        "dimensions": { "width": 913, "height": 1280 },
+        "dimensions": {
+          "width": 913,
+          "height": 1280
+        },
         "sampleName": "زين علي عبد النبي",
         "sampleGrade": "الصف الأول الإبتدائي"
       },
@@ -137,7 +164,10 @@
         "themeGroup": "gaming",
         "arabicThemeGroup": "جيمنج وألعاب",
         "url": "/products/stickers/sticker-08-gamer-level-up.jpeg",
-        "dimensions": { "width": 1057, "height": 1280 },
+        "dimensions": {
+          "width": 1057,
+          "height": 1280
+        },
         "sampleName": "Martial Mena Mosaad",
         "sampleSchool": "Al Karma language school",
         "sampleGrade": "Primary 1"
@@ -150,7 +180,10 @@
         "themeGroup": "educational",
         "arabicThemeGroup": "تعليمي ومرح",
         "url": "/products/stickers/sticker-09-numberblocks-fun.jpeg",
-        "dimensions": { "width": 913, "height": 1280 },
+        "dimensions": {
+          "width": 913,
+          "height": 1280
+        },
         "sampleName": "Yehia Fouad Nader",
         "sampleSchool": "Orman elite school",
         "sampleGrade": "KG1"
@@ -163,7 +196,10 @@
         "themeGroup": "cartoons",
         "arabicThemeGroup": "ديزني ومرح",
         "url": "/products/stickers/sticker-10-monsters-inc.jpeg",
-        "dimensions": { "width": 1057, "height": 1280 },
+        "dimensions": {
+          "width": 1057,
+          "height": 1280
+        },
         "sampleName": "Karma Mohab Hassan",
         "sampleSchool": "Ramy Heal G.D.L.S",
         "sampleGrade": "Kg 1"
@@ -176,7 +212,10 @@
         "themeGroup": "girls",
         "arabicThemeGroup": "أميرات وبنات",
         "url": "/products/stickers/sticker-11-barbie-princess.jpeg",
-        "dimensions": { "width": 913, "height": 1280 },
+        "dimensions": {
+          "width": 913,
+          "height": 1280
+        },
         "sampleName": "Kinda Mustafa Mohamed"
       },
       {
@@ -187,7 +226,10 @@
         "themeGroup": "superheroes",
         "arabicThemeGroup": "أبطال وخوارق",
         "url": "/products/stickers/sticker-12-spiderman-web-action.jpeg",
-        "dimensions": { "width": 1057, "height": 1280 },
+        "dimensions": {
+          "width": 1057,
+          "height": 1280
+        },
         "sampleName": "Mohamed Hussen Mohamed",
         "sampleGrade": "KG1"
       },
@@ -199,7 +241,10 @@
         "themeGroup": "girls",
         "arabicThemeGroup": "هادئ وأناقة",
         "url": "/products/stickers/sticker-13-pink-ribbon-bow.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Dahab Yasser Montasser",
         "sampleGrade": "Fs2"
       },
@@ -211,7 +256,10 @@
         "themeGroup": "cartoons",
         "arabicThemeGroup": "كرتون وشخصيات",
         "url": "/products/stickers/sticker-14-powerpuff-girls.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Leil Islam",
         "sampleGrade": "KG2"
       },
@@ -223,7 +271,10 @@
         "themeGroup": "sports",
         "arabicThemeGroup": "كرة قدم ورياضة",
         "url": "/products/stickers/sticker-15-fc-barcelona-yamal.jpeg",
-        "dimensions": { "width": 913, "height": 1280 },
+        "dimensions": {
+          "width": 913,
+          "height": 1280
+        },
         "sampleName": "Taim Ayman",
         "sampleGrade": "Grade 1F"
       },
@@ -235,7 +286,10 @@
         "themeGroup": "gaming",
         "arabicThemeGroup": "ألعاب وسرعة",
         "url": "/products/stickers/sticker-16-sonic-superstars.jpeg",
-        "dimensions": { "width": 913, "height": 1280 },
+        "dimensions": {
+          "width": 913,
+          "height": 1280
+        },
         "sampleName": "Ayman Mohamed Adel"
       },
       {
@@ -246,7 +300,10 @@
         "themeGroup": "anime",
         "arabicThemeGroup": "أنمي ومغامرات",
         "url": "/products/stickers/sticker-17-naruto-shippuden.jpeg",
-        "dimensions": { "width": 1024, "height": 1280 },
+        "dimensions": {
+          "width": 1024,
+          "height": 1280
+        },
         "sampleName": "Yazan Mohamed Samy"
       },
       {
@@ -257,7 +314,10 @@
         "themeGroup": "gaming",
         "arabicThemeGroup": "جيمنج وألعاب",
         "url": "/products/stickers/sticker-18-brawl-stars-action.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Zoheir Ahmed",
         "sampleGrade": "Grade 5"
       },
@@ -269,7 +329,10 @@
         "themeGroup": "gaming",
         "arabicThemeGroup": "ألعاب وشخصيات",
         "url": "/products/stickers/sticker-19-super-mario-world.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Hady Ahmed"
       },
       {
@@ -280,7 +343,10 @@
         "themeGroup": "girls",
         "arabicThemeGroup": "أميرات وديزني",
         "url": "/products/stickers/sticker-20-frozen-elsa-magic.jpeg",
-        "dimensions": { "width": 855, "height": 1280 },
+        "dimensions": {
+          "width": 855,
+          "height": 1280
+        },
         "sampleName": "Farida Abdulrahman Elmahdy",
         "sampleGrade": "Grade 2"
       },
@@ -292,7 +358,10 @@
         "themeGroup": "superheroes",
         "arabicThemeGroup": "أبطال وخوارق",
         "url": "/products/stickers/sticker-21-spiderman-classic-web.jpeg",
-        "dimensions": { "width": 1057, "height": 1280 },
+        "dimensions": {
+          "width": 1057,
+          "height": 1280
+        },
         "sampleName": "Selim Abdalla"
       },
       {
@@ -303,7 +372,10 @@
         "themeGroup": "girls",
         "arabicThemeGroup": "أناقة وبنات",
         "url": "/products/stickers/sticker-22-barbie-pink-gingham.jpeg",
-        "dimensions": { "width": 913, "height": 1280 },
+        "dimensions": {
+          "width": 913,
+          "height": 1280
+        },
         "sampleName": "Roa'a Mahmoud Mahmoud Ali"
       },
       {
@@ -314,7 +386,10 @@
         "themeGroup": "educational",
         "arabicThemeGroup": "تعليمي ومكعبات",
         "url": "/products/stickers/sticker-23-numberblocks-lego.jpeg",
-        "dimensions": { "width": 913, "height": 1280 },
+        "dimensions": {
+          "width": 913,
+          "height": 1280
+        },
         "sampleName": "Yehia Fouad Nader",
         "sampleSchool": "Orman elite school",
         "sampleGrade": "KG1"
@@ -327,7 +402,10 @@
         "themeGroup": "superheroes",
         "arabicThemeGroup": "أبطال وخوارق",
         "url": "/products/stickers/sticker-24-superman-city-hero.jpeg",
-        "dimensions": { "width": 913, "height": 1280 },
+        "dimensions": {
+          "width": 913,
+          "height": 1280
+        },
         "sampleName": "Zein Ramy",
         "sampleSchool": "Garfield",
         "sampleGrade": "KG2"
@@ -335,4 +413,3 @@
     ]
   }
 }
-

@@ -15,7 +15,7 @@ export type CatalogProductItem = {
   title: string;
   subtitle: string;
   category: string;
-  categoryId: "stickers" | "reward-cards" | "customized-stories" | "printed-t-shirts";
+  categoryId: string;
   price: number;
   priceUnit: string;
   badge: string;
