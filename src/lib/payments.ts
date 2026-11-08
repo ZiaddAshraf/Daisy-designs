@@ -1,5 +1,7 @@
+import { getPaymobClient } from "./paymob";
+
 export type PaymentRequest = { orderNumber: string; amount: number; customerEmail?: string };
-export type PaymentResult = { status: "PENDING" | "PAID" | "FAILED"; reference?: string };
+export type PaymentResult = { status: "PENDING" | "PAID" | "FAILED"; reference?: string; redirectUrl?: string };
 
 export interface PaymentProvider {
     readonly method: "COD" | "STRIPE" | "PAYMOB" | "FAWRY";
@@ -18,7 +20,13 @@ export class StripeProvider implements PaymentProvider {
 
 export class PaymobProvider implements PaymentProvider {
     readonly method = "PAYMOB" as const;
-    async createPayment(_request: PaymentRequest): Promise<PaymentResult> { void _request; throw new Error("Paymob is not configured"); }
+    async createPayment(request: PaymentRequest): Promise<PaymentResult> {
+        const client = getPaymobClient();
+        if (!client.isConfigured()) {
+            throw new Error("Paymob is not configured");
+        }
+        return { status: "PENDING", reference: request.orderNumber };
+    }
 }
 
 export class FawryProvider implements PaymentProvider {

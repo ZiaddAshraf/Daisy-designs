@@ -1,4 +1,8 @@
 "use client";
+import { useImageUpload } from "@/hooks/use-image-upload";
+import { UploadFeedback } from "@/components/upload-feedback";
+import { CustomizationReview } from "@/components/customization-review";
+
 import { PackageSelector } from "@/components/package-selector";
 import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
 
@@ -76,7 +80,7 @@ export function StickersCatalogClient({
   locale, catalog,
 }: StickersCatalogClientProps) {
   const isAr = locale === "ar";
-  const [selectedPackageId, setSelectedPackageId] = useState("");
+  const [selectedPackageId, setSelectedPackageId] = useState(catalog.variants[0]?.id || "");
   const selectedPackage = catalog.variants.find(v => v.id === selectedPackageId);
   const product = { ...stickersData.product, price: selectedPackage?.price ?? catalog.price };
   const { toggle, has } = useWishlist();
@@ -95,10 +99,8 @@ export function StickersCatalogClient({
   const [className, setClassName] = useState("");
   const [parentPhone, setParentPhone] = useState("");
   const [customDesignText, setCustomDesignText] = useState("");
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const photoUpload = useImageUpload("/api/uploads/customization", "url", 5, isAr);
+  const { file: photoFile, preview: photoPreview, key: photoUrl, busy: isUploadingPhoto, clear: clearPhoto } = photoUpload;
   const [quantity, setQuantity] = useState(1);
 
   // Validation States
@@ -214,60 +216,25 @@ export function StickersCatalogClient({
     setClassName("");
     setParentPhone("");
     setCustomDesignText("");
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    setPhotoUrl(null);
+    clearPhoto();
     setQuantity(1);
     setNameError(false);
     setPhoneError(false);
     setCustomTextError(false);
-  }, []);
+  }, [clearPhoto]);
 
   // Handle Photo File Upload
-  const handlePhotoChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert(isAr ? "حجم الصورة يجب ألا يتجاوز 5 ميجابايت." : "Photo size must be under 5MB.");
-      return;
-    }
-
-    setPhotoFile(file);
-    const localUrl = URL.createObjectURL(file);
-    setPhotoPreview(localUrl);
-
-    setIsUploadingPhoto(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/uploads/customization", {
-        method: "POST",
-        body: formData,
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setPhotoUrl(data.url);
-      } else {
-        console.error("Photo upload failed");
-      }
-    } catch (err) {
-      console.error("Photo upload error:", err);
-    } finally {
-      setIsUploadingPhoto(false);
-    }
+    e.target.value = "";
+    if (file) void photoUpload.choose(file);
   };
-
-  const handleRemovePhoto = () => {
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    setPhotoUrl(null);
-  };
+  const handleRemovePhoto = clearPhoto;
 
   // Add to cart with full validation
   const handleAddToCart = (e: FormEvent) => {
     e.preventDefault();
-    if (!customizingDesign) return;
+    if (!customizingDesign || photoUpload.blocked || !selectedPackage || catalog.stock < quantity) return;
 
     // 1. Validate Child's Name (Required & Preserves Exact Case)
     const trimmedName = childName.trim();
@@ -896,12 +863,7 @@ export function StickersCatalogClient({
                         <p className="text-xs font-bold text-[var(--foreground)] truncate">
                           {photoFile?.name || "photo.jpg"}
                         </p>
-                        <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                          <Check size={12} />
-                          {isUploadingPhoto
-                            ? isAr ? "جاري الرفع..." : "Uploading..."
-                            : isAr ? "تم الرفع بنجاح" : "Uploaded"}
-                        </span>
+                        
                       </div>
                       <button
                         type="button"
@@ -928,7 +890,18 @@ export function StickersCatalogClient({
                   )}
                 </div>
 
-                {/* 6 & 7. Sticky Purchase Footer on Mobile */}
+                <UploadFeedback isAr={isAr} busy={isUploadingPhoto} uploaded={Boolean(photoUrl)} error={photoUpload.error} retry={photoUpload.retry} remove={clearPhoto} />
+              <CustomizationReview isAr={isAr} editTarget="childNameInput" rows={[
+                [isAr ? "الباقة" : "Package", selectedPackage ? variantLabel(selectedPackage, locale) : ""],
+                [isAr ? "التصميم" : "Design", isAr ? customizingDesign.arabicTitle : customizingDesign.title],
+                [isAr ? "اسم الطفل" : "Child's name", childName.trim()],
+                [isAr ? "المدرسة / الصف / الفصل" : "School / grade / class", [schoolName, grade, className].filter(Boolean).join(" / ") || (isAr ? "لم يُضف — اختياري" : "Not added \u2014 optional")],
+                [isAr ? "وصف التصميم" : "Design instructions", customDesignText.trim() || (isAr ? "التصميم المختار" : "Selected design")],
+                [isAr ? "الصورة" : "Photo", photoUrl ? (isAr ? "تم رفع الصورة" : "Uploaded") : photoFile ? (isAr ? "لم يكتمل الرفع" : "Upload incomplete") : (isAr ? "بدون صورة" : "No photo")],
+                [isAr ? "الكمية" : "Quantity", String(quantity)],
+                [isAr ? "الإجمالي" : "Total", formatPrice(product.price * quantity, locale)],
+              ]} />
+              {/* 6 & 7. Sticky Purchase Footer on Mobile */}
                 <div className="sticky bottom-0 bg-[var(--card)]/95 backdrop-blur-md -mx-4 -mb-4 sm:mx-0 sm:mb-0 p-4 sm:p-0 border-t sm:border-t-0 border-[var(--border)] space-y-3 z-10 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] sm:shadow-none">
                   {/* Quantity Stepper & Price Calculation */}
                   <div className="p-3 sm:p-4 rounded-2xl bg-[var(--surface-soft)] border border-[var(--border)] flex items-center justify-between gap-4">
@@ -972,7 +945,7 @@ export function StickersCatalogClient({
                   {/* Primary Action Button: "أضف للسلة" */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || isUploadingPhoto || !selectedPackage || catalog.stock < quantity}
+                    disabled={isSubmitting || photoUpload.blocked || !selectedPackage || catalog.stock < quantity}
                     className="w-full py-3.5 px-6 rounded-2xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-extrabold text-sm sm:text-base shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-h-[48px]"
                   >
                     <ShoppingBag size={18} />

@@ -45,8 +45,9 @@ export default async function CategoriesPage() {
             category={category}
             locale={locale}
             index={index}
-            showNotice={true}
-            showDescription={true}
+            showNotice={false}
+            showDescription={false}
+            clearPhotography={true}
             headingTag="h2"
           />
         ))}

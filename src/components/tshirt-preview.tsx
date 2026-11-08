@@ -1,6 +1,10 @@
 "use client";
+import { useImageUpload } from "@/hooks/use-image-upload";
+import { UploadFeedback } from "@/components/upload-feedback";
+import { CustomizationReview } from "@/components/customization-review";
 
-import { useState, useRef, useCallback } from "react";
+
+import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -69,11 +73,8 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
   };
 
   // Artwork Upload state
-  const [artworkFile, setArtworkFile] = useState<File | null>(null);
-  const [artworkPreviewUrl, setArtworkPreviewUrl] = useState<string | null>(null);
-  const [artworkStorageKey, setArtworkStorageKey] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const artworkUpload = useImageUpload("/api/uploads/tshirt-artwork", "storageKey", 10, isAr);
+  const { file: artworkFile, preview: artworkPreviewUrl, key: artworkStorageKey, busy: isUploading, error: uploadError, setError: setUploadError } = artworkUpload;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Written Design Description state
@@ -84,82 +85,39 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
   const unitPrice = price;
   const totalPrice = unitPrice * quantity;
   const [addedToCart, setAddedToCart] = useState(false);
+  const [highlightMissing, setHighlightMissing] = useState(false);
 
   // Validation Gate: Logical OR rule (has valid upload OR non-empty text >= 3 chars)
   const hasValidArtwork = Boolean(artworkStorageKey);
   const hasValidText = designText.trim().length >= 3;
-  const canAddToCart = (hasValidArtwork || hasValidText) && inStock && !isUploading;
+  const canAddToCart = (hasValidArtwork || hasValidText) && inStock && !artworkUpload.blocked;
 
   // Handle file selection and upload
-  const handleFileChange = useCallback(
-    async (file: File) => {
-      setUploadError(null);
-
-      // Client-side quick check
-      if (file.size > 10 * 1024 * 1024) {
-        setUploadError(
-          isAr
-            ? "حجم الملف يتجاوز الحد الأقصى المسموح به (١٠ ميجابايت)"
-            : "File size exceeds the 10MB limit"
-        );
-        return;
-      }
-
-      const validMimes = ["image/jpeg", "image/png", "image/webp"];
-      if (!validMimes.includes(file.type)) {
-        setUploadError(
-          isAr
-            ? "صيغة الملف غير مدعومة. يُرجى اختيار صورة بصيغة PNG أو JPG أو WebP"
-            : "Unsupported file format. Please upload a PNG, JPG, or WebP image"
-        );
-        return;
-      }
-
-      setArtworkFile(file);
-      const localUrl = URL.createObjectURL(file);
-      setArtworkPreviewUrl(localUrl);
-      setIsUploading(true);
-
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const res = await fetch("/api/uploads/tshirt-artwork", {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.message || data.error || "Upload failed");
-        }
-
-        setArtworkStorageKey(data.storageKey);
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Upload error";
-        setUploadError(message);
-        setArtworkStorageKey(null);
-      } finally {
-        setIsUploading(false);
-      }
-    },
-    [isAr]
-  );
-
+  const handleFileChange = artworkUpload.choose;
   const handleRemoveArtwork = () => {
-    if (artworkPreviewUrl && artworkPreviewUrl.startsWith("blob:")) {
-      URL.revokeObjectURL(artworkPreviewUrl);
-    }
-    setArtworkFile(null);
-    setArtworkPreviewUrl(null);
-    setArtworkStorageKey(null);
-    setUploadError(null);
+    artworkUpload.clear();
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const triggerMissingDesignFeedback = () => {
+    setHighlightMissing(true);
+    setTimeout(() => setHighlightMissing(false), 2500);
+    const el = document.getElementById("tshirt-artwork-section") || document.getElementById("tshirt-design-text");
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setUploadError(
+      isAr
+        ? "يرجى رفع تصميم أو كتابة وصف للطلب للمتابعة"
+        : "Please upload artwork or enter a design description"
+    );
+  };
+
   // Add to Cart handler
-  const handleAddToCart = () => {
-    if (!canAddToCart) return;
+  const handleAddToCart = (openDrawer: boolean | unknown = true) => {
+    if (!canAddToCart) {
+      triggerMissingDesignFeedback();
+      return;
+    }
+    const shouldOpen = typeof openDrawer === "boolean" ? openDrawer : true;
 
     const customization: Record<string, string> = {
       garment_color: selectedColor,
@@ -180,7 +138,8 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
       productObj,
       customization,
       undefined,
-      quantity
+      quantity,
+      shouldOpen
     );
 
     setAddedToCart(true);
@@ -188,16 +147,10 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
 
   const handleDirectBuy = () => {
     if (!canAddToCart) {
-      const el = document.getElementById("tshirt-artwork-section") || document.getElementById("tshirt-design-text");
-      el?.scrollIntoView({ behavior: "smooth", block: "center" });
-      setUploadError(
-        isAr
-          ? "يرجى رفع تصميم أو كتابة وصف للطلب للمتابعة"
-          : "Please upload artwork or enter a design description"
-      );
+      triggerMissingDesignFeedback();
       return;
     }
-    handleAddToCart();
+    handleAddToCart(false);
     router.push("/checkout");
   };
 
@@ -435,22 +388,55 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
                       key={s.id}
                       type="button"
                       onClick={() => setSelectedSize(s.id)}
-                      className={`flex h-12 flex-col items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      className={`flex h-11 items-center justify-center rounded-xl text-sm font-extrabold transition-all cursor-pointer ${
                         isSelected
                           ? "bg-teal-600 text-white shadow-xs scale-102 ring-2 ring-teal-500/50"
                           : "bg-slate-50 text-slate-700 hover:bg-slate-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700/60 border border-slate-200/60 dark:border-neutral-700/40"
                       }`}
                     >
-                      <span className="font-extrabold">{s.label}</span>
-                      <span className="text-[10px] font-normal opacity-80">{s.widthCm} سم</span>
+                      <span>{s.label}</span>
                     </button>
                   );
                 })}
             </div>
+
+            {/* Active Size Reassurance Helper */}
+            {(() => {
+              const activeSizeObj = product.sizes.find((s) => s.id === selectedSize) as { arabicGroup?: string } | undefined;
+              return (
+                <div className="flex items-center justify-between rounded-xl bg-teal-50/70 dark:bg-teal-950/30 px-3.5 py-2 text-xs font-semibold text-teal-900 dark:text-teal-200 border border-teal-100 dark:border-teal-900/40 mt-2">
+                  <span className="flex items-center gap-1.5">
+                    <Check size={14} className="text-teal-600 dark:text-teal-400 shrink-0" />
+                    <span>
+                      {isAr ? "المقاس المختار حالياً:" : "Selected:"}{" "}
+                      <strong className="font-extrabold text-teal-950 dark:text-teal-100">
+                        {isAr
+                          ? activeSizeObj?.arabicGroup || `مقاس ${selectedSize}`
+                          : `Size ${selectedSize}`}
+                      </strong>
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsSizeGuideOpen(true)}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-700 hover:text-teal-950 dark:text-teal-300 underline cursor-pointer"
+                  >
+                    <Ruler size={13} />
+                    <span>{isAr ? "دليل المقاسات" : "Size guide"}</span>
+                  </button>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Customization Studio (Upload & Description Zone) */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-neutral-800 dark:bg-neutral-900 space-y-4">
+          <div id="tshirt-custom-zone" className={`rounded-2xl border p-5 shadow-xs bg-white dark:bg-neutral-900 space-y-4 transition-all duration-300 ${highlightMissing ? "border-rose-400 ring-4 ring-rose-400/30 animate-pulse dark:border-rose-500" : "border-slate-200/80 dark:border-neutral-800"}`}>
+            {highlightMissing && (
+              <div className="rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 p-2.5 text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-2">
+                <AlertCircle size={16} className="shrink-0 text-rose-600 dark:text-rose-400" />
+                <span>{isAr ? "خطوة أخيرة: يرجى رفع صورة أو كتابة وصف التصميم المطلوب لإتمام الطلب" : "Please upload an image or write a description to continue"}</span>
+              </div>
+            )}
             <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-neutral-100 flex items-center justify-between">
               <span>{isAr ? "تخصيص التصميم المطلوب" : "Custom Artwork & Description"}</span>
               <span className="text-[11px] font-normal text-slate-400">
@@ -473,6 +459,7 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
                     ref={fileInputRef}
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
+                    aria-label={isAr ? "رفع صورة التصميم أو الفكرة المرجعية" : "Upload design artwork or reference image"}
                     className="sr-only"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
@@ -530,14 +517,15 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
                 </div>
               )}
 
-              {uploadError && (
+              {!artworkFile && uploadError && (
                 <div className="mt-2 flex items-center gap-1.5 text-xs text-rose-600 dark:text-rose-400">
                   <AlertCircle size={14} />
-                  <span>{uploadError}</span>
+                  <span role="alert">{uploadError}</span>
                 </div>
               )}
             </div>
 
+            {artworkFile && <UploadFeedback isAr={isAr} busy={isUploading} uploaded={Boolean(artworkStorageKey)} error={uploadError} retry={artworkUpload.retry} remove={handleRemoveArtwork} />}
             {/* Option B: Design Description Field */}
             <div>
               <label
@@ -577,6 +565,14 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
             </div>
           </div>
 
+          <CustomizationReview isAr={isAr} editTarget="tshirt-design-text" rows={[
+            [isAr ? "اللون" : "Color", isAr ? activeColorObj.arabicName : activeColorObj.name],
+            [isAr ? "المقاس" : "Size", `${sizeCategory === "children" ? (isAr ? "أطفال" : "Children") : (isAr ? "كبار" : "Adults")} — ${selectedSize}`],
+            [isAr ? "وصف التصميم" : "Design instructions", designText.trim() || (isAr ? "حسب الصورة المرفوعة" : "Use uploaded artwork")],
+            [isAr ? "صورة التصميم" : "Artwork", artworkStorageKey ? (isAr ? "تم رفع الصورة" : "Uploaded") : artworkFile ? (isAr ? "لم يكتمل الرفع" : "Upload incomplete") : (isAr ? "بدون صورة" : "No image")],
+            [isAr ? "الكمية" : "Quantity", String(quantity)],
+            [isAr ? "الإجمالي" : "Total", formatPrice(totalPrice, locale)],
+          ]} />
           {/* Quantity & Add to Cart Controls */}
           <div className="space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -612,7 +608,7 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
               {/* Add to Cart CTA */}
               <button
                 type="button"
-                onClick={handleAddToCart}
+                onClick={() => handleAddToCart()}
                 disabled={!canAddToCart}
                 className={`w-full sm:flex-1 min-h-[48px] flex items-center justify-center gap-2 rounded-full py-3.5 px-6 font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer active:scale-[0.98] ${
                   addedToCart
@@ -721,7 +717,7 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
       {/* Mobile Sticky Quick-Purchase Bar */}
       <aside
         aria-label={isAr ? "شريط الشراء السريع" : "Quick purchase bar"}
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+        className="mobile-sticky-bar md:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
       >
         <div className="flex items-center justify-between gap-2.5 max-w-[500px] mx-auto">
           <div className="flex items-center gap-2 min-w-0">
@@ -736,7 +732,7 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                {isAr ? product.arabicName : product.name} ({activeColorObj.arabicName} - {selectedSize})
+                {isAr ? product.arabicName : product.name} ({isAr ? activeColorObj.arabicName : activeColorObj.name} - {selectedSize})
               </p>
               <p className="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5">{formatPrice(totalPrice, locale)}</p>
             </div>
@@ -745,7 +741,7 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
-              onClick={handleAddToCart}
+              onClick={() => handleAddToCart()}
               className="h-11 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold border border-zinc-300 dark:border-zinc-700 flex items-center gap-1 active:scale-95 transition-transform cursor-pointer"
               title={isAr ? "أضيفي إلى السلة" : "Add to Cart"}
             >

@@ -137,7 +137,7 @@ export default async function CategoryPage({ params, searchParams }: { params: P
       ) : slug === "customized-stories" || slug === "stories" ? (
         <StoryBookPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} initialStoryId={(await searchParams).mode === 'custom' ? 'custom-story' : (await searchParams).collection || (await searchParams).story} />
       ) : slug === "printed-t-shirts" || slug === "t-shirts" || slug === "tshirts" ? (
-        specialProduct ? <TShirtPreview locale={locale} price={specialProduct.price} inStock={specialProduct.stock > 0} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />
+        <TShirtPreview locale={locale} price={specialProduct?.price ?? 450} inStock={specialProduct ? specialProduct.stock > 0 : true} />
       ) : hasProducts ? (
         <>
           <div className="catalog-result-line" data-scroll-reveal suppressHydrationWarning>

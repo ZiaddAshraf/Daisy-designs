@@ -77,8 +77,8 @@ export function toStorefrontProduct(product: { slug: string; name: string; arabi
     const isTshirt = product.slug === "custom-printed-tshirt";
     const colors = isTshirt ? [
       { id: "white", name: "White", arabicName: "أبيض", hex: "#FFFFFF", image: "/products/t-shirts/kids-tshirt-studio.jpeg" },
-      { id: "black", name: "Black", arabicName: "أسود", hex: "#18181B", image: "/products/t-shirts/black-tshirt.svg" },
-      { id: "gray", name: "Gray", arabicName: "رمادي", hex: "#9CA3AF", image: "/products/t-shirts/gray-tshirt.svg" },
+      { id: "black", name: "Black", arabicName: "أسود", hex: "#18181B", image: "/products/t-shirts/kids-tshirt-black-studio.jpeg" },
+      { id: "gray", name: "Gray", arabicName: "رمادي", hex: "#9CA3AF", image: "/products/t-shirts/kids-tshirt-gray-studio.jpeg" },
     ] : undefined;
 
     const subtitle = isTshirt

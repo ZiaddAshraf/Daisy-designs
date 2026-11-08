@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import stickersData from "@/data/stickers-product.json";
 
@@ -88,7 +89,7 @@ export async function ensureCatalogProductInTransaction(
           name: "Printed T-Shirts",
           arabicName: "تيشيرتات مطبوعة",
           description: "Custom printed cotton T-shirts for adults and kids.",
-          image: "/products/t-shirts/white-tshirt.svg",
+          image: "/products/t-shirts/kids-tshirt-studio.jpeg",
           published: true,
         },
       });
@@ -111,9 +112,9 @@ export async function ensureCatalogProductInTransaction(
         tags: ["printed-t-shirts", "تيشيرتات مطبوعة", "تيشيرت كبار وأطفال", "Daisy Designs", "ملابس قطنية"],
         images: {
           create: [
-            { position: 0, url: "/products/t-shirts/white-tshirt.svg", alt: "White T-Shirt (Adults & Kids)" },
-            { position: 1, url: "/products/t-shirts/black-tshirt.svg", alt: "Black T-Shirt (Adults & Kids)" },
-            { position: 2, url: "/products/t-shirts/gray-tshirt.svg", alt: "Gray T-Shirt (Adults & Kids)" },
+            { position: 0, url: "/products/t-shirts/kids-tshirt-studio.jpeg", alt: "White T-Shirt (Adults & Kids)" },
+            { position: 1, url: "/products/t-shirts/kids-tshirt-black-studio.jpeg", alt: "Black T-Shirt (Adults & Kids)" },
+            { position: 2, url: "/products/t-shirts/kids-tshirt-gray-studio.jpeg", alt: "Gray T-Shirt (Adults & Kids)" },
           ],
         },
       },
@@ -398,4 +399,22 @@ export async function ensureCatalogProductInTransaction(
     }
   }
 
+}
+
+export async function ensureCoreCatalogProducts(): Promise<void> {
+  const slugs = [
+    "reward-cards-box-set",
+    "first-year-at-school",
+    "custom-waterproof-stickers",
+    "custom-printed-tshirt",
+  ];
+  for (const slug of slugs) {
+    try {
+      await prisma.$transaction(async (tx) => {
+        await ensureCatalogProductInTransaction(slug, tx);
+      });
+    } catch {
+      // Non-blocking self-heal
+    }
+  }
 }

@@ -67,7 +67,7 @@ async function main() {
     for (let index = 0; index < 20; index += 1) await prisma.review.create({ data: { rating: 4 + (index % 2), title: "تجربة جميلة", comment: "الخامة ممتازة والاسم واضح جدًا، وصل الطلب بسرعة.", status: "APPROVED", verified: true, productId: products[index % products.length].id, userId: customers[index % customers.length].id } });
     const coupons = [{ code: "WELCOME10", type: "PERCENTAGE" as const, value: 10 }, { code: "STITCH50", type: "FIXED" as const, value: 50 }, { code: "SCHOOL15", type: "PERCENTAGE" as const, value: 15 }, { code: "FAMILY100", type: "FIXED" as const, value: 100 }, { code: "NEWYEAR20", type: "PERCENTAGE" as const, value: 20 }];
     for (const coupon of coupons) await prisma.coupon.create({ data: { ...coupon, minimumOrder: 200, active: true } });
-    const settings = { announcement: "شحن مجاني للطلبات فوق 2,500 ج.م", brandName: "Daisy Designs", shippingFee: "60", freeShippingThreshold: "2500", currency: "EGP", phone: "+20 100 000 0000", whatsapp: "+20 100 000 0000", email: "hello@stitch.eg" };
+    const settings = { announcement: "شحن مجاني للطلبات فوق 2,500 ج.م", brandName: "Daisy Designs", shippingFee: "60", freeShippingThreshold: "2500", currency: "EGP", phone: "+20 11 52606234", whatsapp: "+20 11 52606234", email: "hello@daisydesigns.shop" };
     for (const [key, value] of Object.entries(settings)) await prisma.siteSetting.create({ data: { key, value } });
 
     for (let index = 0; index < 10; index += 1) {

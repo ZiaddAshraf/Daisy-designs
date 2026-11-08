@@ -67,7 +67,7 @@ test("handleApiError returns fallback status and message for generic errors", as
   const res = handleApiError(genericError, "خطأ في العنصر", 404);
   assert.equal(res.status, 404);
   const data = await res.json();
-  assert.equal(data.error, "ITEM_NOT_FOUND");
+  assert.equal(data.error, "خطأ في العنصر");
 });
 
 test("order inventory aggregation sums quantities across multi-sheet sticker lines", () => {

@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { isAdmin } from "@/lib/admin-auth";
+import { getStorageBackend } from "@/lib/storage";
 import { resolveChildPhotoPath } from "@/lib/child-photo-storage";
 import { prisma } from "@/lib/prisma";
 
@@ -50,36 +51,47 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
     const url = new URL(request.url);
     const photoIndex = parseInt(url.searchParams.get("index") || "0", 10);
-    const filePath = resolveChildPhotoPath(storageKey, isNaN(photoIndex) ? 0 : photoIndex);
-    if (!filePath) {
-      return NextResponse.json({ error: "مسار الصورة غير صالح" }, { status: 400 });
-    }
+    const keys = storageKey.split(",").map((k) => k.trim()).filter(Boolean);
+    const targetKey = keys[isNaN(photoIndex) ? 0 : photoIndex] ?? keys[0];
 
+    const storage = getStorageBackend();
+    const obj = await storage.get(targetKey);
     let buffer: Buffer;
-    try {
-      buffer = await fs.readFile(filePath);
-    } catch {
+    let contentType = targetKey.endsWith(".png") ? "image/png" : targetKey.endsWith(".webp") ? "image/webp" : "image/jpeg";
+
+    if (obj) {
+      buffer = obj.data;
+      contentType = obj.contentType || contentType;
+    } else {
+      const filePath = resolveChildPhotoPath(storageKey, isNaN(photoIndex) ? 0 : photoIndex);
+      if (!filePath) {
+        return NextResponse.json({ error: "مسار الصورة غير صالح" }, { status: 400 });
+      }
+
       try {
-        const altDir = filePath.includes("daisy_storage")
-          ? path.join(process.cwd(), "storage", "private_uploads", "story_child_photos")
-          : path.join(os.tmpdir(), "daisy_storage", "private_uploads", "story_child_photos");
-        buffer = await fs.readFile(path.join(altDir, path.basename(filePath)));
+        buffer = await fs.readFile(filePath);
       } catch {
-        return NextResponse.json({ error: "الملف غير موجود على الخادم أو تم حذفه وفق سياسة الاحتفاظ" }, { status: 404 });
+        try {
+          const altDir = filePath.includes("daisy_storage")
+            ? path.join(process.cwd(), "storage", "private_uploads", "story_child_photos")
+            : path.join(os.tmpdir(), "daisy_storage", "private_uploads", "story_child_photos");
+          buffer = await fs.readFile(path.join(altDir, path.basename(filePath)));
+        } catch {
+          return NextResponse.json({ error: "الملف غير موجود على الخادم أو تم حذفه وفق سياسة الاحتفاظ" }, { status: 404 });
+        }
       }
     }
 
-    const ext = filePath.endsWith(".png") ? "png" : filePath.endsWith(".webp") ? "webp" : "jpeg";
+    const ext = targetKey.endsWith(".png") ? "png" : targetKey.endsWith(".webp") ? "webp" : "jpeg";
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
-        "Content-Type": `image/${ext}`,
+        "Content-Type": contentType,
         "Content-Disposition": `inline; filename="order_${id}_child_photo.${ext}"`,
         "Cache-Control": "private, no-cache, no-store, must-revalidate",
       },
     });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "SERVER_ERROR";
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "SERVER_ERROR" }, { status: 500 });
   }
 }
 

@@ -60,7 +60,7 @@ test("all 10 original story images exist on disk with 902x1280 dimensions", () =
   }
 });
 
-test("database product and category exist with confirmed values and required child_photo field", async () => {
+test("database product and category exist with confirmed values and required child_photo field", { skip: process.env.RUN_DATABASE_TESTS !== "true" }, async () => {
   const category = await prisma.category.findUnique({
     where: { slug: "customized-stories" },
   });

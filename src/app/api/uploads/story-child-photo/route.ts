@@ -3,7 +3,6 @@ import {
   ALLOWED_MIME_TYPES,
   extractDimensions,
   MAX_FILE_SIZE,
-  MIN_DIMENSION,
   saveChildPhoto,
   validateMagicBytes,
 } from "@/lib/child-photo-storage";
@@ -54,15 +53,8 @@ export async function POST(request: Request) {
     }
 
     const dimensions = extractDimensions(buffer, ext);
-    if (dimensions && (dimensions.width < MIN_DIMENSION || dimensions.height < MIN_DIMENSION)) {
-      return NextResponse.json(
-        {
-          error: "IMAGE_RESOLUTION_TOO_LOW",
-          message: `Minimum resolution for print viability is ${MIN_DIMENSION}x${MIN_DIMENSION}px / دقة الصورة أقل من الحد الأدنى المطلوب للطباعة (${MIN_DIMENSION}×${MIN_DIMENSION} بكسل)`,
-          dimensions,
-        },
-        { status: 400 }
-      );
+    if (!dimensions || dimensions.width <= 0 || dimensions.height <= 0) {
+      return NextResponse.json({ error: "INVALID_IMAGE" }, { status: 400 });
     }
 
     // Save into private non-public storage with EXIF/GPS metadata stripped
@@ -74,13 +66,12 @@ export async function POST(request: Request) {
         key: storageKey,
         filename,
         dimensions: dimensions ?? { width: 0, height: 0 },
-        message: "Photo safely uploaded and encrypted / تم حفظ وتأمين صورة الطفل بنجاح",
+        message: "Photo uploaded to private storage / تم حفظ صورة الطفل في مساحة خاصة",
       },
       { status: 201 }
     );
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "UPLOAD_FAILED";
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "UPLOAD_FAILED" }, { status: 500 });
   }
 }
 

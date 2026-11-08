@@ -8,13 +8,113 @@ import { CategoryCard } from "@/components/category-card";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import { getStoreCategories } from "@/lib/store-categories";
-import { getPublishedProducts, toStorefrontProduct } from "@/lib/catalog";
+import { getPublishedProducts, isDemoMode, toStorefrontProduct } from "@/lib/catalog";
+import { ensureCoreCatalogProducts } from "@/lib/ensure-catalog-product";
 
 export const dynamic = "force-dynamic";
 
-type HomeProductRecord = Awaited<ReturnType<typeof getPublishedProducts>>[number] & {
-  featured?: boolean;
+type HomeProductRecord = Omit<Parameters<typeof toStorefrontProduct>[0], "category"> & {
+  id?: string;
+  published?: boolean;
+  category?: {
+    id?: string;
+    slug?: string;
+    name?: string;
+    arabicName?: string;
+  } | null;
 };
+
+
+const CORE_FALLBACK_PRODUCTS: HomeProductRecord[] = [
+  {
+    id: "reward-cards-box-set",
+    slug: "reward-cards-box-set",
+    name: "Daisy Designs Reward Cards Box Set",
+    arabicName: "علبة كروت التشجيع",
+    price: 200,
+    compareAtPrice: null,
+    description: "An exclusive collection of 10 inspiring, heartwarming affirmation and reward cards in a beautifully branded Daisy Designs keepsake box.",
+    arabicDescription: "مجموعة حصرية من كروت التحفيز الملهمة تضم 10 كروت متنوعة ورسائل إيجابية دافئة داخل علبة هدايا أنيقة بشعار Daisy Designs.",
+    customizable: false,
+    featured: true,
+    published: true,
+    images: [{ url: "/products/reward-cards/reward-cards-box-set.jpeg" }],
+    category: {
+      id: "reward-cards",
+      slug: "reward-cards",
+      name: "Reward Cards",
+      arabicName: "كروت التشجيع",
+    },
+    variants: [],
+    tags: ["reward-cards"],
+  },
+  {
+    id: "first-year-at-school",
+    slug: "first-year-at-school",
+    name: "Daisy Designs First Year at School Storybook",
+    arabicName: "قصة أول سنة في المدرسة",
+    price: 200,
+    compareAtPrice: null,
+    description: "An inspiring personalized children's storybook starring your child with their uploaded photograph.",
+    arabicDescription: "قصة أطفال ملهمة ومصممة بحب من Daisy Designs تضع طفلك بطلاً للقصة.",
+    customizable: true,
+    featured: true,
+    published: true,
+    images: [{ url: "/products/customized-stories/first-year-at-school/cover.jpeg" }],
+    category: {
+      id: "customized-stories",
+      slug: "customized-stories",
+      name: "Customized Stories",
+      arabicName: "قصص مخصصة",
+    },
+    variants: [],
+    tags: ["customized-stories"],
+  },
+  {
+    id: "custom-waterproof-stickers",
+    slug: "custom-waterproof-stickers",
+    name: "Daisy Designs Custom Waterproof Stickers",
+    arabicName: "استيكرات مدرسية مخصصة مقاومة للماء",
+    price: 50,
+    compareAtPrice: null,
+    description: "High-quality, durable waterproof stickers personalized with your child's name, school, and class.",
+    arabicDescription: "استيكرات مدرسية عالية الجودة ومقاومة للماء مخصصة باسم طفلك ومدرسته وفصله.",
+    customizable: true,
+    featured: true,
+    published: true,
+    images: [{ url: "/products/stickers/sticker-02-super-cool-dino.jpeg" }],
+    category: {
+      id: "stickers",
+      slug: "stickers",
+      name: "Tickets, Labels & Keychains",
+      arabicName: "تيكت وليبل وميدالية",
+    },
+    variants: [],
+    tags: ["stickers"],
+  },
+  {
+    id: "custom-printed-tshirt",
+    slug: "custom-printed-tshirt",
+    name: "Daisy Designs Custom Printed Cotton T-Shirt (Adults & Kids)",
+    arabicName: "تيشيرت قطن بطباعة مخصصة (كبار وأطفال)",
+    price: 450,
+    compareAtPrice: null,
+    description: "High-quality plain cotton T-shirt for adults and kids customized with your requested artwork or written idea.",
+    arabicDescription: "تيشيرت قطن سادة عالي الجودة ومريح للكبار والأطفال، مخصص بطباعة تصميمك الخاص.",
+    customizable: true,
+    featured: true,
+    published: true,
+    images: [{ url: "/products/t-shirts/kids-tshirt-studio.jpeg" }],
+    category: {
+      id: "printed-t-shirts",
+      slug: "printed-t-shirts",
+      name: "Printed T-Shirts",
+      arabicName: "تيشيرتات مطبوعة",
+    },
+    variants: [],
+    tags: ["printed-t-shirts"],
+  },
+];
 
 export default async function Home() {
   const locale = await getRequestLocale();
@@ -32,8 +132,24 @@ export default async function Home() {
     productsUnavailable = true;
   }
 
-  const featuredRecords = records.filter((product) => product.featured);
-  const featured = (featuredRecords.length ? featuredRecords : records).slice(0, 4).map((product) => toStorefrontProduct(product, locale));
+  // Ensure all 4 flagship products are represented even if missing from remote DB
+  const existingSlugs = new Set(records.map((p) => p.slug));
+  let missingCore = false;
+  for (const fallback of CORE_FALLBACK_PRODUCTS) {
+    if (!existingSlugs.has(fallback.slug)) {
+      records.push(fallback);
+      existingSlugs.add(fallback.slug);
+      missingCore = true;
+    }
+  }
+
+  // Self-heal the database in background so it permanently persists
+  if (missingCore && !isDemoMode()) {
+    void ensureCoreCatalogProducts();
+  }
+
+  const featuredRecords = records.filter((product) => product.featured || product.slug === "custom-printed-tshirt");
+  const featured = (featuredRecords.length >= 4 ? featuredRecords : records).slice(0, 4).map((product) => toStorefrontProduct(product, locale));
   
   const categoryOrder = ["customized-stories", "stickers", "reward-cards", "printed-t-shirts"];
   const homepageCategories = categoryOrder

@@ -202,8 +202,9 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
     return () => clearTimeout(timer);
   }, [added]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (openDrawer: boolean | unknown = true) => {
     if (!inStock) return;
+    const shouldOpen = typeof openDrawer === "boolean" ? openDrawer : true;
     add(
       {
         slug: product.slug,
@@ -217,13 +218,14 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
       },
       undefined,
       undefined,
-      quantity
+      quantity,
+      shouldOpen
     );
     setAdded(true);
   };
 
   const handleDirectBuy = () => {
-    handleAddToCart();
+    handleAddToCart(false);
     router.push("/checkout");
   };
 
@@ -678,7 +680,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
 
                   <button
                     type="button"
-                    onClick={handleAddToCart}
+                    onClick={() => handleAddToCart()}
                     className="rc-add-to-cart-btn daisy-button daisy-button--dark"
                   >
                     <ShoppingBag size={16} />
@@ -1082,7 +1084,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
-              onClick={handleAddToCart}
+              onClick={() => handleAddToCart()}
               className="h-11 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold border border-zinc-300 dark:border-zinc-700 flex items-center gap-1 active:scale-95 transition-transform cursor-pointer"
               title={isAr ? "أضيفي إلى السلة" : "Add to Cart"}
             >

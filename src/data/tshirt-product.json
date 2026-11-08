@@ -42,14 +42,14 @@
         "name": "Black",
         "arabicName": "أسود",
         "hex": "#1E1E1E",
-        "image": "/products/t-shirts/black-tshirt.svg"
+        "image": "/products/t-shirts/kids-tshirt-black-studio.jpeg"
       },
       {
         "id": "gray",
         "name": "Gray",
         "arabicName": "رمادي",
         "hex": "#9CA3AF",
-        "image": "/products/t-shirts/gray-tshirt.svg"
+        "image": "/products/t-shirts/kids-tshirt-gray-studio.jpeg"
       }
     ],
     "sizes": [
@@ -88,12 +88,12 @@
       },
       {
         "colorId": "black",
-        "url": "/products/t-shirts/black-tshirt.svg",
+        "url": "/products/t-shirts/kids-tshirt-black-studio.jpeg",
         "alt": "Black T-Shirt (Adults & Kids) / تيشيرت أسود (كبار وأطفال)"
       },
       {
         "colorId": "gray",
-        "url": "/products/t-shirts/gray-tshirt.svg",
+        "url": "/products/t-shirts/kids-tshirt-gray-studio.jpeg",
         "alt": "Gray T-Shirt (Adults & Kids) / تيشيرت رمادي (كبار وأطفال)"
       }
     ]

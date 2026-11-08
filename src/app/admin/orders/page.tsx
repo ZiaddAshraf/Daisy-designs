@@ -1,14 +1,12 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { isAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { AdminOrdersTable, type AdminOrder, type ShippingAddressData } from "@/components/admin-orders-table";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminOrdersPage() {
-  const session = await getServerSession(authOptions);
-  if (session?.user?.role !== "ADMIN") redirect("/login");
+  if (!(await isAdmin())) redirect("/login");
 
   const rawOrders = await prisma.order.findMany({
     include: {

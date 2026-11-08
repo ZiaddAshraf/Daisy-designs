@@ -52,11 +52,6 @@ export const EGYPTIAN_GOVERNORATES = [
     { id: "south_sinai", nameAr: "جنوب سيناء (شرم الشيخ)", nameEn: "South Sinai (Sharm El-Sheikh)", etaAr: "توصيل خلال ٤ - ٦ أيام عمل", etaEn: "Delivery within 4-6 business days" },
 ] as const;
 
-type OrderConfirmation = {
-    number: string;
-    total: number;
-    items: { productName: string; quantity: number; unitPrice: number; customization?: Record<string, string> }[];
-};
 
 
 
@@ -161,8 +156,7 @@ export default function CheckoutPage() {
                     : displayError ?? t("checkoutErrGeneral"));
                 return;
             }
-            const confirmation: OrderConfirmation = data;
-            try { sessionStorage.setItem("daisy-order-confirmation", JSON.stringify(confirmation)); } catch { /* order was created; continue to the confirmation page */ }
+            try { sessionStorage.removeItem("daisy-order-confirmation"); } catch { /* legacy browser data is no longer used */ }
             try { sessionStorage.removeItem("daisy-checkout-request-id"); } catch { /* the next page load will generate a fresh key */ }
             clear();
             router.replace("/checkout/success");

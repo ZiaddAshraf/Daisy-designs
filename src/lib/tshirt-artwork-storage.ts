@@ -1,10 +1,12 @@
+import { stripChunkMetadata } from "@/lib/image-metadata";
+import { getStorageBackend } from "@/lib/storage";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB for high-resolution print artwork
-export const MIN_DIMENSION = 600; // Minimum 600px width/height for viable print clarity
+export const MIN_DIMENSION = 1; // Any image dimension accepted
 export const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export function getPrivateStorageDir(): string {
@@ -168,24 +170,7 @@ export function stripMetadata(buffer: Buffer, format: "jpg" | "png" | "webp"): B
     return Buffer.concat(chunks);
   }
 
-  if (format === "png") {
-    const chunks: Buffer[] = [buffer.subarray(0, 8)];
-    let offset = 8;
-    while (offset < buffer.length - 12) {
-      const chunkLength = buffer.readUInt32BE(offset);
-      const chunkType = buffer.toString("ascii", offset + 4, offset + 8);
-      const totalChunkSize = chunkLength + 12;
-      // Strip non-critical metadata chunks: eXIf, tEXt, zTXt, iTXt
-      if (chunkType !== "eXIf" && chunkType !== "tEXt" && chunkType !== "zTXt" && chunkType !== "iTXt") {
-        chunks.push(buffer.subarray(offset, offset + totalChunkSize));
-      }
-      offset += totalChunkSize;
-      if (chunkType === "IEND") break;
-    }
-    return Buffer.concat(chunks);
-  }
-
-  return buffer;
+  return stripChunkMetadata(buffer, format);
 }
 
 /**
@@ -215,10 +200,17 @@ export async function saveTshirtArtwork(buffer: Buffer, format: "jpg" | "png" | 
   const filename = `tshirt_art_${uuid}.${ext}`;
   const fullPath = path.join(storageDir, filename);
 
-  await fs.writeFile(fullPath, sanitized);
+  const storage = getStorageBackend();
+  const { key: storageKey } = await storage.put(filename, sanitized, {
+    contentType: `image/${format === "jpg" ? "jpeg" : format}`,
+    metadata: { filename, type: "tshirt_artwork" },
+  });
+  if (storage.driverName === "local") {
+    await fs.writeFile(fullPath, sanitized);
+  }
 
   return {
-    storageKey: `private:${filename}`,
+    storageKey,
     filename,
     fullPath,
   };
@@ -255,7 +247,8 @@ export async function deleteTshirtArtwork(storageKey: string): Promise<boolean> 
   if (!filePath) return false;
 
   try {
-    await fs.unlink(filePath);
+    await getStorageBackend().delete(storageKey);
+    await fs.unlink(filePath).catch(() => {});
     return true;
   } catch {
     return false;

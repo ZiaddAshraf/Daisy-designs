@@ -1,10 +1,12 @@
+import { stripChunkMetadata } from "@/lib/image-metadata";
+import { getStorageBackend } from "@/lib/storage";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB for high-resolution print photos
-export const MIN_DIMENSION = 600; // Minimum 600px width and height for print viability
+export const MIN_DIMENSION = 1; // Any image dimension accepted
 export const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export function getPrivateStorageDir(): string {
@@ -171,26 +173,7 @@ export function stripMetadata(buffer: Buffer, format: "jpg" | "png" | "webp"): B
     return Buffer.concat(chunks);
   }
 
-  if (format === "png") {
-    // Keep 8-byte PNG signature
-    const chunks: Buffer[] = [buffer.subarray(0, 8)];
-    let offset = 8;
-    while (offset < buffer.length - 12) {
-      const chunkLength = buffer.readUInt32BE(offset);
-      const chunkType = buffer.toString("ascii", offset + 4, offset + 8);
-      const totalChunkSize = chunkLength + 12;
-      // Strip non-critical metadata chunks: eXIf, tEXt, zTXt, iTXt
-      if (chunkType !== "eXIf" && chunkType !== "tEXt" && chunkType !== "zTXt" && chunkType !== "iTXt") {
-        chunks.push(buffer.subarray(offset, offset + totalChunkSize));
-      }
-      offset += totalChunkSize;
-      if (chunkType === "IEND") break;
-    }
-    return Buffer.concat(chunks);
-  }
-
-  // WebP: default safe passthrough
-  return buffer;
+  return stripChunkMetadata(buffer, format);
 }
 
 /**
@@ -218,9 +201,12 @@ export async function saveChildPhoto(buffer: Buffer, format: "jpg" | "png" | "we
   const fullPath = path.join(storageDir, filename);
 
   const sanitized = stripMetadata(buffer, format);
-  await fs.writeFile(fullPath, sanitized);
-
-  const storageKey = `private:${filename}`;
+  const storage = getStorageBackend();
+  const { key: storageKey } = await storage.put(filename, sanitized, {
+    contentType: `image/${format === "jpg" ? "jpeg" : format}`,
+    metadata: { filename, type: "story_child" },
+  });
+  if (storage.driverName === "local") { await fs.writeFile(fullPath, sanitized); }
   return { storageKey, filename, fullPath };
 }
 
@@ -249,7 +235,8 @@ export async function deleteChildPhoto(storageKey: string): Promise<boolean> {
   const filePath = resolveChildPhotoPath(storageKey);
   if (!filePath) return false;
   try {
-    await fs.unlink(filePath);
+    await getStorageBackend().delete(storageKey);
+    await fs.unlink(filePath).catch(() => {});
     return true;
   } catch {
     return false;
@@ -259,7 +246,10 @@ export async function deleteChildPhoto(storageKey: string): Promise<boolean> {
 /**
  * Retention Maintenance: Purges orphaned uncompleted uploads older than maxAgeHours (default 24h).
  */
-export async function purgeOrphanedPhotos(maxAgeHours = 24): Promise<number> {
+export async function purgeOrphanedPhotos(maxAgeHours = 24, isConfirmedOrphan?: (storageKey: string) => Promise<boolean>): Promise<number> {
+  // Age alone does not establish that an order no longer references the photo.
+  // Callers must supply an authoritative check and coordinate concurrent writes.
+  if (!isConfirmedOrphan || !Number.isFinite(maxAgeHours) || maxAgeHours <= 0) return 0;
   try {
     const entries = await fs.readdir(PRIVATE_STORAGE_DIR, { withFileTypes: true });
     const now = Date.now();
@@ -270,7 +260,7 @@ export async function purgeOrphanedPhotos(maxAgeHours = 24): Promise<number> {
       if (entry.isFile() && entry.name.startsWith("story_child_")) {
         const filePath = path.join(/* turbopackIgnore: true */ PRIVATE_STORAGE_DIR, entry.name);
         const stat = await fs.stat(/* turbopackIgnore: true */ filePath);
-        if (now - stat.mtimeMs > thresholdMs) {
+        if (now - stat.mtimeMs > thresholdMs && await isConfirmedOrphan(`private:${entry.name}`)) {
           await fs.unlink(filePath);
           purgedCount++;
         }

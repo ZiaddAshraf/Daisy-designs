@@ -3,7 +3,6 @@ import {
   ALLOWED_MIME_TYPES,
   extractDimensions,
   MAX_FILE_SIZE,
-  MIN_DIMENSION,
   saveTshirtArtwork,
   validateMagicBytes,
 } from "@/lib/tshirt-artwork-storage";
@@ -54,15 +53,8 @@ export async function POST(request: Request) {
     }
 
     const dimensions = extractDimensions(buffer, ext);
-    if (dimensions && (dimensions.width < MIN_DIMENSION || dimensions.height < MIN_DIMENSION)) {
-      return NextResponse.json(
-        {
-          error: "IMAGE_RESOLUTION_TOO_LOW",
-          message: `دقة الصورة منخفضة جداً للطباعة (الحد الأدنى ${MIN_DIMENSION}×${MIN_DIMENSION} بكسل) / Minimum resolution for print viability is ${MIN_DIMENSION}x${MIN_DIMENSION}px`,
-          dimensions,
-        },
-        { status: 400 }
-      );
+    if (!dimensions || dimensions.width <= 0 || dimensions.height <= 0) {
+      return NextResponse.json({ error: "INVALID_IMAGE" }, { status: 400 });
     }
 
     // Save into private non-public storage with EXIF/GPS metadata stripped
@@ -76,8 +68,7 @@ export async function POST(request: Request) {
       fileSize: file.size,
       mimeType: file.type,
     });
-  } catch (error) {
-    console.error("T-shirt artwork upload error:", error);
+  } catch {
     return NextResponse.json(
       { error: "INTERNAL_UPLOAD_ERROR", message: "حدث خطأ أثناء معالجة الصورة، يرجى المحاولة مرة أخرى" },
       { status: 500 }

@@ -1,4 +1,6 @@
 "use client";
+import { CustomizationReview } from "@/components/customization-review";
+import { uploadErrorMessage } from "@/lib/upload-feedback";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -199,20 +201,19 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       scrollToPhotoUpload();
       return;
     }
-    handleAddToCart();
+    handleAddToCart(false);
     router.push("/checkout");
   };
 
-  // Clean up blob URLs when component unmounts or photos change
+  const photoUrls = useRef(new Set<string>());
+  // Revoke previews on unmount; existing previews must survive adding another photo.
   useEffect(() => {
+    const urls = photoUrls.current;
     return () => {
-      uploadedPhotos.forEach((p) => {
-        if (p.previewUrl.startsWith("blob:")) {
-          URL.revokeObjectURL(p.previewUrl);
-        }
-      });
+      urls.forEach((url) => URL.revokeObjectURL(url));
+      urls.clear();
     };
-  }, [uploadedPhotos]);
+  }, []);
 
   // Flash added to cart state
   useEffect(() => {
@@ -266,8 +267,8 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
     setUploadError(null);
     setIsUploadingPhoto(true);
 
+    const newUploads: UploadedStoryPhoto[] = [];
     try {
-      const newUploads: UploadedStoryPhoto[] = [];
 
       for (const file of filesToUpload) {
         if (file.size > 10 * 1024 * 1024) {
@@ -296,10 +297,14 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
 
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.message || data.error || "Upload failed");
+          throw new Error(uploadErrorMessage(data.error || "UPLOAD_FAILED", isAr));
+        }
+        if (typeof data.key !== "string" || !data.key.startsWith("private:")) {
+          throw new Error(uploadErrorMessage("UPLOAD_FAILED", isAr));
         }
 
         const localBlob = URL.createObjectURL(file);
+        photoUrls.current.add(localBlob);
         newUploads.push({
           id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
           file,
@@ -308,11 +313,12 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
         });
       }
 
-      setUploadedPhotos((prev) => [...prev, ...newUploads]);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload error";
       setUploadError(msg);
     } finally {
+      // Keep successful photos even if a later file in the same batch fails.
+      if (newUploads.length) setUploadedPhotos((prev) => [...prev, ...newUploads]);
       setIsUploadingPhoto(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -323,14 +329,16 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       const target = prev.find((p) => p.id === id);
       if (target && target.previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(target.previewUrl);
+        photoUrls.current.delete(target.previewUrl);
       }
       return prev.filter((p) => p.id !== id);
     });
   };
 
   // Add to Cart
-  const handleAddToCart = () => {
-    if (!inStock) return;
+  const handleAddToCart = (openDrawer: boolean | unknown = true) => {
+    if (!inStock || isUploadingPhoto) return;
+    const shouldOpen = typeof openDrawer === "boolean" ? openDrawer : true;
     if (uploadedPhotos.length === 0 && !sendPhotosViaWhatsApp) {
       scrollToPhotoUpload();
       return;
@@ -408,14 +416,16 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
         custom_design_text: customText,
       },
       undefined,
-      quantity
+      quantity,
+      shouldOpen
     );
 
     setAddedToCart(true);
   };
 
   // Direct WhatsApp contact URL
-  const whatsappUrl = `https://wa.me/201012345678?text=${encodeURIComponent(
+  const storePhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "201152606234";
+  const whatsappUrl = `https://wa.me/${storePhone}?text=${encodeURIComponent(
     isAr
       ? `أهلاً Daisy Designs! عايزة أطلب ${
           isCustomMode ? "قصة مصممة خاصة بالكامل لطفلي ✨" : activeStory.titleAr
@@ -998,9 +1008,18 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
               </div>
             </div>
 
+            <CustomizationReview isAr={isAr} editTarget="sb-child-name-input" rows={[
+              [isAr ? "القصة" : "Story", displayedTitle],
+              [isAr ? "اسم الطفل" : "Child's name", childName.trim() || (isAr ? "لم يُضف — اختياري" : "Not added \u2014 optional")],
+              [isAr ? "بطل القصة" : "Main character", childGender === "boy" ? (isAr ? "ولد" : "Boy") : (isAr ? "بنت" : "Girl")],
+              ...(isCustomMode ? [[isAr ? "فكرة القصة" : "Story idea", customIdeaText.trim()], [isAr ? "الإهداء" : "Dedication", dedicationText.trim() || (isAr ? "بدون إهداء" : "No dedication")]] as [string, string][] : []),
+              [isAr ? "الصور" : "Photos", `${uploadedPhotos.length} ${isAr ? "صورة مرفوعة" : "uploaded"}${sendPhotosViaWhatsApp ? (isAr ? " — إرسال عبر واتساب" : " \u2014 send via WhatsApp") : ""}`],
+              [isAr ? "الكمية" : "Quantity", String(quantity)],
+              [isAr ? "الإجمالي" : "Total", formatPrice(totalPrice, locale)],
+            ]} />
             {/* Quantity & Add to Cart Controls */}
             <div className="sb-purchase-controls flex flex-col gap-2.5">
-              <div className="flex items-center gap-2.5 w-full">
+              <div className="flex flex-wrap items-center gap-2.5 w-full">
                 <div className="sb-quantity shrink-0" role="group" aria-label={isAr ? "الكمية" : "Quantity"}>
                   <button
                     type="button"
@@ -1030,7 +1049,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                   className={`daisy-button daisy-button--dark sb-add-btn flex-1 cursor-pointer active:scale-[0.98] ${
                     addedToCart ? "sb-add-btn--added" : ""
                   }`}
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart()}
                   disabled={!inStock || isUploadingPhoto}
                   title={
                     uploadedPhotos.length === 0 && !sendPhotosViaWhatsApp
@@ -1340,7 +1359,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
-              onClick={handleAddToCart}
+              onClick={() => handleAddToCart()}
               disabled={isUploadingPhoto}
               className="h-11 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold border border-zinc-300 dark:border-zinc-700 flex items-center gap-1 active:scale-95 transition-transform cursor-pointer"
               title={isAr ? "أضيفي إلى السلة" : "Add to Cart"}

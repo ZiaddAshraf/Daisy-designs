@@ -27,6 +27,8 @@ export function validateCustomization(
     const values = normalizeCustomization(input) ?? {};
     const knownKeys = new Set([
         ...fields.map(field => field.key),
+        "child_name",
+        "parent_phone",
         "custom_design_text",
         "school_name",
         "grade",
@@ -77,7 +79,10 @@ export function validateCustomization(
     }
 
     // Preserve allowed extra fields if they weren't in the DB fields list
-    for (const extraKey of ["custom_design_text", "school_name", "grade", "class_name", "child_photo"]) {
+    for (const extraKey of ["child_name", "parent_phone", "custom_design_text", "school_name", "grade", "class_name", "child_photo"]) {
+        if (extraKey === "parent_phone" && values[extraKey] && !validateEgyptianPhone(values[extraKey])) {
+            return { success: false, reason: "INVALID_CUSTOMIZATION" };
+        }
         const val = values[extraKey];
         if (val && !validated[extraKey]) {
             if (typeof val === "string" && val.length <= 500) {

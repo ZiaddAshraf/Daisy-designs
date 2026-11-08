@@ -41,7 +41,6 @@ export function handleApiError(
     );
   }
 
-  const message = error instanceof Error ? error.message : fallbackMessage;
-  return NextResponse.json({ error: message }, { status: fallbackStatus });
+  return NextResponse.json({ error: fallbackMessage }, { status: fallbackStatus });
 }
 

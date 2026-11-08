@@ -5,9 +5,12 @@ import Image from "@/components/site-image";
 import { WishlistButton, useLocale } from "@/components/storefront";
 import { formatPrice, type Product } from "@/lib/products";
 import { getProductImageUrl } from "@/lib/product-image";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export function HomeFeaturedGrid({ products }: { products: Product[] }) {
   const locale = useLocale();
+  const isAr = locale === "ar";
+  const Arrow = isAr ? ArrowLeft : ArrowRight;
 
   return (
     <div className="home-featured-grid">
@@ -18,6 +21,14 @@ export function HomeFeaturedGrid({ products }: { products: Product[] }) {
           ? `/products/custom-waterproof-stickers?design=${designId}`
           : `/products/${product.slug}`;
 
+        const cta = product.slug.includes("tshirt")
+          ? (isAr ? "اختاري المقاس والتصميم" : "Choose size & design")
+          : product.slug.includes("sticker")
+            ? (isAr ? "اختاري الباقة والتصميم" : "Choose package & design")
+            : product.slug.includes("school") || product.slug.includes("story")
+              ? (isAr ? "خصّصي قصة طفلك" : "Personalize your story")
+              : (isAr ? "شوفي تفاصيل المنتج" : "View product details");
+
         return (
           <article className="home-featured-card group" key={product.slug}>
             <div className="home-featured-media">
@@ -26,7 +37,7 @@ export function HomeFeaturedGrid({ products }: { products: Product[] }) {
                   src={getProductImageUrl(product.image)}
                   alt={product.name}
                   fill
-                  sizes="(max-width: 700px) 50vw, 25vw"
+                  sizes="(max-width: 900px) 50vw, 25vw"
                   className="home-featured-image transition-transform duration-500 group-hover:scale-105"
                 />
               </Link>
@@ -38,7 +49,17 @@ export function HomeFeaturedGrid({ products }: { products: Product[] }) {
                   {product.name}
                 </Link>
               </h3>
-              <p className="home-featured-price">{formatPrice(product.price, locale)}</p>
+              <div className="home-featured-footer">
+                <p className="home-featured-price">{formatPrice(product.price, locale)}</p>
+                <Link
+                  href={href}
+                  className="home-featured-cta"
+                  aria-label={`${cta}: ${product.name}`}
+                >
+                  <span>{cta}</span>
+                  <Arrow size={12} className="shrink-0" />
+                </Link>
+              </div>
             </div>
           </article>
         );

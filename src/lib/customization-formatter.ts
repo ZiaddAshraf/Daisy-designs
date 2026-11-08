@@ -228,11 +228,12 @@ export function formatCustomizationEntries(
   const entries: FormattedCustomization[] = [];
   const keys = Object.keys(customization);
 
-  const isStory = Boolean(
+  const isTshirt = Boolean(customization.garment_color || customization.garment_size || customization.print_placement);
+  const isStory = !isTshirt && Boolean(
     customization.child_photo?.startsWith("private:story_child_") ||
-    customization.custom_design_text?.includes("القصة") ||
-    customization.custom_design_text?.includes("بطل") ||
-    customization.custom_design_text?.includes("بطلة")
+    customization.story_title ||
+    customization.story_slug ||
+    customization.custom_design_text?.includes("القصة")
   );
 
   // Add sorted recognized keys first

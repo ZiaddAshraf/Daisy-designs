@@ -10,8 +10,18 @@ import { validateCustomization, validateTshirtCustomization } from "@/lib/custom
 import { isDemoCatalogProduct } from "@/lib/demo-preview-safety";
 import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
 import { resolveProductPrice, usesProductStock } from "@/lib/product-pricing";
+import { ORDER_RECEIPT_COOKIE, ORDER_RECEIPT_MAX_AGE, receiptSecret, signOrderReceipt } from "@/lib/order-receipt";
 
 export const runtime = "nodejs";
+
+function orderResponse<T extends { id: string }>(result: T) {
+    const response = NextResponse.json(result, { status: 201 });
+    response.cookies.set(ORDER_RECEIPT_COOKIE, signOrderReceipt(result.id, receiptSecret()), {
+        httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/api/orders/confirmation", maxAge: ORDER_RECEIPT_MAX_AGE,
+    });
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+}
 
 export async function POST(request: Request) {
     if (shouldBlockDemoTransactions(isDemoModeEnabled())) return NextResponse.json({ error: "DEMO_MODE_READ_ONLY" }, { status: 503 });
@@ -20,6 +30,7 @@ export async function POST(request: Request) {
     const parsed = checkoutSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: "بيانات الطلب غير مكتملة", issues: parsed.error.flatten() }, { status: 400 });
     const input = parsed.data;
+    try { receiptSecret(); } catch { return NextResponse.json({ error: "CHECKOUT_UNAVAILABLE" }, { status: 503 }); }
     const session = await getServerSession(authOptions);
     const payment = new CashOnDeliveryProvider();
     const number = input.requestId
@@ -29,7 +40,10 @@ export async function POST(request: Request) {
     try {
         const result = await prisma.$transaction(async transaction => {
             const existingOrder = await transaction.order.findUnique({ where: { number }, include: { items: true } });
-            if (existingOrder) return { id: existingOrder.id, number: existingOrder.number, total: existingOrder.total, items: existingOrder.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) };
+            if (existingOrder) {
+                if ((existingOrder.userId ?? null) !== (session?.user?.id ?? null)) throw new Error("ORDER_ACCESS_DENIED");
+                return { id: existingOrder.id, number: existingOrder.number, total: existingOrder.total, items: existingOrder.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) };
+            }
             const products = await transaction.product.findMany({ where: { slug: { in: input.items.map(item => item.slug) }, published: true }, include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 }, customizationFields: { include: { options: true } } } });
             if (products.some(isDemoCatalogProduct)) throw new Error("PRODUCT_NOT_FOUND");
             if (products.length !== new Set(input.items.map(item => item.slug)).size) throw new Error("PRODUCT_NOT_FOUND");
@@ -80,7 +94,11 @@ export async function POST(request: Request) {
                 if (!coupon || (coupon.startsAt && coupon.startsAt > new Date()) || (coupon.expiresAt && coupon.expiresAt < new Date()) || (coupon.usageLimit !== null && coupon.usageCount >= coupon.usageLimit) || subtotal < coupon.minimumOrder) throw new Error("INVALID_COUPON");
                 discount = calculateDiscount(subtotal, coupon);
                 couponCode = coupon.code;
-                await transaction.coupon.update({ where: { id: coupon.id }, data: { usageCount: { increment: 1 } } });
+                const claimed = await transaction.coupon.updateMany({
+                    where: { id: coupon.id, active: true, ...(coupon.usageLimit !== null ? { usageCount: { lt: coupon.usageLimit } } : {}) },
+                    data: { usageCount: { increment: 1 } },
+                });
+                if (claimed.count !== 1) throw new Error("INVALID_COUPON");
             }
             const settings = await transaction.siteSetting.findMany({ where: { key: { in: ["shippingFee", "freeShippingThreshold"] } } });
             const setting = (key: string, fallback: number) => Number(settings.find(item => item.key === key)?.value ?? fallback);
@@ -118,17 +136,24 @@ export async function POST(request: Request) {
             });
             return { id: order.id, number: order.number, total: order.total, items: order.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) };
         });
-        return NextResponse.json(result, { status: 201 });
+        return orderResponse(result);
     } catch (error) {
         if (input.requestId && typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
-            const existingOrder = await prisma.order.findUnique({ where: { number }, include: { items: true } });
-            if (existingOrder) return NextResponse.json({ id: existingOrder.id, number: existingOrder.number, total: existingOrder.total, items: existingOrder.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) }, { status: 201 });
+            try {
+                const existingOrder = await prisma.order.findUnique({ where: { number }, include: { items: true } });
+                if (existingOrder) {
+                    if ((existingOrder.userId ?? null) !== (session?.user?.id ?? null)) return NextResponse.json({ error: "ORDER_ACCESS_DENIED" }, { status: 403 });
+                    return orderResponse({ id: existingOrder.id, number: existingOrder.number, total: existingOrder.total, items: existingOrder.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) });
+                }
+            } catch {
+                return NextResponse.json({ error: "ORDER_LOOKUP_UNAVAILABLE" }, { status: 503 });
+            }
         }
         if (isDatabaseUnavailable(error)) {
             return NextResponse.json({ error: "DATABASE_UNAVAILABLE" }, { status: 503 });
         }
         const message = error instanceof Error ? error.message : "ORDER_FAILED";
-        const status = message.startsWith("OUT_OF_STOCK")
+        const status = message === "ORDER_ACCESS_DENIED" ? 403 : message.startsWith("OUT_OF_STOCK")
             ? 409
             : [
                 "INVALID_COUPON",
@@ -145,7 +170,7 @@ export async function POST(request: Request) {
             : message === "PRODUCT_NOT_FOUND"
             ? 404
             : 500;
-        return NextResponse.json({ error: message }, { status });
+        return NextResponse.json({ error: status === 500 ? "ORDER_FAILED" : message }, { status });
     }
 }
 

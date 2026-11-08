@@ -17,7 +17,7 @@
     "db:demo:dry-run": "tsx scripts/import-demo-catalog.ts --dry-run",
     "db:demo:apply-local": "tsx scripts/import-demo-catalog.ts --apply",
     "db:health": "tsx scripts/db-health.ts",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "tsx --import ./tests/setup.mjs --test tests/*.test.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
@@ -49,5 +49,9 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.9.0 <23.0.0",
+    "npm": ">=10.0.0"
   }
 }

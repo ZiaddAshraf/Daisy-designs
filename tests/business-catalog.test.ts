@@ -44,7 +44,7 @@ test("actual order handler ignores forged prices, aggregates shared inventory an
     order: { findUnique: async () => null, create: async ({ data }: { data: Record<string, unknown> }) => { saved = data; return { ...data, id: "order", items: (data.items as { create: unknown[] }).create }; } },
     product: { findMany: async () => [product], updateMany: async (args: unknown) => { decrements.push(args); return { count: 1 }; } },
     productVariant: { updateMany: async () => { throw new Error("Package stock must not be decremented"); } },
-    coupon: { findFirst: async () => ({ code: "TEN", active: true, type: "PERCENTAGE", value: 10, minimumOrder: 0, usageLimit: null, usageCount: 0, startsAt: null, expiresAt: null }), update: async () => ({}) },
+    coupon: { findFirst: async () => ({ id: "coupon", code: "TEN", active: true, type: "PERCENTAGE", value: 10, minimumOrder: 0, usageLimit: null, usageCount: 0, startsAt: null, expiresAt: null }), updateMany: async () => ({ count: 1 }) },
     siteSetting: { findMany: async () => [{ key: "shippingFee", value: "60" }, { key: "freeShippingThreshold", value: "700" }] },
   };
   const originalTransaction = prisma.$transaction;

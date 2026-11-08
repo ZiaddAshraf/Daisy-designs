@@ -18,11 +18,12 @@ import { directionForLocale, formatLocaleNumber, type Locale } from "@/lib/local
 import { formatMessage, getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { BrandLogo } from "@/components/brand-logo";
 import { formatCustomizationEntries } from "@/lib/customization-formatter";
+import { WhatsAppFloatingButton } from "@/components/whatsapp-floating-button";
 
 type CartVariant = { id: string; name: string; stock: number };
 type CartItem = Product & { lineId: string; quantity: number; customization?: Record<string, string>; variantId?: string; variantName?: string };
 type CartQuote = { subtotal: number; discount: number; shipping: number; total: number; fee: number; threshold: number };
-type CartContextType = { quote: CartQuote | null; pricingError: string; pricingPending: boolean; couponCode: string; setCouponCode: (value: string) => void; items: CartItem[]; demoMode: boolean; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
+type CartContextType = { quote: CartQuote | null; pricingError: string; pricingPending: boolean; couponCode: string; setCouponCode: (value: string) => void; items: CartItem[]; demoMode: boolean; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number, openDrawer?: boolean) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
 const CartContext = createContext<CartContextType | null>(null);
 export function useCart() { const context = useContext(CartContext); if (!context) throw new Error("useCart must be used inside StoreShell"); return context; }
 type WishlistContextType = { items: Product[]; demoMode: boolean; toggle: (product: Product) => void; has: (slug: string) => boolean };
@@ -36,6 +37,7 @@ export function useTranslation() {
 }
 
 export function StoreShell({ children, demoMode = false, locale = "ar" }: { children: ReactNode; demoMode?: boolean; locale?: Locale }) {
+  const pathname = usePathname();
   const [items, setItems] = useState<CartItem[]>([]);
   const [quote, setQuote] = useState<CartQuote | null>(null);
   const [pricingError, setPricingError] = useState("");
@@ -50,15 +52,35 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
   const mergedSession = useRef(false);
 
   useEffect(() => {
+    setCartOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
     if (demoMode) return;
     const savedCart = localStorage.getItem("stitch-cart");
     const savedWishlist = localStorage.getItem("stitch-wishlist");
     queueMicrotask(() => {
       if (savedCart) {
-        const savedItems = JSON.parse(savedCart) as Omit<CartItem, "lineId">[];
-        setItems(savedItems.reduce<CartItem[]>((normalized, item) => mergeCartLine(normalized, normalizeStoredCartLine({ ...item, image: getProductImageUrl(item.image) })), []));
+        try {
+          const parsed = JSON.parse(savedCart);
+          if (Array.isArray(parsed)) {
+            const savedItems = parsed as Omit<CartItem, "lineId">[];
+            setItems(savedItems.reduce<CartItem[]>((normalized, item) => mergeCartLine(normalized, normalizeStoredCartLine({ ...item, image: getProductImageUrl(item.image) })), []));
+          }
+        } catch {
+          localStorage.removeItem("stitch-cart");
+        }
       }
-      if (savedWishlist) setWishlist((JSON.parse(savedWishlist) as Product[]).map(product => ({ ...product, image: getProductImageUrl(product.image) })));
+      if (savedWishlist) {
+        try {
+          const parsed = JSON.parse(savedWishlist);
+          if (Array.isArray(parsed)) {
+            setWishlist((parsed as Product[]).map(product => ({ ...product, image: getProductImageUrl(product.image) })));
+          }
+        } catch {
+          localStorage.removeItem("stitch-wishlist");
+        }
+      }
       setCartLoaded(true);
     });
   }, [demoMode]);
@@ -87,14 +109,16 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
     return () => controller.abort();
   }, [demoMode, cartLoaded, quoteKey]);
 
-  const add = (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity = 1) => {
+  const add = (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity = 1, openDrawer = true) => {
     if (demoMode) return;
     const normalizedCustomization = normalizeCustomization(customization);
     const lineId = cartLineId({ slug: product.slug, variantId: variant?.id, customization: normalizedCustomization });
     setItems(current => {
       return mergeCartLine(current, { ...product, image: getProductImageUrl(product.image), lineId, quantity, customization: normalizedCustomization, variantId: variant?.id, variantName: variant?.name });
     });
-    setCartOpen(true);
+    if (openDrawer && !pathname?.startsWith("/checkout") && !pathname?.startsWith("/cart")) {
+      setCartOpen(true);
+    }
   };
   const update = (lineId: string, amount: number) => setItems(current => adjustCartLine(current, lineId, amount));
   const remove = (lineId: string) => setItems(current => removeCartLine(current, lineId));
@@ -137,7 +161,8 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
         {demoMode && <div className="daisy-demo-notice" role="status" dir={directionForLocale(locale)}><strong>{getTranslation(locale, "previewBannerTitle")}</strong><span>{getTranslation(locale, "previewBannerDescription")}</span></div>}
         {children}
         <Footer locale={locale} />
-        {cartOpen && <CartDrawer onClose={() => setCartOpen(false)} />}
+        {cartOpen && !pathname?.startsWith("/checkout") && !pathname?.startsWith("/cart") && <CartDrawer onClose={() => setCartOpen(false)} />}
+        <WhatsAppFloatingButton locale={locale} />
         {wishlistToast && (
           <aside
             role="status"

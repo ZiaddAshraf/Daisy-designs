@@ -243,9 +243,15 @@ export default function ContactPage() {
                   <span className="block text-xs font-semibold text-[var(--muted-foreground)]">
                     {isRtl ? "واتساب وخدمة العملاء" : "Customer Care & WhatsApp"}
                   </span>
-                  <span dir="ltr" className="block font-medium">
-                    +20 10 1234 5678
-                  </span>
+                  <a
+                    href="https://wa.me/201152606234"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    dir="ltr"
+                    className="block font-bold text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+                  >
+                    +20 11 52606234
+                  </a>
                 </div>
               </div>
 

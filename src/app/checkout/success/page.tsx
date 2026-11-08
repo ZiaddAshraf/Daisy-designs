@@ -11,6 +11,16 @@ import { CheckCircle2, ShoppingBag, MessageCircle, ShieldCheck } from "lucide-re
 type Confirmation = {
   number: string;
   total: number;
+  status: string;
+  paymentStatus: string;
+  paymentMethod?: string;
+  shippingAddress?: {
+    fullName?: string;
+    phone?: string;
+    governorate?: string;
+    city?: string;
+    address?: string;
+  } | null;
   items: {
     productName: string;
     quantity: number;
@@ -19,20 +29,96 @@ type Confirmation = {
   }[];
 };
 
+function buildWhatsAppOrderMessage(confirmation: Confirmation, locale: "ar" | "en"): string {
+  const isAr = locale === "ar";
+  const addr = confirmation.shippingAddress;
+  const addressParts = [addr?.governorate, addr?.city, addr?.address].filter(Boolean);
+  const addressStr = addressParts.join(" - ");
+
+  if (isAr) {
+    const lines: string[] = [
+      `أهلاً متجر Daisy Designs! 🌸`,
+      `أود تأكيد طلبي الجديد:`,
+      `• رقم الطلب: ${confirmation.number}`,
+      `• الاسم: ${addr?.fullName || "غير محدد"}`,
+      `• رقم الهاتف: ${addr?.phone || "غير محدد"}`,
+      `• عنوان التوصيل: ${addressStr || "غير محدد"}`,
+      `• طريقة الدفع: الدفع عند الاستلام (COD)`,
+      ``,
+      `📦 تفاصيل المنتجات:`,
+    ];
+
+    confirmation.items.forEach((item, idx) => {
+      lines.push(`${idx + 1}. ${item.productName} (الكمية: ${item.quantity})`);
+      if (item.customization && Object.keys(item.customization).length > 0) {
+        const customEntries = formatCustomizationEntries(item.customization, "ar");
+        const details = customEntries
+          .map((entry) => `${entry.label}: ${entry.displayValue}`)
+          .join(" | ");
+        if (details) {
+          lines.push(`   └ التخصيص: ${details}`);
+        }
+      }
+    });
+
+    lines.push(``);
+    lines.push(`💰 إجمالي الطلب: ${formatPrice(confirmation.total, "ar")}`);
+    lines.push(`أرجو تأكيد استلام الطلب وبدء التجهيز. شكراً لكم! ✨`);
+
+    return lines.join("\n");
+  } else {
+    const lines: string[] = [
+      `Hello Daisy Designs! 🌸`,
+      `I'd like to confirm my new order:`,
+      `• Order Number: ${confirmation.number}`,
+      `• Name: ${addr?.fullName || "N/A"}`,
+      `• Phone: ${addr?.phone || "N/A"}`,
+      `• Delivery Address: ${addressStr || "N/A"}`,
+      `• Payment Method: Cash on Delivery (COD)`,
+      ``,
+      `📦 Items:`,
+    ];
+
+    confirmation.items.forEach((item, idx) => {
+      lines.push(`${idx + 1}. ${item.productName} (Qty: ${item.quantity})`);
+      if (item.customization && Object.keys(item.customization).length > 0) {
+        const customEntries = formatCustomizationEntries(item.customization, "en");
+        const details = customEntries
+          .map((entry) => `${entry.label}: ${entry.displayValue}`)
+          .join(" | ");
+        if (details) {
+          lines.push(`   └ Customization: ${details}`);
+        }
+      }
+    });
+
+    lines.push(``);
+    lines.push(`💰 Total: ${formatPrice(confirmation.total, "en")}`);
+    lines.push(`Please confirm order receipt and processing. Thank you! ✨`);
+
+    return lines.join("\n");
+  }
+}
+
 export default function CheckoutSuccessPage() {
   const locale = useLocale();
   const t = useTranslation();
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
+  const statusLabels: Record<string, [string, string]> = {
+    PENDING: ["قيد الانتظار", "Pending"], CONFIRMED: ["مؤكد", "Confirmed"],
+    PROCESSING: ["قيد التجهيز", "Processing"], SHIPPED: ["تم الشحن", "Shipped"],
+    DELIVERED: ["تم التسليم", "Delivered"], CANCELLED: ["ملغي", "Cancelled"],
+    PAID: ["مدفوع", "Paid"], FAILED: ["فشل الدفع", "Failed"],
+  };
+  const statusLabel = (status: string) => statusLabels[status]?.[locale === "ar" ? 0 : 1] ?? status;
 
   useEffect(() => {
-    const saved = sessionStorage.getItem("daisy-order-confirmation");
-    if (!saved) return;
-    try {
-      const parsed = JSON.parse(saved) as Confirmation;
-      queueMicrotask(() => setConfirmation(parsed));
-    } catch {
-      sessionStorage.removeItem("daisy-order-confirmation");
-    }
+    const controller = new AbortController();
+    fetch("/api/orders/confirmation", { cache: "no-store", signal: controller.signal })
+      .then(response => response.ok ? response.json() : null)
+      .then(value => { if (!controller.signal.aborted) setConfirmation(value); })
+      .catch(() => { if (!controller.signal.aborted) setConfirmation(null); });
+    return () => controller.abort();
   }, []);
 
   return (
@@ -70,6 +156,11 @@ export default function CheckoutSuccessPage() {
               {t("checkoutSuccessPaymentMethod")}
             </span>
           </div>
+
+          <p className="mt-4 text-sm" role="status">
+            {locale === "ar" ? "حالة الطلب" : "Order status"}: {statusLabel(confirmation.status)}
+            {" · "}{locale === "ar" ? "حالة الدفع" : "Payment status"}: {statusLabel(confirmation.paymentStatus)}
+          </p>
 
           <section aria-label={t("checkoutSuccessOrderDetails")} className="divide-y divide-[var(--border)]">
             {confirmation.items.map((item, index) => (
@@ -134,10 +225,8 @@ export default function CheckoutSuccessPage() {
             </div>
 
             <a
-              href={`https://wa.me/201012345678?text=${encodeURIComponent(
-                locale === "ar"
-                  ? `أهلاً دايزي ديزاينز! أنا عملت أوردر برقم (${confirmation.number}) بإجمالي ${formatPrice(confirmation.total, locale)}. حابة أتابع معاكم التجهيز والشحن!`
-                  : `Hello Daisy Designs! I placed order (${confirmation.number}) with total ${formatPrice(confirmation.total, locale)}. Looking forward to delivery updates!`
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "201152606234"}?text=${encodeURIComponent(
+                buildWhatsAppOrderMessage(confirmation, locale)
               )}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -157,8 +246,8 @@ export default function CheckoutSuccessPage() {
               </strong>
               <span>
                 {locale === "ar"
-                  ? "طلبك قيد التجهيز الآن بعناية. مندوب شركة الشحن هيتصل بيكي هاتفياً قبل موعد التسليم لتأكيد العنوان والمعاد المناسب، وهتعايني المنتج بالكامل قبل الدفع."
-                  : "Your order is being carefully prepared. The courier will call you before delivery to coordinate timing, and you can inspect items before paying."}
+                  ? "يمكنك متابعة حالة الطلب والدفع الموضحة أعلاه. عند ترتيب التوصيل، سيتواصل معك مندوب الشحن لتأكيد التفاصيل."
+                  : "Check the order and payment status shown above. When delivery is arranged, the courier will contact you to confirm the details."}
               </span>
             </div>
           </div>

@@ -21,10 +21,8 @@
     "stock": 500,
     "lowStockThreshold": 20,
     "published": true,
-    "description": "High-quality, durable waterproof stickers personalized with your child's name, school, and class. Specially crafted for school supplies, notebooks, water bottles, lunchboxes, and pencil cases. Daisy Designs sells custom stickers only (not the bottles or bags).",
-    "arabicDescription": "استيكرات مدرسية عالية الجودة ومقاومة للماء مخصصة باسم طفلك ومدرسته وفصله. صُممت خصيصاً للدفاتر والكتب المدرسية وزجاجات المياه واللانش بوكس والمقالم. Daisy Designs تصمم وتوفر الملصقات فقط (ولا تبيع الزجاجات أو الحقائب المعروضة للتوضيح).",
-    "surfaceNotice": "Daisy Designs sells custom stickers only (not the bottles or bags).",
-    "arabicSurfaceNotice": "المتجر يوفر ويصمم الملصقات فقط، ولا يبيع الأدوات المدرسية أو الزجاجات المعروضة للتوضيح.",
+    "description": "High-quality, durable waterproof stickers personalized with your child's name, school, and class. Specially crafted for school supplies, notebooks, water bottles, lunchboxes, and pencil cases.",
+    "arabicDescription": "استيكرات مدرسية عالية الجودة ومقاومة للماء مخصصة باسم طفلك ومدرسته وفصله. صُممت خصيصاً للدفاتر والكتب المدرسية وزجاجات المياه واللانش بوكس والمقالم.",
     "primaryImage": {
       "url": "/products/stickers/sticker-02-super-cool-dino.jpeg",
       "alt": "Daisy Designs Custom Waterproof Stickers",

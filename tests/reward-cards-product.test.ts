@@ -17,7 +17,7 @@ test("reward cards JSON fixture has confirmed 200 EGP price, stock 50, and 10 ca
   assert.ok(product.primaryImage.url.includes("reward-cards-box-set"));
 });
 
-test("reward cards database product and category are created with confirmed values", async () => {
+test("reward cards database product and category are created with confirmed values", { skip: process.env.RUN_DATABASE_TESTS !== "true" }, async () => {
   const category = await prisma.category.findUnique({
     where: { slug: "reward-cards" },
   });
@@ -41,7 +41,7 @@ test("reward cards database product and category are created with confirmed valu
   assert.equal(product.images[0].url, "/products/reward-cards/reward-cards-box-set.jpeg");
 });
 
-test("checkout validation enforces stock boundaries for reward cards", async () => {
+test("checkout validation enforces stock boundaries for reward cards", { skip: process.env.RUN_DATABASE_TESTS !== "true" }, async () => {
   const product = await prisma.product.findUnique({
     where: { slug: "reward-cards-box-set" },
   });

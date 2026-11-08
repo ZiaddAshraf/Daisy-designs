@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 const projectRoot = process.cwd();
 const envRoot = path.basename(projectRoot) === "store" || path.basename(projectRoot).startsWith("store-") ? projectRoot : path.join(projectRoot, "store");
-loadEnvConfig(envRoot);
+if (process.env.NODE_ENV !== "test") loadEnvConfig(envRoot);
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
@@ -16,13 +16,7 @@ export class DatabaseUnavailableError extends Error {
     }
 }
 
-let lastLoggedError: unknown;
-
 export function isDatabaseUnavailable(error: unknown) {
-    if (process.env.NODE_ENV !== "production" && error !== lastLoggedError) {
-        lastLoggedError = error;
-        console.error("[database] runtime connection failed", error);
-    }
     if (error instanceof DatabaseUnavailableError) return true;
     if (!(error instanceof Error)) return false;
     const code = "code" in error && typeof error.code === "string" ? error.code : "";

@@ -5,8 +5,7 @@ export async function GET() {
     try {
         const ok = await checkDatabaseHealth();
         return NextResponse.json({ ok }, { status: ok ? 200 : 503 });
-    } catch (error) {
-        if (process.env.NODE_ENV !== "production") console.error("[database] health check failed", error);
+    } catch {
         return NextResponse.json({ ok: false, error: "DATABASE_UNAVAILABLE" }, { status: 503 });
     }
 }
