@@ -61,7 +61,7 @@ type ThemeFilter =
 
 // Distinct tab filters
 const FILTER_TABS: { id: ThemeFilter; labelAr: string; labelEn: string }[] = [
-  { id: "all", labelAr: "الكل (٢٥ تصميم)", labelEn: "All (25 Designs)" },
+  { id: "all", labelAr: "الكل", labelEn: "All" },
   { id: "custom", labelAr: "تصميم مخصص", labelEn: "Custom Design" },
   { id: "superheroes", labelAr: "أبطال وخوارق", labelEn: "Superheroes" },
   { id: "girls", labelAr: "شخصيات وبنات", labelEn: "Girls & Princesses" },
@@ -473,7 +473,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
         </div>
       </section>
 
-      {/* 3. The 24-Design Visual Showcase */}
+      {/* Design gallery */}
       <section className="pt-10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 text-start">
           <div>
@@ -481,7 +481,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
               {isAr ? "تصميمات حصرية ومحبوبة للأطفال" : "Exclusive Catalog"}
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-[var(--foreground)]">
-              {isAr ? "اختر من بين ٢٤ تصميماً مبهراً" : "Explore All 24 Designs"}
+              {isAr ? `اختاري من بين ${totalDesigns.toLocaleString("ar-EG")} تصميمًا` : `Explore All ${totalDesigns} Designs`}
             </h2>
           </div>
           <span className="text-xs text-[var(--muted-foreground)]">
@@ -502,7 +502,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                   : "bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/30"
               }`}
             >
-              {isAr ? tab.labelAr : tab.labelEn}
+              {tab.id === "all" ? `${isAr ? tab.labelAr : tab.labelEn} (${isAr ? totalDesigns.toLocaleString("ar-EG") : totalDesigns})` : isAr ? tab.labelAr : tab.labelEn}
             </button>
           ))}
         </div>
@@ -598,7 +598,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     ? isAr
                       ? "تصميم مخصص بالكامل"
                       : "Full Custom Design"
-                    : `${isAr ? "تصميم رقم" : "Design #"} ${currentLightboxDesign.id} / 24`}
+                    : `${isAr ? "تصميم رقم" : "Design #"} ${currentLightboxDesign.id} / ${totalDesigns - 1}`}
                 </span>
                 <h3 className="text-base font-bold text-[var(--foreground)]">
                   {isAr ? currentLightboxDesign.arabicTitle : currentLightboxDesign.title}

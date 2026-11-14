@@ -187,7 +187,7 @@ export default async function ProductsPage() {
     ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
-  // 3. All 24 Individual School Sticker Designs
+  // Individual school ticket and label designs
   const stickerProducts: CatalogProductItem[] = stickersData.product.designs.map((design) => ({
     id: `sticker-design-${design.id}`,
     slug: `custom-waterproof-stickers?design=${design.id}`,
@@ -349,6 +349,7 @@ export default async function ProductsPage() {
     stickerProducts[21],                              // 28. Sky Airplanes
     stickerProducts[22],                              // 29. Martial Arts Hero
     stickerProducts[23],                              // 30. Cartoon Pals
+    ...stickerProducts.slice(25),                     // Newly added ticket and label designs
   ];
 
   const catalog = shuffledCatalog.filter(item => {

@@ -46,6 +46,18 @@ test("customization validation accepts child_name and valid Egyptian parent_phon
   assert.equal(invalidPhone.success, false);
 });
 
+test("new ticket and label designs remain orderable while database options are stale", () => {
+  const fields = [{
+    key: "design_theme",
+    type: "SELECT" as const,
+    required: true,
+    maxLength: 80,
+    options: [{ value: "super-cool-dino" }],
+  }];
+  assert.equal(validateCustomization(fields, { design_theme: "ticket-label-doctor-girl" }).success, true);
+  assert.equal(validateCustomization(fields, { design_theme: "ticket-label-not-in-catalog" }).success, false);
+});
+
 test("checkoutSchema strictly enforces Egyptian phone validation and COD payment method", () => {
   const validPayload = {
     fullName: "مريم أحمد",

@@ -1,4 +1,5 @@
 import { normalizeCustomization } from "@/lib/commerce-rules";
+import stickersData from "@/data/stickers-product.json";
 
 type CustomizationFieldDefinition = {
     key: string;
@@ -72,8 +73,8 @@ export function validateCustomization(
                 return { success: false, reason: "INVALID_CUSTOMIZATION" };
             }
         } else if (choiceTypes.has(field.type)) {
-            const isDesignThemeCustom = field.key === "design_theme" && value === "custom-design";
-            if (!isDesignThemeCustom && !field.options.some(option => option.value === value)) {
+            const isKnownStickerDesign = field.key === "design_theme" && stickersData.product.designs.some(design => design.slug === value);
+            if (!isKnownStickerDesign && !field.options.some(option => option.value === value)) {
                 return { success: false, reason: "INVALID_CUSTOMIZATION" };
             }
         }

@@ -150,7 +150,7 @@ export function StickersCatalogClient({
   // Mobile theme quick-filter pills
   const themes = useMemo(
     () => [
-      { id: "all", label: isAr ? "الكل (٢٥)" : "All (25)" },
+      { id: "all", label: isAr ? `الكل (${product.designs.length.toLocaleString("ar-EG")})` : `All (${product.designs.length})` },
       { id: "custom", label: isAr ? "صمّم بنفسك" : "Custom Design" },
       { id: "girls", label: isAr ? "أناقة وبنات" : "Girls & Style" },
       { id: "cartoons", label: isAr ? "كرتون وشخصيات" : "Cartoons" },
@@ -160,7 +160,7 @@ export function StickersCatalogClient({
       { id: "educational", label: isAr ? "تعليمي ومكعبات" : "Educational" },
       { id: "sports", label: isAr ? "كرة قدم ورياضة" : "Sports" },
     ],
-    [isAr]
+    [isAr, product.designs.length]
   );
 
   // Filter & Sort designs
@@ -199,7 +199,9 @@ export function StickersCatalogClient({
         return nameA.localeCompare(nameB, isAr ? "ar" : "en");
       }
       if (sortBy === "newest") {
-        return a.id - b.id;
+        if (a.id === 0) return -1;
+        if (b.id === 0) return 1;
+        return b.id - a.id;
       }
       return 0;
     });

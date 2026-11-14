@@ -407,6 +407,468 @@
         "sampleName": "Zein Ramy",
         "sampleSchool": "Garfield",
         "sampleGrade": "KG2"
+      },
+      {
+        "id": 25,
+        "slug": "ticket-label-doctor-girl",
+        "title": "Doctor Girl Ticket & Label",
+        "arabicTitle": "تيكت وليبل الدكتورة الصغيرة",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "شخصيات وبنات",
+        "url": "/products/stickers/sticker-25-doctor-girl.jpeg",
+        "dimensions": {
+          "width": 1000,
+          "height": 1401
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 26,
+        "slug": "ticket-label-island-princess",
+        "title": "Island Princess Ticket & Label",
+        "arabicTitle": "تيكت وليبل أميرة الجزيرة",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أميرات وبنات",
+        "url": "/products/stickers/sticker-26-island-princess.jpeg",
+        "dimensions": {
+          "width": 1000,
+          "height": 1401
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 27,
+        "slug": "ticket-label-spiderman-school",
+        "title": "Spider-Man School Ticket & Label",
+        "arabicTitle": "تيكت وليبل سبايدرمان المدرسة",
+        "themeGroup": "superheroes",
+        "arabicThemeGroup": "أبطال وخوارق",
+        "url": "/products/stickers/sticker-27-spiderman-school.jpeg",
+        "dimensions": {
+          "width": 1096,
+          "height": 1536
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 28,
+        "slug": "ticket-label-spiderman-red",
+        "title": "Spider-Man Red Web Ticket & Label",
+        "arabicTitle": "تيكت وليبل سبايدرمان الشبكة الحمراء",
+        "themeGroup": "superheroes",
+        "arabicThemeGroup": "أبطال وخوارق",
+        "url": "/products/stickers/sticker-28-spiderman-red.jpeg",
+        "dimensions": {
+          "width": 900,
+          "height": 1049
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 29,
+        "slug": "ticket-label-sonic-blue",
+        "title": "Sonic Blue Ticket & Label",
+        "arabicTitle": "تيكت وليبل سونيك الأزرق",
+        "themeGroup": "gaming",
+        "arabicThemeGroup": "ألعاب وشخصيات",
+        "url": "/products/stickers/sticker-29-sonic-blue.jpeg",
+        "dimensions": {
+          "width": 900,
+          "height": 1049
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 30,
+        "slug": "ticket-label-super-mario",
+        "title": "Super Mario Ticket & Label",
+        "arabicTitle": "تيكت وليبل سوبر ماريو",
+        "themeGroup": "gaming",
+        "arabicThemeGroup": "ألعاب وشخصيات",
+        "url": "/products/stickers/sticker-30-super-mario.jpeg",
+        "dimensions": {
+          "width": 900,
+          "height": 1049
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 31,
+        "slug": "ticket-label-real-madrid",
+        "title": "Real Madrid Football Ticket & Label",
+        "arabicTitle": "تيكت وليبل ريال مدريد وكرة القدم",
+        "themeGroup": "sports",
+        "arabicThemeGroup": "رياضة وكرة قدم",
+        "url": "/products/stickers/sticker-31-real-madrid.jpeg",
+        "dimensions": {
+          "width": 900,
+          "height": 1049
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 32,
+        "slug": "ticket-label-sonic-adventure",
+        "title": "Sonic Adventure Ticket & Label",
+        "arabicTitle": "تيكت وليبل مغامرة سونيك",
+        "themeGroup": "gaming",
+        "arabicThemeGroup": "ألعاب وشخصيات",
+        "url": "/products/stickers/sticker-32-sonic-adventure.jpeg",
+        "dimensions": {
+          "width": 1096,
+          "height": 1536
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 33,
+        "slug": "ticket-label-numberblocks",
+        "title": "Numberblocks Ticket & Label",
+        "arabicTitle": "تيكت وليبل نامبر بلوكس",
+        "themeGroup": "educational",
+        "arabicThemeGroup": "تعليمي ومكعبات",
+        "url": "/products/stickers/sticker-33-numberblocks.jpeg",
+        "dimensions": {
+          "width": 1096,
+          "height": 1536
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 34,
+        "slug": "ticket-label-barbie-pink",
+        "title": "Barbie Pink Ticket & Label",
+        "arabicTitle": "تيكت وليبل باربي الوردي",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أناقة وبنات",
+        "url": "/products/stickers/sticker-34-barbie-pink.jpeg",
+        "dimensions": {
+          "width": 1096,
+          "height": 1536
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 35,
+        "slug": "ticket-label-mermaid-sea",
+        "title": "Mermaid Under the Sea Ticket & Label",
+        "arabicTitle": "تيكت وليبل حورية البحر",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أميرات وبنات",
+        "url": "/products/stickers/sticker-35-mermaid-sea.jpeg",
+        "dimensions": {
+          "width": 1000,
+          "height": 1401
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 36,
+        "slug": "ticket-label-cars-racing",
+        "title": "Cars Racing Ticket & Label",
+        "arabicTitle": "تيكت وليبل سباق سيارات كارز",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-36-cars-racing.jpeg",
+        "dimensions": {
+          "width": 1000,
+          "height": 1401
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 37,
+        "slug": "ticket-label-lightning-mcqueen",
+        "title": "Lightning McQueen Ticket & Label",
+        "arabicTitle": "تيكت وليبل لايتنينج ماكوين",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-37-lightning-mcqueen.jpeg",
+        "dimensions": {
+          "width": 1000,
+          "height": 1401
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 38,
+        "slug": "ticket-label-cars-friends",
+        "title": "Cars Friends Ticket & Label",
+        "arabicTitle": "تيكت وليبل أصدقاء كارز",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-38-cars-friends.jpeg",
+        "dimensions": {
+          "width": 1000,
+          "height": 1401
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 39,
+        "slug": "ticket-label-ballet-princess",
+        "title": "Ballet Princess Ticket & Label",
+        "arabicTitle": "تيكت وليبل أميرة الباليه",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أناقة وبنات",
+        "url": "/products/stickers/sticker-39-ballet-princess.jpeg",
+        "dimensions": {
+          "width": 1100,
+          "height": 1371
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 40,
+        "slug": "ticket-label-dinosaurs",
+        "title": "Dinosaur Friends Ticket & Label",
+        "arabicTitle": "تيكت وليبل أصدقاء الديناصورات",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-40-dinosaurs.jpeg",
+        "dimensions": {
+          "width": 1280,
+          "height": 1600
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 41,
+        "slug": "ticket-label-minecraft",
+        "title": "Minecraft World Ticket & Label",
+        "arabicTitle": "تيكت وليبل عالم ماينكرافت",
+        "themeGroup": "gaming",
+        "arabicThemeGroup": "ألعاب وشخصيات",
+        "url": "/products/stickers/sticker-41-minecraft.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 42,
+        "slug": "ticket-label-football",
+        "title": "Football Champion Ticket & Label",
+        "arabicTitle": "تيكت وليبل بطل كرة القدم",
+        "themeGroup": "sports",
+        "arabicThemeGroup": "رياضة وكرة قدم",
+        "url": "/products/stickers/sticker-42-football.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 43,
+        "slug": "ticket-label-fairy-princess",
+        "title": "Fairy Princess Ticket & Label",
+        "arabicTitle": "تيكت وليبل أميرة الجنيات",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أميرات وبنات",
+        "url": "/products/stickers/sticker-43-fairy-princess.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 44,
+        "slug": "ticket-label-paw-patrol",
+        "title": "Paw Patrol Ticket & Label",
+        "arabicTitle": "تيكت وليبل باو باترول",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-44-paw-patrol.jpeg",
+        "dimensions": {
+          "width": 900,
+          "height": 1049
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 45,
+        "slug": "ticket-label-toy-story",
+        "title": "Toy Story Friends Ticket & Label",
+        "arabicTitle": "تيكت وليبل أصدقاء توي ستوري",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-45-toy-story.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 46,
+        "slug": "ticket-label-toy-story-blue",
+        "title": "Toy Story Blue Ticket & Label",
+        "arabicTitle": "تيكت وليبل توي ستوري الأزرق",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-46-toy-story-blue.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 47,
+        "slug": "ticket-label-lol-surprise",
+        "title": "LOL Surprise Ticket & Label",
+        "arabicTitle": "تيكت وليبل لول سربرايز",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أناقة وبنات",
+        "url": "/products/stickers/sticker-47-lol-surprise.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 48,
+        "slug": "ticket-label-bunny-friends",
+        "title": "Bunny Friends Ticket & Label",
+        "arabicTitle": "تيكت وليبل أصدقاء الأرانب",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-48-bunny-friends.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 49,
+        "slug": "ticket-label-space-rocket",
+        "title": "Space Rocket Ticket & Label",
+        "arabicTitle": "تيكت وليبل صاروخ الفضاء",
+        "themeGroup": "educational",
+        "arabicThemeGroup": "تعليمي ومكعبات",
+        "url": "/products/stickers/sticker-49-space-rocket.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 50,
+        "slug": "ticket-label-space-astronaut",
+        "title": "Space Astronaut Ticket & Label",
+        "arabicTitle": "تيكت وليبل رائد الفضاء",
+        "themeGroup": "educational",
+        "arabicThemeGroup": "تعليمي ومكعبات",
+        "url": "/products/stickers/sticker-50-space-astronaut.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 51,
+        "slug": "ticket-label-school-bus",
+        "title": "School Bus Ticket & Label",
+        "arabicTitle": "تيكت وليبل باص المدرسة",
+        "themeGroup": "educational",
+        "arabicThemeGroup": "تعليمي ومكعبات",
+        "url": "/products/stickers/sticker-51-school-bus.jpeg",
+        "dimensions": {
+          "width": 1242,
+          "height": 1552
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 52,
+        "slug": "ticket-label-unicorn-rainbow",
+        "title": "Rainbow Unicorn Ticket & Label",
+        "arabicTitle": "تيكت وليبل يونيكورن وقوس قزح",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أميرات وبنات",
+        "url": "/products/stickers/sticker-52-unicorn-rainbow.jpeg",
+        "dimensions": {
+          "width": 1080,
+          "height": 1350
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 53,
+        "slug": "ticket-label-stitch-beach",
+        "title": "Stitch Beach Ticket & Label",
+        "arabicTitle": "تيكت وليبل ستيتش على الشاطئ",
+        "themeGroup": "cartoons",
+        "arabicThemeGroup": "كرتون وشخصيات",
+        "url": "/products/stickers/sticker-53-stitch-beach.jpeg",
+        "dimensions": {
+          "width": 1242,
+          "height": 1552
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 54,
+        "slug": "ticket-label-mario-photo",
+        "title": "Mario Photo Ticket & Label",
+        "arabicTitle": "تيكت وليبل ماريو مع صورة الطفل",
+        "themeGroup": "gaming",
+        "arabicThemeGroup": "ألعاب وشخصيات",
+        "url": "/products/stickers/sticker-54-mario-photo.jpeg",
+        "dimensions": {
+          "width": 1242,
+          "height": 1552
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 55,
+        "slug": "ticket-label-mermaid-photo",
+        "title": "Mermaid Photo Ticket & Label",
+        "arabicTitle": "تيكت وليبل حورية البحر مع صورة الطفل",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أميرات وبنات",
+        "url": "/products/stickers/sticker-55-mermaid-photo.jpeg",
+        "dimensions": {
+          "width": 1242,
+          "height": 1552
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 56,
+        "slug": "ticket-label-elsa-photo",
+        "title": "Elsa Photo Ticket & Label",
+        "arabicTitle": "تيكت وليبل إلسا مع صورة الطفل",
+        "themeGroup": "girls",
+        "arabicThemeGroup": "أميرات وبنات",
+        "url": "/products/stickers/sticker-56-elsa-photo.jpeg",
+        "dimensions": {
+          "width": 1242,
+          "height": 1552
+        },
+        "sampleName": ""
+      },
+      {
+        "id": 57,
+        "slug": "ticket-label-superheroes-photo",
+        "title": "Superheroes Photo Ticket & Label",
+        "arabicTitle": "تيكت وليبل الأبطال الخارقون مع صورة الطفل",
+        "themeGroup": "superheroes",
+        "arabicThemeGroup": "أبطال وخوارق",
+        "url": "/products/stickers/sticker-57-superheroes-photo.jpeg",
+        "dimensions": {
+          "width": 1242,
+          "height": 1552
+        },
+        "sampleName": ""
       }
     ]
   }
