@@ -389,8 +389,6 @@ export function StickersCatalogClient({
         </button>
       </section>
 
-      {currentKind === "labels" && thermalLabelsCard}
-
       {/* 2. Top Filter & Search Bar */}
       <div className="mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Search Input */}
@@ -512,6 +510,7 @@ export function StickersCatalogClient({
       ) : (
         /* 3-Column Luxury Product Cards Grid with INLINE CUSTOMIZATION */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-7 lg:gap-8">
+          {currentKind === "labels" && selectedTheme === "all" && !searchQuery && thermalLabelsCard}
           {processedDesigns.map((design, idx) => {
             const wishlistSlug = `sticker-${design.id}-${design.slug}`;
             const isFavorite = has(wishlistSlug);
