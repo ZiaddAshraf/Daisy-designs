@@ -390,6 +390,7 @@ export function StickersCatalogClient({
               </button>
             )}
           </div>
+          {!primaryDesign && <p className="text-sm text-[var(--muted-foreground)]">{isAr ? "ابدئي باختيار تصميم من الصور اللي تحت." : "Start by selecting a photo design below."}</p>}
           <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} showGallery={false} />
         </>}
         <button type="button" disabled={!mixValid || !primaryDesign || catalog.stock < 1}

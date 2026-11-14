@@ -32,7 +32,7 @@ export function StickerMixPicker({ locale, tickets, labels, ticketMix, labelMix,
     { kind: "labels", count: labels, mix: labelMix, change: onLabelMix, search: labelSearch, setSearch: setLabelSearch, title: isAr ? "اختاري تصميمات الـ٢٥ ليبل" : "Choose label designs" },
   ];
   return <div className="space-y-4">
-    {sections.filter(section => section.count > 0).map(section => {
+    {sections.filter(section => section.count > 0 && (showGallery || stickerMixTotal(section.mix) > 0)).map(section => {
       const total = stickerMixTotal(section.mix);
       const visibleDesigns = stickersData.product.designs.filter(design =>
         (isAr ? design.arabicTitle : design.title).toLowerCase().includes(section.search.trim().toLowerCase())
