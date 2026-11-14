@@ -6,7 +6,7 @@ import stickersData from "@/data/stickers-product.json";
 import { addStickerDesign, stickerMixTotal, type StickerMix } from "@/lib/sticker-package-mix";
 import type { Locale } from "@/lib/locale";
 
-export function StickerMixPicker({ locale, tickets, labels, ticketMix, labelMix, onTicketMix, onLabelMix }: {
+export function StickerMixPicker({ locale, tickets, labels, ticketMix, labelMix, onTicketMix, onLabelMix, showGallery = true }: {
   locale: Locale;
   tickets: number;
   labels: number;
@@ -14,6 +14,7 @@ export function StickerMixPicker({ locale, tickets, labels, ticketMix, labelMix,
   labelMix: StickerMix;
   onTicketMix: (mix: StickerMix) => void;
   onLabelMix: (mix: StickerMix) => void;
+  showGallery?: boolean;
 }) {
   const isAr = locale === "ar";
   const [ticketSearch, setTicketSearch] = useState("");
@@ -71,7 +72,8 @@ export function StickerMixPicker({ locale, tickets, labels, ticketMix, labelMix,
             </div>;
           })}
         </div>
-        <div className="space-y-2">
+        {total === 0 && <p className="text-xs text-[var(--muted-foreground)]">{isAr ? "اختاري أول تصميم من الصور اللي تحت." : "Choose the first design from the photos below."}</p>}
+        {showGallery && <div className="space-y-2">
           <label className="block text-xs font-bold" htmlFor={`sticker-search-${section.kind}`}>
             {isAr ? "شوّفي صور التصميمات واختاري منها" : "Browse designs by photo"}
           </label>
@@ -106,7 +108,7 @@ export function StickerMixPicker({ locale, tickets, labels, ticketMix, labelMix,
             </div>
             {visibleDesigns.length === 0 && <p className="p-4 text-center text-xs text-[var(--muted-foreground)]">{isAr ? "مفيش تصميمات مطابقة" : "No matching designs"}</p>}
           </div>
-        </div>
+        </div>}
         {total !== section.count && <p className="text-xs font-semibold text-rose-600" role="status">
           {isAr ? `لازم مجموع ${section.kind === "tickets" ? "التيكت" : "الليبل"} يكون ${section.count} بالضبط.` : `The ${section.kind} total must be exactly ${section.count}.`}
         </p>}

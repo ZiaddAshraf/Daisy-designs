@@ -7,7 +7,7 @@ import { formatCustomizationValue } from "@/lib/customization-formatter";
 import { PackageSelector } from "@/components/package-selector";
 import { StickerMixPicker } from "@/components/sticker-mix-picker";
 import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
-import { STICKER_PACKAGE_COUNTS, initialStickerMix, serializeStickerMix, stickerMixTotal, type StickerMix } from "@/lib/sticker-package-mix";
+import { STICKER_PACKAGE_COUNTS, addStickerDesign, initialStickerMix, serializeStickerMix, stickerMixTotal, type StickerKind, type StickerMix } from "@/lib/sticker-package-mix";
 
 import { useState, useMemo, useEffect, useRef, useCallback, type ChangeEvent, type FormEvent } from "react";
 import SiteImage from "@/components/site-image";
@@ -107,9 +107,16 @@ export function StickersCatalogClient({
   const [quantity, setQuantity] = useState(1);
   const [ticketMix, setTicketMix] = useState<StickerMix>({});
   const [labelMix, setLabelMix] = useState<StickerMix>({});
+  const [activeKind, setActiveKind] = useState<StickerKind>("tickets");
   const packageCounts = selectedPackage ? STICKER_PACKAGE_COUNTS[selectedPackage.sku ?? ""] : undefined;
   const mixValid = Boolean(packageCounts && stickerMixTotal(ticketMix) === packageCounts.tickets && stickerMixTotal(labelMix) === packageCounts.labels);
   const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"]);
+  const currentKind: StickerKind = packageCounts?.[activeKind] ? activeKind : packageCounts?.tickets ? "tickets" : "labels";
+  const currentMix = currentKind === "tickets" ? ticketMix : labelMix;
+  const currentCount = packageCounts?.[currentKind] ?? 0;
+  const canAddDesign = stickerMixTotal(currentMix) < currentCount || Object.values(currentMix).some(count => count > 1);
+  const primarySlug = Object.keys(ticketMix)[0] ?? Object.keys(labelMix)[0];
+  const primaryDesign = product.designs.find(design => design.slug === primarySlug);
 
   // Validation States
   const [nameError, setNameError] = useState(false);
@@ -228,14 +235,19 @@ export function StickersCatalogClient({
     setCustomDesignText("");
     clearPhoto();
     setQuantity(1);
-    const pack = catalog.variants.find(variant => variant.id === selectedPackageId);
-    const counts = pack ? STICKER_PACKAGE_COUNTS[pack.sku ?? ""] : undefined;
-    setTicketMix(initialStickerMix(design.slug, counts?.tickets ?? 0));
-    setLabelMix(initialStickerMix(design.slug, counts?.labels ?? 0));
     setNameError(false);
     setPhoneError(false);
     setCustomTextError(false);
-  }, [clearPhoto, catalog.variants, selectedPackageId]);
+  }, [clearPhoto]);
+
+  const handleSelectDesign = (design: StickerDesign) => {
+    if (!currentCount || currentMix[design.slug] || !canAddDesign) return;
+    const next = Object.keys(currentMix).length
+      ? addStickerDesign(currentMix, design.slug, currentCount)
+      : initialStickerMix(design.slug, currentCount);
+    if (currentKind === "tickets") setTicketMix(next);
+    else setLabelMix(next);
+  };
 
   // Handle Photo File Upload
   const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -311,7 +323,7 @@ export function StickersCatalogClient({
 
     setIsSubmitting(false);
     setSuccessToast({
-      designName: isAr ? customizingDesign.arabicTitle : customizingDesign.title,
+      designName: variantLabel(selectedPackage, locale),
       quantity,
     });
     setCustomizingDesign(null);
@@ -353,6 +365,38 @@ export function StickersCatalogClient({
             <span>{isAr ? "مقاوم للماء ١٠٠%" : "100% Waterproof"}</span>
           </div>
         </div>
+      </section>
+
+      <section className="mb-6 rounded-3xl border border-teal-200 bg-[var(--card)] p-4 sm:p-6 shadow-sm dark:border-teal-900" aria-label={isAr ? "كوّني باقة التيكت والليبل" : "Build your ticket and label pack"}>
+        <h2 className="text-lg sm:text-xl font-extrabold">{isAr ? "كوّني باقتك من التصميمات اللي تحت" : "Build your pack from the designs below"}</h2>
+        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+          {isAr ? "اختاري الباقة، وبعدها اضغطي على صور التصميمات لإضافتها. ممكن توزّعي العدد على أكتر من تصميم." : "Choose a pack, then add designs from the photo cards below. Mix several designs in one pack."}
+        </p>
+        <PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={id => {
+          setSelectedPackageId(id);
+          const pack = catalog.variants.find(variant => variant.id === id);
+          const counts = pack ? STICKER_PACKAGE_COUNTS[pack.sku ?? ""] : undefined;
+          setTicketMix({});
+          setLabelMix({});
+          setActiveKind(counts?.tickets ? "tickets" : "labels");
+        }} locale={locale} basePrice={catalog.price} />
+        {packageCounts && <>
+          <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label={isAr ? "اختاري نوع القطع" : "Choose piece type"}>
+            {(["tickets", "labels"] as const).filter(kind => packageCounts[kind] > 0).map(kind =>
+              <button key={kind} type="button" onClick={() => setActiveKind(kind)}
+                aria-pressed={currentKind === kind}
+                className={`min-h-11 rounded-xl px-4 py-2 text-sm font-bold ${currentKind === kind ? "bg-teal-700 text-white" : "border border-[var(--border)] bg-[var(--surface-soft)]"}`}>
+                {kind === "tickets" ? (isAr ? `التيكت ${stickerMixTotal(ticketMix)}/20` : `Tickets ${stickerMixTotal(ticketMix)}/20`) : (isAr ? `الليبل ${stickerMixTotal(labelMix)}/25` : `Labels ${stickerMixTotal(labelMix)}/25`)}
+              </button>
+            )}
+          </div>
+          <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} showGallery={false} />
+        </>}
+        <button type="button" disabled={!mixValid || !primaryDesign || catalog.stock < 1}
+          onClick={() => { if (primaryDesign) handleOpenCustomize(primaryDesign); }}
+          className="mt-4 min-h-12 w-full rounded-xl bg-teal-700 px-5 py-3 text-sm font-extrabold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50">
+          {isAr ? "كمّلي بيانات الطلب" : "Continue to order details"}
+        </button>
       </section>
 
       {/* 2. Top Filter & Search Bar */}
@@ -438,6 +482,19 @@ export function StickersCatalogClient({
         })}
       </div>
 
+      {packageCounts && <div className="sticky top-0 z-30 mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-teal-200 bg-[var(--card)]/95 p-2 shadow-md backdrop-blur dark:border-teal-900">
+        {(["tickets", "labels"] as const).filter(kind => packageCounts[kind] > 0).map(kind =>
+          <button key={kind} type="button" onClick={() => setActiveKind(kind)} aria-pressed={currentKind === kind}
+            className={`min-h-10 rounded-lg px-3 text-xs font-bold ${currentKind === kind ? "bg-teal-700 text-white" : "bg-[var(--surface-soft)]"}`}>
+            {kind === "tickets" ? (isAr ? `التيكت ${stickerMixTotal(ticketMix)}/20` : `Tickets ${stickerMixTotal(ticketMix)}/20`) : (isAr ? `الليبل ${stickerMixTotal(labelMix)}/25` : `Labels ${stickerMixTotal(labelMix)}/25`)}
+          </button>
+        )}
+        <button type="button" disabled={!mixValid || !primaryDesign} onClick={() => { if (primaryDesign) handleOpenCustomize(primaryDesign); }}
+          className="ms-auto min-h-10 rounded-lg bg-neutral-900 px-3 text-xs font-bold text-white disabled:opacity-40">
+          {isAr ? "كمّلي الطلب" : "Continue"}
+        </button>
+      </div>}
+
       {/* Empty State */}
       {processedDesigns.length === 0 ? (
         <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-12 text-center my-10">
@@ -485,6 +542,7 @@ export function StickersCatalogClient({
             const tagLabel = badge.en;
             const categoryLabel = isAr ? design.arabicThemeGroup : design.themeGroup;
             const titleLabel = isAr ? design.arabicTitle : design.title;
+            const designSelected = Boolean(currentMix[design.slug]);
 
             return (
               <article
@@ -527,11 +585,11 @@ export function StickersCatalogClient({
                 {/* Card Top & Media - Interactive trigger opening customization */}
                 <div
                   className="cursor-pointer"
-                  onClick={() => handleOpenCustomize(design)}
+                  onClick={() => handleSelectDesign(design)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleOpenCustomize(design)}
-                  aria-label={`${isAr ? "تخصيص" : "Customize"} ${titleLabel}`}
+                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleSelectDesign(design)}
+                  aria-label={`${isAr ? "إضافة تصميم" : "Add design"} ${titleLabel} ${isAr ? currentKind === "tickets" ? "للتيكت" : "للليبل" : currentKind}`}
                 >
                   {/* Sticker Image Frame - Portrait aspect ratio matching sheets, zero cropping */}
                   <div className="catalog-card__frame relative aspect-[3/4] w-full overflow-hidden p-1 sm:p-1.5 flex items-center justify-center transition-colors bg-white dark:bg-neutral-900">
@@ -594,10 +652,11 @@ export function StickersCatalogClient({
                   {/* Primary CTA: "خصص الآن" (Customize Now) */}
                   <button
                     type="button"
-                    onClick={() => handleOpenCustomize(design)}
+                    onClick={() => handleSelectDesign(design)}
+                    disabled={designSelected || !canAddDesign}
                     className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 hover:bg-teal-700 text-white dark:bg-white dark:text-neutral-950 dark:hover:bg-teal-400 px-4 py-2.5 text-xs sm:text-sm font-extrabold shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer min-h-[42px]"
                   >
-                    <span>{isAr ? "خصص الآن" : "Customize Now"}</span>
+                    <span>{designSelected ? (isAr ? "✓ تم الاختيار" : "✓ Selected") : (isAr ? currentKind === "tickets" ? "أضيفي للتيكت" : "أضيفي للليبل" : `Add to ${currentKind}`)}</span>
                     {isAr ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
                   </button>
                 </div>
@@ -687,14 +746,11 @@ export function StickersCatalogClient({
 
               {/* Right Column: Interactive Customization Form */}
               <form onSubmit={handleAddToCart} className="space-y-4">
-<PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={id => {
-  setSelectedPackageId(id);
-  const pack = catalog.variants.find(variant => variant.id === id);
-  const counts = pack ? STICKER_PACKAGE_COUNTS[pack.sku ?? ""] : undefined;
-  setTicketMix(initialStickerMix(customizingDesign.slug, counts?.tickets ?? 0));
-  setLabelMix(initialStickerMix(customizingDesign.slug, counts?.labels ?? 0));
-}} locale={locale} basePrice={catalog.price} />
-                {packageCounts && <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} />}
+                <div className="rounded-2xl border border-teal-200 bg-teal-50/60 p-3 text-sm dark:border-teal-900 dark:bg-teal-950/30">
+                  <strong>{selectedPackage ? variantLabel(selectedPackage, locale) : ""}</strong>
+                  {packageCounts?.tickets ? <p className="mt-1">{isAr ? "التيكت: " : "Tickets: "}{formatCustomizationValue("ticket_designs", serializeStickerMix(ticketMix), locale).displayValue}</p> : null}
+                  {packageCounts?.labels ? <p className="mt-1">{isAr ? "الليبل: " : "Labels: "}{formatCustomizationValue("label_designs", serializeStickerMix(labelMix), locale).displayValue}</p> : null}
+                </div>
 
                 {/* 1. Custom Design Idea Description (Required for Design ID 0) */}
                 {includesCustomDesign && (
