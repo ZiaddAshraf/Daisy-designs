@@ -8,24 +8,28 @@ const examples = [
     image: "/products/keychains/personalized-name-tags-examples.jpg",
     ar: "ميدالية اسم بتصميمك",
     en: "Custom name keychain",
+    price: 80,
   },
   {
     slug: "keychain-lamine-yamal",
     image: "/products/keychains/yamal-name-keychain-example.jpg",
     ar: "ميدالية لامين يامال",
     en: "Lamine Yamal keychain",
+    price: 80,
   },
   {
     slug: "keychain-cristiano-ronaldo",
     image: "/products/keychains/ronaldo-name-keychain-example.jpg",
     ar: "ميدالية كريستيانو رونالدو",
     en: "Cristiano Ronaldo keychain",
+    price: 80,
   },
   {
     slug: "personalized-school-id-card",
     image: "/products/keychains/personalized-school-id-front.jpg",
     ar: "ID مدرسي مخصص",
     en: "Personalized school ID card",
+    price: 150,
   },
 ];
 
@@ -59,7 +63,10 @@ export function KeychainExamples({ locale }: { locale: Locale }) {
               />
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 p-4">
-              <h2 className="text-sm font-extrabold text-[var(--foreground)]">{isAr ? example.ar : example.en}</h2>
+              <div>
+                <h2 className="text-sm font-extrabold text-[var(--foreground)]">{isAr ? example.ar : example.en}</h2>
+                <p className="mt-1 text-sm font-bold text-teal-800 dark:text-teal-300">{isAr ? `${example.price.toLocaleString("ar-EG")} ج.م` : `EGP ${example.price}`}</p>
+              </div>
               <span className="rounded-lg bg-teal-700 px-3 py-2 text-xs font-extrabold text-white transition-colors group-hover:bg-teal-800">
                 {isAr ? "شوفي المنتج" : "View product"}
               </span>

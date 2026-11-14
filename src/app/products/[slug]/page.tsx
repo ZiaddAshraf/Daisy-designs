@@ -19,6 +19,7 @@ import storyData from "@/data/story-product.json";
 import tshirtData from "@/data/tshirt-product.json";
 import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
 import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
+import { ensureThermalLabelProduct, THERMAL_LABEL_SLUG } from "@/lib/ensure-thermal-label-product";
 import { stickerPackageVariants } from "@/lib/product-pricing";
 
 const PRODUCT_SLUG_ALIASES: Record<string, string> = {
@@ -152,6 +153,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         };
     }
     const resolvedSlug = PRODUCT_SLUG_ALIASES[slug] ?? slug;
+    if (resolvedSlug === THERMAL_LABEL_SLUG) {
+        try { await ensureThermalLabelProduct(); }
+        catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
+    }
     if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo", "personalized-school-id-card"].includes(resolvedSlug)) {
         try { await ensureKeychainCatalogProducts(); }
         catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
@@ -202,6 +207,7 @@ export default async function ProductPage({
     let unavailable = false;
     try {
         if (resolvedSlug === "custom-waterproof-stickers") await ensureStickerPackages();
+        if (resolvedSlug === THERMAL_LABEL_SLUG) await ensureThermalLabelProduct();
         if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo", "personalized-school-id-card"].includes(resolvedSlug)) {
             await ensureKeychainCatalogProducts();
         }

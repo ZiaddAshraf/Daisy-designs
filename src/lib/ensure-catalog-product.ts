@@ -406,7 +406,7 @@ export async function ensureCatalogProductInTransaction(
           arabicName: "ID مدرسي مخصص باسم الطفل",
           description: "Personalized school ID card with a protective holder and neck strap, printed with your child's name and class.",
           arabicDescription: "ID مدرسي باسم طفلك وصفه مع جراب حماية وحبل للتعليق. اختاري التصميم واكتبي البيانات المطلوبة.",
-          price: 80,
+          price: 150,
           sku: "DD-ID-001",
           stock: 100,
           lowStockThreshold: 10,
@@ -469,6 +469,13 @@ const KEYCHAIN_IMAGES: Record<(typeof KEYCHAIN_SLUGS)[number], string> = {
   "personalized-school-id-card": "/products/keychains/personalized-school-id-front.jpg",
 };
 
+const KEYCHAIN_PRICES: Record<(typeof KEYCHAIN_SLUGS)[number], number> = {
+  "custom-acrylic-name-keychain": 80,
+  "keychain-lamine-yamal": 80,
+  "keychain-cristiano-ronaldo": 80,
+  "personalized-school-id-card": 150,
+};
+
 export async function ensureKeychainCatalogProducts(): Promise<void> {
   const existing = await prisma.product.findMany({
     where: { slug: { in: [...KEYCHAIN_SLUGS] } },
@@ -478,8 +485,8 @@ export async function ensureKeychainCatalogProducts(): Promise<void> {
   for (const slug of KEYCHAIN_SLUGS) {
     const product = existingBySlug.get(slug);
     if (product) {
-      if (!product.published || product.price !== 80) {
-        await prisma.product.update({ where: { id: product.id }, data: { published: true, price: 80 } });
+      if (!product.published || product.price !== KEYCHAIN_PRICES[slug]) {
+        await prisma.product.update({ where: { id: product.id }, data: { published: true, price: KEYCHAIN_PRICES[slug] } });
       }
       const image = product.images[0];
       if (image?.url !== KEYCHAIN_IMAGES[slug]) {

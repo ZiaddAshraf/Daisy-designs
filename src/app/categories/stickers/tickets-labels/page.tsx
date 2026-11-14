@@ -7,6 +7,8 @@ import { isDatabaseUnavailable } from "@/lib/prisma";
 import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
 import { stickerPackageVariants } from "@/lib/product-pricing";
 import { getRequestLocale } from "@/lib/locale-server";
+import { ensureThermalLabelProduct } from "@/lib/ensure-thermal-label-product";
+import { ThermalLabelsCard } from "@/components/thermal-labels-card";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,7 @@ export default async function TicketsLabelsPage() {
   let product: Awaited<ReturnType<typeof getPublishedProduct>> = null;
   try {
     await ensureStickerPackages();
+    await ensureThermalLabelProduct();
     product = await getPublishedProduct("custom-waterproof-stickers");
   } catch (error) {
     if (!isDatabaseUnavailable(error)) throw error;
@@ -32,6 +35,6 @@ export default async function TicketsLabelsPage() {
       <Link href="/categories/stickers">{locale === "ar" ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains"}</Link><span>/</span>
       <span>{locale === "ar" ? "تيكت وليبل" : "Tickets & Labels"}</span>
     </nav>
-    {product ? <StickersCatalogClient locale={locale} catalog={{ price: product.price, stock: product.stock, variants: stickerPackageVariants(product.variants) }} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />}
+    {product ? <><ThermalLabelsCard locale={locale} /><StickersCatalogClient locale={locale} catalog={{ price: product.price, stock: product.stock, variants: stickerPackageVariants(product.variants) }} /></> : <DatabaseUnavailable messageKey="categoryUnavailable" />}
   </main>;
 }

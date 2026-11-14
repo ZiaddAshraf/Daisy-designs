@@ -7,6 +7,7 @@ import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
 import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
+import { ensureThermalLabelProduct } from "@/lib/ensure-thermal-label-product";
 import stickersData from "@/data/stickers-product.json";
 import { ProductsCatalogClient, type CatalogProductItem } from "@/components/products-catalog-client";
 
@@ -29,6 +30,7 @@ export default async function ProductsPage() {
   try {
     await ensureKeychainCatalogProducts();
     await ensureStickerPackages();
+    await ensureThermalLabelProduct();
     records = await getPublishedProducts();
   } catch { return <main className="catalog-page"><DatabaseUnavailable /></main>; }
   const priceFor = (slug: string) => records.find(p => p.slug === slug)?.price ?? 0;
@@ -309,7 +311,7 @@ export default async function ProductsPage() {
     subtitle: isRtl ? "مع جراب حماية وحبل للتعليق" : "With protective holder and neck strap",
     category: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
     categoryId: "stickers",
-    price: priceFor("personalized-school-id-card") || 80,
+    price: priceFor("personalized-school-id-card") || 150,
     priceUnit: isRtl ? "للقطعة الواحدة" : "per ID card",
     badge: isRtl ? "ID مخصص" : "Custom ID",
     image: "/products/keychains/personalized-school-id-front.jpg",
