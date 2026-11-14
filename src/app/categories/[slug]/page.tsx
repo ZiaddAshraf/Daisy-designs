@@ -22,7 +22,6 @@ import { RewardCardsPreview } from "@/components/reward-cards-preview";
 import { StickersCatalogClient } from "@/components/stickers-catalog-client";
 import { StoryBookPreview } from "@/components/story-book-preview";
 import { TShirtPreview } from "@/components/tshirt-preview";
-import { KeychainExamples } from "@/components/keychain-examples";
 import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
 import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
 import { stickerPackageVariants } from "@/lib/product-pricing";
@@ -141,7 +140,7 @@ export default async function CategoryPage({ params, searchParams }: { params: P
       {slug === "reward-cards" ? (
         <RewardCardsPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
       ) : slug === "stickers" || slug === "school-stickers" ? (
-        specialProduct ? <><StickersCatalogClient locale={locale} catalog={{ price: specialProduct.price, stock: specialProduct.stock, variants: stickerPackageVariants(specialProduct.variants) }} /><KeychainExamples locale={locale} /></> : <DatabaseUnavailable messageKey="categoryUnavailable" />
+        specialProduct ? <StickersCatalogClient locale={locale} catalog={{ price: specialProduct.price, stock: specialProduct.stock, variants: stickerPackageVariants(specialProduct.variants) }} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />
       ) : slug === "customized-stories" || slug === "stories" ? (
         <StoryBookPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} initialStoryId={(await searchParams).mode === 'custom' ? 'custom-story' : (await searchParams).collection || (await searchParams).story} />
       ) : slug === "printed-t-shirts" || slug === "t-shirts" || slug === "tshirts" ? (

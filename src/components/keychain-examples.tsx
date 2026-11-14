@@ -26,13 +26,14 @@ const examples = [
 export function KeychainExamples({ locale }: { locale: Locale }) {
   const isAr = locale === "ar";
   return (
-    <section className="mt-14 border-t border-[var(--border)] pt-9" aria-labelledby="keychain-examples-heading">
-      <div className="mb-6">
-        <h2 id="keychain-examples-heading" className="text-2xl font-extrabold text-[var(--foreground)]">
+    <section id="keychain-examples" className="mb-8 scroll-mt-24 rounded-3xl border border-teal-200 bg-gradient-to-br from-teal-50 via-white to-amber-50 p-4 shadow-sm dark:border-teal-900 dark:from-teal-950/60 dark:via-[var(--card)] dark:to-amber-950/20 sm:p-6" aria-labelledby="keychain-examples-heading">
+      <div className="mb-5">
+        <span className="mb-2 inline-block rounded-full bg-teal-700 px-3 py-1 text-xs font-extrabold text-white">{isAr ? "ميداليات مخصصة" : "CUSTOM KEYCHAINS"}</span>
+        <h2 id="keychain-examples-heading" className="text-2xl font-extrabold text-[var(--foreground)] sm:text-3xl">
           {isAr ? "ميداليات بأسماء الأطفال" : "Personalized Name Keychains"}
         </h2>
         <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-          {isAr ? "اختاري التصميم واكتبي اسم طفلك عند الطلب." : "Choose a design and add your child's name when ordering."}
+          {isAr ? "ميدالية للشنطة أو المفاتيح باسم طفلك. شوّفي الصور واختاري التصميم اللي تحبيه." : "A personalized keychain for your child's bag or keys. Browse the photos and choose a design."}
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -40,9 +41,9 @@ export function KeychainExamples({ locale }: { locale: Locale }) {
           <Link
             key={example.slug}
             href={`/products/${example.slug}`}
-            className="group overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+            className="group overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm transition-all hover:-translate-y-1 hover:border-teal-500 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
           >
-            <div className="relative aspect-[4/3] bg-white">
+            <div className="relative aspect-[3/2] bg-white">
               <Image
                 src={example.image}
                 alt={isAr ? example.ar : example.en}
@@ -51,10 +52,10 @@ export function KeychainExamples({ locale }: { locale: Locale }) {
                 className="object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </div>
-            <div className="flex items-center justify-between gap-3 p-4">
-              <h3 className="text-sm font-bold text-[var(--foreground)]">{isAr ? example.ar : example.en}</h3>
-              <span className="shrink-0 text-xs font-semibold text-teal-700 dark:text-teal-400">
-                {isAr ? "عرض المنتج" : "View product"}
+            <div className="flex flex-wrap items-center justify-between gap-2 p-4">
+              <h3 className="text-sm font-extrabold text-[var(--foreground)]">{isAr ? example.ar : example.en}</h3>
+              <span className="rounded-lg bg-teal-700 px-3 py-2 text-xs font-extrabold text-white transition-colors group-hover:bg-teal-800">
+                {isAr ? "اختاري الميدالية" : "Choose keychain"}
               </span>
             </div>
           </Link>

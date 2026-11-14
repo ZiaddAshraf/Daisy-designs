@@ -6,6 +6,7 @@ import { formatCustomizationValue } from "@/lib/customization-formatter";
 
 import { PackageSelector } from "@/components/package-selector";
 import { StickerMixPicker } from "@/components/sticker-mix-picker";
+import { KeychainExamples } from "@/components/keychain-examples";
 import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
 import { STICKER_PACKAGE_COUNTS, serializeStickerMix, stickerMixTotal, type StickerKind, type StickerMix } from "@/lib/sticker-package-mix";
 
@@ -17,7 +18,6 @@ import {
   ChevronDown,
   X,
   Layers,
-  Tag,
   Check,
   ShoppingBag,
   Minus,
@@ -343,21 +343,12 @@ export function StickersCatalogClient({
 
           <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 max-w-xl">
             {isAr
-              ? "فينيل أصلي مقاوم للماء والحرارة، مخصص باسم طفلك ومدرسته."
-              : "Waterproof vinyl stickers customized with your child's name and school."}
+              ? "تيكت وليبل باسم طفلك، وميداليات مخصصة للشنطة والمفاتيح."
+              : "Personalized tickets and labels, plus custom keychains for bags and keys."}
           </p>
         </div>
 
-        {/* Price & Quality Badge */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <div className="inline-flex items-center gap-2 rounded-xl bg-teal-600 dark:bg-teal-500 text-white px-3.5 py-2 text-xs sm:text-sm font-extrabold shadow-xs">
-            <Tag size={14} className="shrink-0" />
-            <strong className="text-sm sm:text-base">{formatPrice(catalog.price, locale)}</strong>
-            <span className="font-normal text-teal-100 text-[11px] sm:text-xs">
-              {isAr ? "للباقة المجمعة" : "combined pack"}
-            </span>
-          </div>
-
           <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/40 px-3 py-2 rounded-xl">
             <ShieldCheck size={14} className="shrink-0" />
             <span>{isAr ? "مقاوم للماء ١٠٠%" : "100% Waterproof"}</span>
@@ -365,7 +356,18 @@ export function StickersCatalogClient({
         </div>
       </section>
 
-      <section className="mb-6 rounded-3xl border border-teal-200 bg-[var(--card)] p-4 sm:p-6 shadow-sm dark:border-teal-900" aria-label={isAr ? "كوّني باقة التيكت والليبل" : "Build your ticket and label pack"}>
+      <nav className="mb-5 flex flex-wrap gap-2" aria-label={isAr ? "اختاري القسم" : "Choose section"}>
+        <a href="#keychain-examples" className="rounded-full bg-teal-700 px-4 py-2.5 text-sm font-extrabold text-white transition-colors hover:bg-teal-800">
+          {isAr ? "شوّفي الميداليات" : "Shop keychains"}
+        </a>
+        <a href="#sticker-builder" className="rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2.5 text-sm font-extrabold transition-colors hover:border-teal-600">
+          {isAr ? "كوّني باقة التيكت والليبل" : "Build tickets & labels"}
+        </a>
+      </nav>
+
+      <KeychainExamples locale={locale} />
+
+      <section id="sticker-builder" className="mb-6 scroll-mt-24 rounded-3xl border border-teal-200 bg-[var(--card)] p-4 sm:p-6 shadow-sm dark:border-teal-900" aria-label={isAr ? "كوّني باقة التيكت والليبل" : "Build your ticket and label pack"}>
         <h2 className="text-lg sm:text-xl font-extrabold">{isAr ? "كوّني باقتك من التصميمات اللي تحت" : "Build your pack from the designs below"}</h2>
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           {isAr ? "اختاري الباقة، وبعدها أضيفي قطعة واحدة بكل ضغطة من الأزرار تحت التصميمات. ممكن توزّعي العدد على أكتر من تصميم." : "Choose a pack, then add one piece per tap using the buttons under each design. Mix several designs in one pack."}
