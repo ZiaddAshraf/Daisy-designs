@@ -61,7 +61,7 @@ export function StickerMixPicker({ locale, tickets, labels, ticketMix, labelMix,
                 aria-label={isAr ? `عدد ${section.kind === "tickets" ? "التيكت" : "الليبل"} بتصميم ${design.arabicTitle}` : `Quantity of ${design.title} ${section.kind}`}
                 onChange={event => {
                   const nextCount = Number(event.target.value);
-                  if (Number.isInteger(nextCount) && nextCount >= 1 && nextCount <= section.count) section.change({ ...section.mix, [slug]: nextCount });
+                  if (Number.isInteger(nextCount) && nextCount >= 1 && total - count + nextCount <= section.count) section.change({ ...section.mix, [slug]: nextCount });
                 }}
                 className="w-16 rounded-lg border border-[var(--border)] bg-[var(--card)] px-2 py-2 text-center text-sm" />
               <button type="button" onClick={() => {
