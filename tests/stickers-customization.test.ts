@@ -113,6 +113,10 @@ test("a sticker pack can contain several designs with exact ticket and label tot
   const input = { design_theme: "super-cool-dino", child_name: "Omar", ticket_designs: ticketMix, label_designs: labelMix };
   const combined = validateStickerPackageCustomization(fields, input, "DD-STK-050-COMBINED");
   assert.equal(combined.success, true);
+  assert.equal(validateStickerPackageCustomization(fields, input, "DD-STK-050-COMBINED-AI").success, false);
+  const aiCombined = validateStickerPackageCustomization(fields, { ...input, custom_design_text: "صورة الطفل بأسلوب كرتوني" }, "DD-STK-050-COMBINED-AI");
+  assert.equal(aiCombined.success, true);
+  if (aiCombined.success) assert.equal(aiCombined.data?.custom_design_text, "صورة الطفل بأسلوب كرتوني");
   if (combined.success) {
     assert.deepEqual(parseStickerMix(combined.data?.ticket_designs, 20), { "kuromi-sanrio": 8, "super-cool-dino": 12 });
     assert.match(formatCustomizationValue("label_designs", combined.data?.label_designs ?? "", "ar").displayValue, /15/);

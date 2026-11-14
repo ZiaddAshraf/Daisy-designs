@@ -87,6 +87,7 @@ export function StickersCatalogClient({
   const isAr = locale === "ar";
   const [selectedPackageId, setSelectedPackageId] = useState(catalog.variants[0]?.id || "");
   const selectedPackage = catalog.variants.find(v => v.id === selectedPackageId);
+  const aiImageSelected = selectedPackage?.sku === "DD-STK-050-COMBINED-AI";
   const thermalLabelsSelected = selectedPackageId === THERMAL_LABEL_OPTION_ID;
   const product = { ...stickersData.product, price: selectedPackage?.price ?? catalog.price };
   const { toggle, has } = useWishlist();
@@ -113,7 +114,7 @@ export function StickersCatalogClient({
   const [activeKind, setActiveKind] = useState<StickerKind>("tickets");
   const packageCounts = selectedPackage ? STICKER_PACKAGE_COUNTS[selectedPackage.sku ?? ""] : undefined;
   const mixValid = Boolean(packageCounts && stickerMixTotal(ticketMix) === packageCounts.tickets && stickerMixTotal(labelMix) === packageCounts.labels);
-  const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"]);
+  const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"] || aiImageSelected);
   const currentKind: StickerKind = packageCounts?.[activeKind] ? activeKind : packageCounts?.tickets ? "tickets" : "labels";
   const primarySlug = Object.keys(ticketMix)[0] ?? Object.keys(labelMix)[0];
   const primaryDesign = product.designs.find(design => design.slug === primarySlug);
@@ -372,6 +373,7 @@ export function StickersCatalogClient({
           setLabelMix({});
           setActiveKind(counts?.tickets ? "tickets" : "labels");
         }} locale={locale} basePrice={catalog.price} />
+        {aiImageSelected && <p className="mb-3 text-sm text-teal-800 dark:text-teal-300">{isAr ? "اختيار صورة AI: اكتبي فكرتك عند استكمال بيانات الباقة، ويمكنك رفع صورة الطفل كمرجع." : "AI image option: describe your idea when completing the pack details. You can upload a child’s photo as a reference."}</p>}
         {thermalLabelsSelected && <div className="flex flex-col gap-4 rounded-2xl border border-teal-200 bg-teal-50 p-4 dark:border-teal-900 dark:bg-teal-950/30 sm:flex-row sm:items-center">
           <div className="relative aspect-[3/2] w-full shrink-0 overflow-hidden rounded-xl bg-white sm:w-48">
             <SiteImage src="/products/stickers/thermal-labels-10-pack.jpg" alt={isAr ? "ليبل حراري مخصص - ١٠ قطع" : "Custom thermal labels - 10 pack"} fill sizes="(max-width: 640px) 100vw, 192px" className="object-contain" />
@@ -783,9 +785,9 @@ export function StickersCatalogClient({
                       </p>
                     )}
                     <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium">
-                      {isAr
-                        ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا."
-                        : "Describe the artwork for the pieces you assigned to a custom design."}
+                      {aiImageSelected
+                        ? isAr ? "اكتبي شكل صورة AI المطلوب للتيكت والليبل، ويمكنك رفع صورة الطفل كمرجع." : "Describe the AI image for the tickets and labels. You can upload the child’s photo as a reference."
+                        : isAr ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا." : "Describe the artwork for the pieces you assigned to a custom design."}
                     </p>
                   </div>
                 )}

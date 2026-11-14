@@ -140,7 +140,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
   const [labelMix, setLabelMix] = useState<StickerMix>({});
   const packageCounts = selectedPackage ? STICKER_PACKAGE_COUNTS[selectedPackage.sku ?? ""] : undefined;
   const mixValid = Boolean(packageCounts && stickerMixTotal(ticketMix) === packageCounts.tickets && stickerMixTotal(labelMix) === packageCounts.labels);
-  const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"]);
+  const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"] || selectedPackage?.sku === "DD-STK-050-COMBINED-AI");
   const [phoneError, setPhoneError] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [customTextError, setCustomTextError] = useState(false);
@@ -738,6 +738,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
   setTicketMix(initialStickerMix(activeDesign.slug, counts?.tickets ?? 0));
   setLabelMix(initialStickerMix(activeDesign.slug, counts?.labels ?? 0));
 }} locale={locale} basePrice={catalog.price} />
+              {selectedPackage?.sku === "DD-STK-050-COMBINED-AI" && <p className="text-sm text-teal-800 dark:text-teal-300">{isAr ? "اختيار صورة AI: اكتبي فكرتك ويمكنك رفع صورة الطفل كمرجع." : "AI image option: describe your idea. You can upload a child’s photo as a reference."}</p>}
               {packageCounts && <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} />}
 
               {/* Custom Design Idea / Character (Shown for Custom Sticker) */}
@@ -770,9 +771,9 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     </p>
                   )}
                   <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium leading-relaxed">
-                    {isAr
-                      ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا."
-                      : "Describe the artwork for the pieces you assigned to a custom design."}
+                    {selectedPackage?.sku === "DD-STK-050-COMBINED-AI"
+                      ? isAr ? "اكتبي شكل صورة AI المطلوب للتيكت والليبل، ويمكنك رفع صورة الطفل كمرجع." : "Describe the AI image for the tickets and labels. You can upload the child’s photo as a reference."
+                      : isAr ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا." : "Describe the artwork for the pieces you assigned to a custom design."}
                   </p>
                 </div>
               )}

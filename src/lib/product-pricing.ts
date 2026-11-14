@@ -1,7 +1,9 @@
 export type PricedVariant = { id: string; sku?: string; name: string; price: number | null; stock: number; options: unknown };
-const STICKER_PACKAGE_SKUS = new Set(["DD-STK-050-COMBINED", "DD-STK-050-TICKETS", "DD-STK-050-LABELS"]);
+const STICKER_PACKAGE_ORDER = ["DD-STK-050-COMBINED", "DD-STK-050-COMBINED-AI", "DD-STK-050-TICKETS", "DD-STK-050-LABELS"];
+const STICKER_PACKAGE_SKUS = new Set(STICKER_PACKAGE_ORDER);
 export function stickerPackageVariants<V extends PricedVariant>(variants: V[]): V[] {
-  return variants.filter(variant => STICKER_PACKAGE_SKUS.has(variant.sku ?? ""));
+  return variants.filter(variant => STICKER_PACKAGE_SKUS.has(variant.sku ?? ""))
+    .sort((a, b) => STICKER_PACKAGE_ORDER.indexOf(a.sku ?? "") - STICKER_PACKAGE_ORDER.indexOf(b.sku ?? ""));
 }
 export function usesProductStock(variant?: Pick<PricedVariant, "options">) {
   return !!variant?.options && typeof variant.options === "object" && "inventory" in variant.options && variant.options.inventory === "product";

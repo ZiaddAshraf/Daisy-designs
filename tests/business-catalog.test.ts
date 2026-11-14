@@ -1,7 +1,7 @@
 import test, { mock } from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { resolveProductPrice, usesProductStock } from "../src/lib/product-pricing";
+import { resolveProductPrice, stickerPackageVariants, usesProductStock } from "../src/lib/product-pricing";
 import { cartLineId, mergeCartLine, normalizeStoredCartLine, checkoutLinePayload } from "../src/lib/cart-line-state";
 import { prisma } from "../src/lib/prisma";
 import { POST as createOrder } from "../src/app/api/orders/route";
@@ -27,6 +27,13 @@ test("packages use DB prices, require a valid selection, and share unchanged pro
   assert.throws(() => resolveProductPrice(product, "other-product-variant"), /INVALID_VARIANT/);
   assert.throws(() => resolveProductPrice({ ...product, variants: [...variants, { ...variants[0], id: "single", sku: "DD-STK-050-SINGLE" }] }, "single"), /INVALID_VARIANT/);
   assert.equal(resolveProductPrice({ ...product, variants: [{ ...variants[0], price: 321 }] }, "combined").unitPrice, 321);
+});
+
+test("AI combined pack is priced at 400 EGP and listed beside the real-photo pack", () => {
+  const aiVariant = { ...variants[0], id: "combined-ai", sku: "DD-STK-050-COMBINED-AI", name: "٢٠ تيكت + ٢٥ ليبل — صورة AI", price: 400 };
+  const pricedProduct = { ...product, variants: [...variants, aiVariant] };
+  assert.deepEqual(stickerPackageVariants([...pricedProduct.variants].reverse()).map(v => v.id), ["combined", "combined-ai", "tickets", "labels"]);
+  assert.equal(resolveProductPrice(pricedProduct, "combined-ai").unitPrice, 400);
 });
 
 test("three packages persist as distinct cart lines; merging and checkout preserve selection and quantity", () => {

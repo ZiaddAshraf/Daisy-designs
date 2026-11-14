@@ -5,6 +5,7 @@ export type StickerKind = "tickets" | "labels";
 
 export const STICKER_PACKAGE_COUNTS: Record<string, { tickets: number; labels: number }> = {
   "DD-STK-050-COMBINED": { tickets: 20, labels: 25 },
+  "DD-STK-050-COMBINED-AI": { tickets: 20, labels: 25 },
   "DD-STK-050-TICKETS": { tickets: 20, labels: 0 },
   "DD-STK-050-LABELS": { tickets: 0, labels: 25 },
 };
