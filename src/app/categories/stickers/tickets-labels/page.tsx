@@ -35,6 +35,6 @@ export default async function TicketsLabelsPage() {
       <Link href="/categories/stickers">{locale === "ar" ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains"}</Link><span>/</span>
       <span>{locale === "ar" ? "تيكت وليبل" : "Tickets & Labels"}</span>
     </nav>
-    {product ? <><ThermalLabelsCard locale={locale} /><StickersCatalogClient locale={locale} catalog={{ price: product.price, stock: product.stock, variants: stickerPackageVariants(product.variants) }} /></> : <DatabaseUnavailable messageKey="categoryUnavailable" />}
+    {product ? <StickersCatalogClient locale={locale} catalog={{ price: product.price, stock: product.stock, variants: stickerPackageVariants(product.variants) }} thermalLabelsCard={<ThermalLabelsCard locale={locale} />} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />}
   </main>;
 }

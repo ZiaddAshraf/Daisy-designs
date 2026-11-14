@@ -9,7 +9,7 @@ import { StickerMixPicker } from "@/components/sticker-mix-picker";
 import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
 import { STICKER_PACKAGE_COUNTS, serializeStickerMix, stickerMixTotal, type StickerKind, type StickerMix } from "@/lib/sticker-package-mix";
 
-import { useState, useMemo, useEffect, useRef, useCallback, type ChangeEvent, type FormEvent } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import SiteImage from "@/components/site-image";
 import {
   Search,
@@ -43,6 +43,7 @@ import type { Locale } from "@/lib/locale";
 type StickersCatalogClientProps = {
   locale: Locale;
   catalog: { price: number; stock: number; variants: PricedVariant[] };
+  thermalLabelsCard?: ReactNode;
 };
 
 // Design badges for the bottom-left arched cutout tab
@@ -79,7 +80,7 @@ type SortOption = "newest" | "price-asc" | "price-desc" | "alpha";
 type StickerDesign = (typeof stickersData.product.designs)[0];
 
 export function StickersCatalogClient({
-  locale, catalog,
+  locale, catalog, thermalLabelsCard,
 }: StickersCatalogClientProps) {
   const isAr = locale === "ar";
   const [selectedPackageId, setSelectedPackageId] = useState(catalog.variants[0]?.id || "");
@@ -387,6 +388,8 @@ export function StickersCatalogClient({
           {isAr ? "كمّلي بيانات الطلب" : "Continue to order details"}
         </button>
       </section>
+
+      {currentKind === "labels" && thermalLabelsCard}
 
       {/* 2. Top Filter & Search Bar */}
       <div className="mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
