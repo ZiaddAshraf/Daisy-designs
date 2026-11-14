@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
+import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
 import stickersData from "@/data/stickers-product.json";
 import { ProductsCatalogClient, type CatalogProductItem } from "@/components/products-catalog-client";
 
@@ -24,7 +25,10 @@ export default async function ProductsPage() {
   const isRtl = locale === "ar";
 
   let records: Awaited<ReturnType<typeof getPublishedProducts>>;
-  try { records = await getPublishedProducts(); } catch { return <main className="catalog-page"><DatabaseUnavailable /></main>; }
+  try {
+    await ensureKeychainCatalogProducts();
+    records = await getPublishedProducts();
+  } catch { return <main className="catalog-page"><DatabaseUnavailable /></main>; }
   const priceFor = (slug: string) => records.find(p => p.slug === slug)?.price ?? 0;
   // Ready-made customized storybooks
   const storySchoolProduct: CatalogProductItem = {
@@ -243,7 +247,7 @@ export default async function ProductsPage() {
     price: priceFor("custom-acrylic-name-keychain") || 70,
     priceUnit: isRtl ? "للقطعة الواحدة" : "per keychain",
     badge: isRtl ? "ميدالية مخصصة" : "Custom Keychain",
-    image: "/products/keychains/keychains-collection.jpeg",
+    image: "/products/keychains/personalized-name-tags-examples.jpg",
     description: isRtl
       ? "ميدالية أكريليك عالية الجودة ومقاومة للمية بتصميمات كرتونية وبناتي وولادي مبهجة (سبايدرمان، باربي، ستيتش، سونيك، موانا) مخصصة باسم طفلك وفصله لشنطة المدرسة والمفاتيح."
       : "High-quality durable acrylic keychain featuring fun characters (Spider-Man, Barbie, Stitch, Sonic, Moana) customized with your child's name and grade.",
@@ -264,7 +268,7 @@ export default async function ProductsPage() {
     price: priceFor("keychain-lamine-yamal") || 70,
     priceUnit: isRtl ? "للقطعة الواحدة" : "per keychain",
     badge: isRtl ? "برشلونة 19" : "Barça 19",
-    image: "/products/keychains/keychain-lamine-yamal.jpeg",
+    image: "/products/keychains/yamal-name-keychain-example.jpg",
     description: isRtl
       ? "ميدالية أكريليك كروية مميزة لعشاق نادي برشلونة وللنجم لامين يامال رقم 19، مطبوعة بجودة فائقة ومخصصة باسم طفلك بالكامل."
       : "Premium acrylic football keychain for FC Barcelona and Lamine Yamal #19 fans, personalized with your child's name.",
@@ -285,7 +289,7 @@ export default async function ProductsPage() {
     price: priceFor("keychain-cristiano-ronaldo") || 70,
     priceUnit: isRtl ? "للقطعة الواحدة" : "per keychain",
     badge: isRtl ? "ريال مدريد" : "Real Madrid",
-    image: "/products/keychains/keychain-cristiano-ronaldo.jpeg",
+    image: "/products/keychains/ronaldo-name-keychain-example.jpg",
     description: isRtl
       ? "ميدالية أكريليك أسطورية للنجم كريستيانو رونالدو مع شعار ريال مدريد والكرة الذهبية، مخصصة باسم طفلك ومقاومة للخدش والماء."
       : "Legendary acrylic keychain featuring Cristiano Ronaldo with Real Madrid crest and the Ballon d'Or, personalized with your child's name.",

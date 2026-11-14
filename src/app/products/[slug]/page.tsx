@@ -17,6 +17,7 @@ import stickersData from "@/data/stickers-product.json";
 import rewardCardsData from "@/data/reward-cards-product.json";
 import storyData from "@/data/story-product.json";
 import tshirtData from "@/data/tshirt-product.json";
+import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
 
 const PRODUCT_SLUG_ALIASES: Record<string, string> = {
     "stickers": "custom-waterproof-stickers",
@@ -149,6 +150,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         };
     }
     const resolvedSlug = PRODUCT_SLUG_ALIASES[slug] ?? slug;
+    if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo"].includes(resolvedSlug)) {
+        try { await ensureKeychainCatalogProducts(); }
+        catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
+    }
     try {
         const product = await getPublishedProduct(resolvedSlug);
         if (product) {
@@ -194,6 +199,9 @@ export default async function ProductPage({
     let product: Awaited<ReturnType<typeof getPublishedProduct>> | CoreFallbackProduct | null = null;
     let unavailable = false;
     try {
+        if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo"].includes(resolvedSlug)) {
+            await ensureKeychainCatalogProducts();
+        }
         product = await getPublishedProduct(resolvedSlug);
     } catch (error) {
         if (isDatabaseUnavailable(error)) unavailable = true;

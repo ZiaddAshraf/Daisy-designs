@@ -320,7 +320,7 @@ export async function ensureCatalogProductInTransaction(
           tags: ["keychains", "ميداليات", "Daisy Designs", "أطفال"],
           images: {
             create: [
-              { position: 0, url: "/products/keychains/keychains-collection.jpeg", alt: "Custom Acrylic Keychain Collection" },
+              { position: 0, url: "/products/keychains/personalized-name-tags-examples.jpg", alt: "Custom Acrylic Keychain Collection" },
             ],
           },
           customizationFields: {
@@ -353,7 +353,7 @@ export async function ensureCatalogProductInTransaction(
           tags: ["keychains", "ميداليات", "Daisy Designs", "برشلونة", "يامال"],
           images: {
             create: [
-              { position: 0, url: "/products/keychains/keychain-lamine-yamal.jpeg", alt: "Lamine Yamal Keychain" },
+              { position: 0, url: "/products/keychains/yamal-name-keychain-example.jpg", alt: "Lamine Yamal Keychain" },
             ],
           },
           customizationFields: {
@@ -385,7 +385,7 @@ export async function ensureCatalogProductInTransaction(
           tags: ["keychains", "ميداليات", "Daisy Designs", "ريال مدريد", "رونالدو"],
           images: {
             create: [
-              { position: 0, url: "/products/keychains/keychain-cristiano-ronaldo.jpeg", alt: "Cristiano Ronaldo Keychain" },
+              { position: 0, url: "/products/keychains/ronaldo-name-keychain-example.jpg", alt: "Cristiano Ronaldo Keychain" },
             ],
           },
           customizationFields: {
@@ -415,6 +415,50 @@ export async function ensureCoreCatalogProducts(): Promise<void> {
       });
     } catch {
       // Non-blocking self-heal
+    }
+  }
+}
+
+const KEYCHAIN_SLUGS = [
+  "custom-acrylic-name-keychain",
+  "keychain-lamine-yamal",
+  "keychain-cristiano-ronaldo",
+] as const;
+
+const KEYCHAIN_IMAGES: Record<(typeof KEYCHAIN_SLUGS)[number], string> = {
+  "custom-acrylic-name-keychain": "/products/keychains/personalized-name-tags-examples.jpg",
+  "keychain-lamine-yamal": "/products/keychains/yamal-name-keychain-example.jpg",
+  "keychain-cristiano-ronaldo": "/products/keychains/ronaldo-name-keychain-example.jpg",
+};
+
+export async function ensureKeychainCatalogProducts(): Promise<void> {
+  const existing = await prisma.product.findMany({
+    where: { slug: { in: [...KEYCHAIN_SLUGS] } },
+    select: { id: true, slug: true, published: true, images: { orderBy: { position: "asc" }, take: 1, select: { id: true, url: true } } },
+  });
+  const existingBySlug = new Map(existing.map((product) => [product.slug, product]));
+  for (const slug of KEYCHAIN_SLUGS) {
+    const product = existingBySlug.get(slug);
+    if (product) {
+      if (!product.published) {
+        await prisma.product.update({ where: { id: product.id }, data: { published: true } });
+      }
+      const image = product.images[0];
+      if (image?.url !== KEYCHAIN_IMAGES[slug]) {
+        if (image) {
+          await prisma.productImage.update({ where: { id: image.id }, data: { url: KEYCHAIN_IMAGES[slug] } });
+        } else {
+          await prisma.productImage.create({ data: { productId: product.id, position: 0, url: KEYCHAIN_IMAGES[slug], alt: product.slug } });
+        }
+      }
+      continue;
+    }
+    try {
+      await prisma.$transaction((tx) => ensureCatalogProductInTransaction(slug, tx));
+    } catch (error) {
+      // Another request may have created this product at the same time.
+      const created = await prisma.product.findUnique({ where: { slug } });
+      if (!created) throw error;
     }
   }
 }
