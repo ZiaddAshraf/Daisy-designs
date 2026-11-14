@@ -66,6 +66,7 @@ export function ProductsCatalogClient({
       "customized-stories": initialProducts.filter((p) => p.categoryId === "customized-stories").length,
       "reward-cards": initialProducts.filter((p) => p.categoryId === "reward-cards").length,
       stickers: initialProducts.filter((p) => p.categoryId === "stickers").length,
+      keychains: initialProducts.filter((p) => p.categoryId === "keychains").length,
       "printed-t-shirts": initialProducts.filter((p) => p.categoryId === "printed-t-shirts").length,
     };
   }, [initialProducts]);
@@ -96,6 +97,7 @@ export function ProductsCatalogClient({
     { id: "customized-stories", label: translations.storiesFilter, count: counts["customized-stories"] },
     { id: "reward-cards", label: translations.cardsFilter, count: counts["reward-cards"] },
     { id: "stickers", label: translations.stickersFilter, count: counts.stickers },
+    { id: "keychains", label: isRtl ? "ميداليات" : "Keychains", count: counts.keychains },
     { id: "printed-t-shirts", label: translations.tshirtsFilter || (isRtl ? "تيشيرتات" : "T-Shirts"), count: counts["printed-t-shirts"] },
   ];
 

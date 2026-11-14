@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
-import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
+import { ensureKeychainCategory } from "@/lib/ensure-keychain-category";
 import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
 import stickersData from "@/data/stickers-product.json";
 import { ProductsCatalogClient, type CatalogProductItem } from "@/components/products-catalog-client";
@@ -27,7 +27,7 @@ export default async function ProductsPage() {
 
   let records: Awaited<ReturnType<typeof getPublishedProducts>>;
   try {
-    await ensureKeychainCatalogProducts();
+    await ensureKeychainCategory();
     await ensureStickerPackages();
     records = await getPublishedProducts();
   } catch { return <main className="catalog-page"><DatabaseUnavailable /></main>; }
@@ -198,7 +198,7 @@ export default async function ProductsPage() {
     subtitle: isRtl
       ? "شيت استيكرات مخصص باسم طفلك ومقاوم للمية"
       : "Personalized Waterproof Sheet",
-    category: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
+    category: isRtl ? "تيكت وليبل" : "Tickets & Labels",
     categoryId: "stickers",
     price: priceFor("custom-waterproof-stickers"),
     priceUnit: isRtl ? "للباقة المجمعة" : "combined pack",
@@ -244,8 +244,8 @@ export default async function ProductsPage() {
     href: "/products/custom-acrylic-name-keychain",
     title: isRtl ? "ميدالية اسم مخصصة (أشكال متعددة)" : "Custom Acrylic Name Keychain (Assorted)",
     subtitle: isRtl ? "ميدالية أكريليك متينة ومقاومة للماء للشنطة والمفاتيح" : "Personalized Acrylic Keychain for Bags & Keys",
-    category: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
-    categoryId: "stickers",
+    category: isRtl ? "ميداليات مخصصة" : "Personalized Keychains",
+    categoryId: "keychains",
     price: priceFor("custom-acrylic-name-keychain") || 70,
     priceUnit: isRtl ? "للقطعة الواحدة" : "per keychain",
     badge: isRtl ? "ميدالية مخصصة" : "Custom Keychain",
@@ -265,8 +265,8 @@ export default async function ProductsPage() {
     href: "/products/keychain-lamine-yamal",
     title: isRtl ? "ميدالية لامين يامال - برشلونة مخصصة بالاسم" : "Lamine Yamal FC Barcelona Custom Keychain",
     subtitle: isRtl ? "ميدالية أكريليك رقم 19 بتصميم لامين يامال وبرشلونة" : "Custom Lamine Yamal #19 Acrylic Keychain",
-    category: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
-    categoryId: "stickers",
+    category: isRtl ? "ميداليات مخصصة" : "Personalized Keychains",
+    categoryId: "keychains",
     price: priceFor("keychain-lamine-yamal") || 70,
     priceUnit: isRtl ? "للقطعة الواحدة" : "per keychain",
     badge: isRtl ? "برشلونة 19" : "Barça 19",
@@ -286,8 +286,8 @@ export default async function ProductsPage() {
     href: "/products/keychain-cristiano-ronaldo",
     title: isRtl ? "ميدالية كريستيانو رونالدو - الكرة الذهبية مخصصة بالاسم" : "Cristiano Ronaldo Ballon d'Or Custom Keychain",
     subtitle: isRtl ? "ميدالية أكريليك فاخرة بشعار ريال مدريد والكرة الذهبية" : "Cristiano Ronaldo Real Madrid Acrylic Keychain",
-    category: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
-    categoryId: "stickers",
+    category: isRtl ? "ميداليات مخصصة" : "Personalized Keychains",
+    categoryId: "keychains",
     price: priceFor("keychain-cristiano-ronaldo") || 70,
     priceUnit: isRtl ? "للقطعة الواحدة" : "per keychain",
     badge: isRtl ? "ريال مدريد" : "Real Madrid",
@@ -371,7 +371,7 @@ export default async function ProductsPage() {
     products: t("products"),
     searchPlaceholder: isRtl ? "ابحث باسم المنتج أو التصميم..." : "Search by product or design name...",
     allFilter: isRtl ? "كل المنتجات" : "All Products",
-    stickersFilter: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
+    stickersFilter: isRtl ? "تيكت وليبل" : "Tickets & Labels",
     storiesFilter: isRtl ? "قصص مخصصة" : "Customized Stories",
     cardsFilter: isRtl ? "كروت التشجيع" : "Reward Cards",
     tshirtsFilter: isRtl ? "تيشيرتات (كبار وأطفال)" : "T-Shirts (Adults & Kids)",

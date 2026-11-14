@@ -6,7 +6,6 @@ import { formatCustomizationValue } from "@/lib/customization-formatter";
 
 import { PackageSelector } from "@/components/package-selector";
 import { StickerMixPicker } from "@/components/sticker-mix-picker";
-import { KeychainExamples } from "@/components/keychain-examples";
 import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
 import { STICKER_PACKAGE_COUNTS, serializeStickerMix, stickerMixTotal, type StickerKind, type StickerMix } from "@/lib/sticker-package-mix";
 
@@ -334,17 +333,17 @@ export function StickersCatalogClient({
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 dark:text-teal-400 mb-1.5">
             <TinyDaisyDoodle size={13} className="text-teal-600 dark:text-teal-400" />
-            <span>DAISY DESIGNS / {isAr ? "تيكت وليبل وميدالية" : "TICKETS, LABELS & KEYCHAINS"}</span>
+            <span>DAISY DESIGNS / {isAr ? "تيكت وليبل" : "TICKETS & LABELS"}</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[var(--foreground)]">
-            {isAr ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains"}
+            {isAr ? "تيكت وليبل" : "Tickets & Labels"}
           </h1>
 
           <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 max-w-xl">
             {isAr
-              ? "تيكت وليبل باسم طفلك، وميداليات مخصصة للشنطة والمفاتيح."
-              : "Personalized tickets and labels, plus custom keychains for bags and keys."}
+              ? "تيكت وليبل باسم طفلك ومدرسته بتصميمات متنوعة."
+              : "Personalized tickets and labels in your favorite designs."}
           </p>
         </div>
 
@@ -356,18 +355,7 @@ export function StickersCatalogClient({
         </div>
       </section>
 
-      <nav className="mb-5 flex flex-wrap gap-2" aria-label={isAr ? "اختاري القسم" : "Choose section"}>
-        <a href="#keychain-examples" className="rounded-full bg-teal-700 px-4 py-2.5 text-sm font-extrabold text-white transition-colors hover:bg-teal-800">
-          {isAr ? "شوّفي الميداليات" : "Shop keychains"}
-        </a>
-        <a href="#sticker-builder" className="rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2.5 text-sm font-extrabold transition-colors hover:border-teal-600">
-          {isAr ? "كوّني باقة التيكت والليبل" : "Build tickets & labels"}
-        </a>
-      </nav>
-
-      <KeychainExamples locale={locale} />
-
-      <section id="sticker-builder" className="mb-6 scroll-mt-24 rounded-3xl border border-teal-200 bg-[var(--card)] p-4 sm:p-6 shadow-sm dark:border-teal-900" aria-label={isAr ? "كوّني باقة التيكت والليبل" : "Build your ticket and label pack"}>
+      <section className="mb-6 rounded-3xl border border-teal-200 bg-[var(--card)] p-4 sm:p-6 shadow-sm dark:border-teal-900" aria-label={isAr ? "كوّني باقة التيكت والليبل" : "Build your ticket and label pack"}>
         <h2 className="text-lg sm:text-xl font-extrabold">{isAr ? "كوّني باقتك من التصميمات اللي تحت" : "Build your pack from the designs below"}</h2>
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           {isAr ? "اختاري الباقة، وبعدها أضيفي قطعة واحدة بكل ضغطة من الأزرار تحت التصميمات. ممكن توزّعي العدد على أكتر من تصميم." : "Choose a pack, then add one piece per tap using the buttons under each design. Mix several designs in one pack."}

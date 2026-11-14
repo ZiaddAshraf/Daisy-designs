@@ -20,9 +20,10 @@ import {
 import { Info } from "lucide-react";
 import { RewardCardsPreview } from "@/components/reward-cards-preview";
 import { StickersCatalogClient } from "@/components/stickers-catalog-client";
+import { KeychainExamples } from "@/components/keychain-examples";
 import { StoryBookPreview } from "@/components/story-book-preview";
 import { TShirtPreview } from "@/components/tshirt-preview";
-import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
+import { ensureKeychainCategory } from "@/lib/ensure-keychain-category";
 import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
 import { stickerPackageVariants } from "@/lib/product-pricing";
 
@@ -53,7 +54,11 @@ export default async function CategoryPage({ params, searchParams }: { params: P
   const Arrow = isRtl ? ArrowLeft : ArrowRight;
   const { slug } = await params;
   if (slug === "stickers" || slug === "school-stickers") {
-    try { await ensureKeychainCatalogProducts(); await ensureStickerPackages(); }
+    try { await ensureStickerPackages(); }
+    catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
+  }
+  if (slug === "keychains") {
+    try { await ensureKeychainCategory(); }
     catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
   }
   const filters = normalizeFilters(await searchParams);
@@ -120,7 +125,7 @@ export default async function CategoryPage({ params, searchParams }: { params: P
         <span>{categoryName}</span>
       </nav>
 
-      {slug !== "reward-cards" && slug !== "stickers" && slug !== "school-stickers" && slug !== "customized-stories" && slug !== "stories" && slug !== "printed-t-shirts" && slug !== "t-shirts" && slug !== "tshirts" && (
+      {slug !== "reward-cards" && slug !== "stickers" && slug !== "school-stickers" && slug !== "keychains" && slug !== "customized-stories" && slug !== "stories" && slug !== "printed-t-shirts" && slug !== "t-shirts" && slug !== "tshirts" && (
         <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning>
           <div>
             <p className="eyebrow">DAISY DESIGNS / {t("categoryLabel")}</p>
@@ -139,6 +144,8 @@ export default async function CategoryPage({ params, searchParams }: { params: P
 
       {slug === "reward-cards" ? (
         <RewardCardsPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
+      ) : slug === "keychains" ? (
+        <KeychainExamples locale={locale} />
       ) : slug === "stickers" || slug === "school-stickers" ? (
         specialProduct ? <StickersCatalogClient locale={locale} catalog={{ price: specialProduct.price, stock: specialProduct.stock, variants: stickerPackageVariants(specialProduct.variants) }} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />
       ) : slug === "customized-stories" || slug === "stories" ? (

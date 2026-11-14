@@ -20,6 +20,7 @@ type CategoryCardProps = {
 
 const CATEGORY_IMAGES: Record<string, string> = {
   "stickers": "/products/stickers/tickets-labels-studio.jpeg",
+  "keychains": "/products/keychains/keychains-collection.jpeg",
   "reward-cards": "/products/reward-cards/reward-cards-box-set.jpeg",
   "customized-stories": "/products/customized-stories/first-year-at-school/cover.jpeg",
   "printed-t-shirts": "/products/t-shirts/kids-tshirt-studio.jpeg",
@@ -27,8 +28,12 @@ const CATEGORY_IMAGES: Record<string, string> = {
 
 const SHORT_SUBTITLES: Record<string, { ar: string; en: string }> = {
   "stickers": {
-    ar: "استيكرات وميداليات مقاومة للماء",
-    en: "Waterproof labels & keychains",
+    ar: "تيكت وليبل باسم طفلك",
+    en: "Personalized tickets & labels",
+  },
+  "keychains": {
+    ar: "ميداليات للشنط والمفاتيح",
+    en: "Name keychains for bags & keys",
   },
   "reward-cards": {
     ar: "١٠ كروت تحفيزية بعلبة أنيقة",
