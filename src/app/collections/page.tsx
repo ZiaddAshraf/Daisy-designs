@@ -9,6 +9,9 @@ import { formatMessage, getTranslation } from "@/lib/i18n/messages";
 import { formatLocaleNumber } from "@/lib/locale";
 import { getRequestLocale } from "@/lib/locale-server";
 import { isDatabaseUnavailable } from "@/lib/prisma";
+import { CategoryCard } from "@/components/category-card";
+import { getStoreCategories } from "@/lib/store-categories";
+import "../categories/categories.css";
 
 type Collection = { id: string; name: string; slug: string; description: string | null; image: string | null; _count: { products: number } };
 export const dynamic = "force-dynamic";
@@ -25,10 +28,17 @@ export default async function CollectionsPage() {
   catch (error) { if (isDatabaseUnavailable(error)) unavailable = true; else throw error; }
   if (unavailable) return <main className="catalog-page"><DatabaseUnavailable messageKey="collectionsUnavailable" /></main>;
   const t = (key: "collections" | "collectionsHeading" | "collectionsIntro" | "noCollections" | "browseProductsLink" | "productCount" | "exploreCollection" | "breadcrumb") => getTranslation(locale, key);
+  if (!collections.length) return <main className="catalog-page category-directory">
+    <nav className="catalog-breadcrumb" aria-label={t("breadcrumb")}><Link href="/">{getTranslation(locale, "home")}</Link><span aria-hidden="true">/</span><span aria-current="page">{t("collections")}</span></nav>
+    <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning><h1>{getTranslation(locale, "categoriesHeading")}</h1></header>
+    <div className="store-category-grid" data-scroll-reveal-stagger>{getStoreCategories().map((category, index) =>
+      <CategoryCard key={category.id} category={category} locale={locale} index={index} showNotice={false} showDescription={false} clearPhotography={true} headingTag="h2" />
+    )}</div>
+  </main>;
   return <main className="catalog-page collections-page">
     <nav className="catalog-breadcrumb" aria-label={t("breadcrumb")}><Link href="/">{getTranslation(locale, "home")}</Link><span aria-hidden="true">/</span><span aria-current="page">{t("collections")}</span></nav>
     <header className="collections-intro" data-scroll-reveal suppressHydrationWarning><div><p className="eyebrow">DAISY DESIGNS / {t("collections")}</p><h1>{t("collectionsHeading")}</h1></div></header>
-    {collections.length ? <div className="collections-grid" data-scroll-reveal-stagger>{collections.map(collection => {
+    <div className="collections-grid" data-scroll-reveal-stagger>{collections.map(collection => {
       const name = collectionTextForLocale(collection.name, locale) ?? collection.name;
       const image = collectionCover(collection.image, collection.slug);
       const isBrandCover = image === PRODUCT_IMAGE_PLACEHOLDER;
@@ -40,6 +50,6 @@ export default async function CollectionsPage() {
           <div className="collection-card__footer"><span>{formatMessage(t("productCount"), { count: formatLocaleNumber(locale, collection._count.products) })}</span><span className="collection-card__cta">{t("exploreCollection")}</span></div>
         </div>
       </Link>;
-    })}</div> : <section className="catalog-empty" data-scroll-reveal suppressHydrationWarning><h2>{t("noCollections")}</h2><Link href="/products" className="daisy-button daisy-button--dark">{t("browseProductsLink")}</Link></section>}
+    })}</div>
   </main>;
 }
