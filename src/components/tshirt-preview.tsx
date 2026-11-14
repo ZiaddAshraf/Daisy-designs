@@ -258,14 +258,6 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
               )}
             </div>
 
-            {/* Bottom Disclaimer */}
-            <div className="absolute bottom-4 inset-x-4 z-20 text-center">
-              <span className="inline-block rounded-full bg-white/85 px-4 py-1 text-[11px] font-medium text-slate-500 shadow-2xs backdrop-blur-xs border border-slate-200/50 dark:bg-neutral-900/85 dark:text-neutral-400 dark:border-neutral-800">
-                {isAr
-                  ? "معاينة تقريبية على منتصف الصدر — التصميم النهائي يخضع لتنسيق فريق العمل"
-                  : "Approximate preview on center chest — final proof confirmed with our team"}
-              </span>
-            </div>
           </div>
 
           {/* Color Switcher Quick Row Under Mockup */}
@@ -310,9 +302,6 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-neutral-100 tracking-tight">
               {isAr ? product.arabicName : product.name}
             </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-neutral-400 leading-relaxed">
-              {isAr ? product.arabicDescription : product.description}
-            </p>
           </div>
 
           {/* Pricing & Prep SLA Card */}
@@ -568,15 +557,6 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
               </div>
             </div>
 
-            {/* Manual Review & WhatsApp Communication Banner */}
-            <div className="flex items-start gap-2.5 rounded-xl border border-teal-100 bg-teal-50/60 p-3 text-xs leading-relaxed text-teal-900 dark:border-teal-900/40 dark:bg-teal-950/30 dark:text-teal-200">
-              <MessageCircle size={16} className="text-teal-600 dark:text-teal-400 shrink-0 mt-0.5" />
-              <p>
-                {isAr
-                  ? "ملاحظة هامة وتأكيد الطلب: طلبات الطباعة المخصصة لا تتم برمجتها آلياً. يقوم فريق المتجر بمراجعة كل طلب بدقة للتأكد من جودة الصورة، وسنتواصل معكم هاتفياً أو عبر الواتساب لتأكيد الشكل النهائي قبل بدء الطباعة."
-                  : "Important Notice: Custom print orders are not automatically converted. Our team manually reviews every request for print viability and contacts you via WhatsApp to confirm the final proof before printing."}
-              </p>
-            </div>
           </div>
 
           <CustomizationReview isAr={isAr} editTarget="tshirt-design-text" rows={[
