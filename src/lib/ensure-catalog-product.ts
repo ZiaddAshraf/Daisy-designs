@@ -309,7 +309,7 @@ export async function ensureCatalogProductInTransaction(
           arabicName: "ميدالية اسم مخصصة (أشكال متعددة)",
           description: "Durable waterproof custom acrylic keychain with your child's name for school backpacks and keys.",
           arabicDescription: "ميدالية أكريليك متينة ومقاومة للماء مخصصة باسم طفلك والشخصية المفضلة للحقائب المدرسية والمفاتيح.",
-          price: 70,
+          price: 80,
           sku: "DD-KC-001",
           stock: 100,
           lowStockThreshold: 10,
@@ -342,7 +342,7 @@ export async function ensureCatalogProductInTransaction(
           arabicName: "ميدالية لامين يامال - برشلونة مخصصة بالاسم",
           description: "Custom acrylic keychain featuring Lamine Yamal (Barcelona #19) personalized with your child's name.",
           arabicDescription: "ميدالية أكريليك مميزة بتصميم لامين يامال ونادي برشلونة رقم 19، مخصصة باسم طفلك بجودة طباعة فائقة ومقاومة للماء.",
-          price: 70,
+          price: 80,
           sku: "DD-KC-002",
           stock: 100,
           lowStockThreshold: 10,
@@ -374,7 +374,7 @@ export async function ensureCatalogProductInTransaction(
           arabicName: "ميدالية كريستيانو رونالدو - الكرة الذهبية مخصصة بالاسم",
           description: "Luxury custom acrylic keychain featuring Cristiano Ronaldo with Ballon d'Or and Real Madrid logo, personalized with child's name.",
           arabicDescription: "ميدالية أكريليك فاخرة للأسطورة كريستيانو رونالدو بشعار ريال مدريد والكرة الذهبية، مخصصة باسم طفلك.",
-          price: 70,
+          price: 80,
           sku: "DD-KC-003",
           stock: 100,
           lowStockThreshold: 10,
@@ -434,14 +434,14 @@ const KEYCHAIN_IMAGES: Record<(typeof KEYCHAIN_SLUGS)[number], string> = {
 export async function ensureKeychainCatalogProducts(): Promise<void> {
   const existing = await prisma.product.findMany({
     where: { slug: { in: [...KEYCHAIN_SLUGS] } },
-    select: { id: true, slug: true, published: true, images: { orderBy: { position: "asc" }, take: 1, select: { id: true, url: true } } },
+    select: { id: true, slug: true, price: true, published: true, images: { orderBy: { position: "asc" }, take: 1, select: { id: true, url: true } } },
   });
   const existingBySlug = new Map(existing.map((product) => [product.slug, product]));
   for (const slug of KEYCHAIN_SLUGS) {
     const product = existingBySlug.get(slug);
     if (product) {
-      if (!product.published) {
-        await prisma.product.update({ where: { id: product.id }, data: { published: true } });
+      if (!product.published || product.price !== 80) {
+        await prisma.product.update({ where: { id: product.id }, data: { published: true, price: 80 } });
       }
       const image = product.images[0];
       if (image?.url !== KEYCHAIN_IMAGES[slug]) {

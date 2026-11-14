@@ -30,7 +30,7 @@ async function main() {
       arabicName: "ميدالية اسم مخصصة (أشكال متعددة)",
       description: "Durable waterproof custom acrylic keychain with your child's name for school backpacks and keys.",
       arabicDescription: "ميدالية أكريليك متينة ومقاومة للماء مخصصة باسم طفلك والشخصية المفضلة للحقائب المدرسية والمفاتيح.",
-      price: 70,
+      price: 80,
       stock: 100,
       image: "/products/keychains/keychains-collection.jpeg",
       fields: [
@@ -45,7 +45,7 @@ async function main() {
       arabicName: "ميدالية لامين يامال - برشلونة مخصصة بالاسم",
       description: "Custom acrylic keychain featuring Lamine Yamal (Barcelona #19) personalized with your child's name.",
       arabicDescription: "ميدالية أكريليك مميزة بتصميم لامين يامال ونادي برشلونة رقم 19، مخصصة باسم طفلك بجودة طباعة فائقة ومقاومة للماء.",
-      price: 70,
+      price: 80,
       stock: 100,
       image: "/products/keychains/keychain-lamine-yamal.jpeg",
       fields: [
@@ -59,7 +59,7 @@ async function main() {
       arabicName: "ميدالية كريستيانو رونالدو - الكرة الذهبية مخصصة بالاسم",
       description: "Luxury custom acrylic keychain featuring Cristiano Ronaldo with Ballon d'Or and Real Madrid logo, personalized with child's name.",
       arabicDescription: "ميدالية أكريليك فاخرة للأسطورة كريستيانو رونالدو بشعار ريال مدريد والكرة الذهبية، مخصصة باسم طفلك.",
-      price: 70,
+      price: 80,
       stock: 100,
       image: "/products/keychains/keychain-cristiano-ronaldo.jpeg",
       fields: [
