@@ -83,7 +83,6 @@ export function StickersCatalogClient({
   const [selectedPackageId, setSelectedPackageId] = useState(catalog.variants[0]?.id || "");
   const selectedPackage = catalog.variants.find(v => v.id === selectedPackageId);
   const product = { ...stickersData.product, price: selectedPackage?.price ?? catalog.price };
-  const startingPrice = catalog.variants.length ? Math.min(...catalog.variants.map(v => v.price ?? catalog.price)) : catalog.price;
   const { toggle, has } = useWishlist();
   const { add } = useCart();
 
@@ -329,9 +328,9 @@ export function StickersCatalogClient({
         <div className="flex items-center gap-2.5 shrink-0">
           <div className="inline-flex items-center gap-2 rounded-xl bg-teal-600 dark:bg-teal-500 text-white px-3.5 py-2 text-xs sm:text-sm font-extrabold shadow-xs">
             <Tag size={14} className="shrink-0" />
-            <strong className="text-sm sm:text-base">{formatPrice(startingPrice, locale)}</strong>
+            <strong className="text-sm sm:text-base">{formatPrice(catalog.price, locale)}</strong>
             <span className="font-normal text-teal-100 text-[11px] sm:text-xs">
-              {isAr ? "تبدأ من / للباقة" : "from / pack"}
+              {isAr ? "للباقة المجمعة" : "combined pack"}
             </span>
           </div>
 
@@ -571,10 +570,10 @@ export function StickersCatalogClient({
                   {/* Database package price */}
                   <div className="text-start">
                     <span className="text-[11px] text-[var(--muted-foreground)] block">
-                      {isAr ? "الباقات تبدأ من" : "Packages from"}
+                      {isAr ? "الباقة المجمعة" : "Combined pack"}
                     </span>
                     <strong className="text-base sm:text-lg font-black text-teal-700 dark:text-teal-400">
-                      {formatPrice(startingPrice, locale)}
+                      {formatPrice(catalog.price, locale)}
                     </strong>
                   </div>
 

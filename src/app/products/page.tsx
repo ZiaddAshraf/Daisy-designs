@@ -200,8 +200,8 @@ export default async function ProductsPage() {
       : "Personalized Waterproof Sheet",
     category: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
     categoryId: "stickers",
-    price: 150,
-    priceUnit: isRtl ? "تبدأ من / للباقة" : "starting price per pack",
+    price: priceFor("custom-waterproof-stickers"),
+    priceUnit: isRtl ? "للباقة المجمعة" : "combined pack",
     badge: isRtl ? `${design.arabicThemeGroup}` : `${design.themeGroup}`,
     image: design.url,
     description: isRtl
