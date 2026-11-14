@@ -39,6 +39,20 @@ type TShirtPreviewProps = {
 
 type GarmentColor = "white" | "black" | "gray";
 
+const tshirtExamples = [
+  { file: "super-family-set", ar: "تيشيرتات سوبر موم وسوبر داد للأطفال والعائلة", en: "Super Mom and Super Dad family T-shirts" },
+  { file: "super-dad-set", ar: "تيشيرتات سوبر داد بأسماء الأطفال", en: "Super Dad T-shirts with children's names" },
+  { file: "birthday-boy-family", ar: "طقم عيد ميلاد للأب والأم والطفل", en: "Birthday family T-shirt set" },
+  { file: "birthday-boy-raglan", ar: "تيشيرتات عيد ميلاد للأم والطفل", en: "Birthday T-shirts for mom and child" },
+  { file: "birthday-boy-black", ar: "طقم عيد ميلاد أسود للعائلة", en: "Black birthday family T-shirt set" },
+  { file: "spiderman-birthday-family", ar: "تيشيرتات عيد ميلاد بطباعة الأبطال الخارقين", en: "Superhero birthday T-shirt set" },
+  { file: "boss-family-set", ar: "تيشيرتات بوس مان للعائلة", en: "Boss Man family T-shirt set" },
+  { file: "dad-mom-baby", ar: "تيشيرتات داد وموم وبيبي", en: "Dad, Mom and Baby T-shirts" },
+  { file: "copy-paste-dad-baby", ar: "تيشيرتات متناسقة للأب والطفل", en: "Matching dad and baby T-shirts" },
+  { file: "pizza-family", ar: "تيشيرتات بيتزا متناسقة للعائلة", en: "Matching pizza family T-shirts" },
+  { file: "family-names-black", ar: "تيشيرتات سوداء بأسماء أفراد العائلة", en: "Black family name T-shirts" },
+];
+
 export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewProps) {
   const router = useRouter();
   const isAr = locale === "ar";
@@ -705,6 +719,44 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
           </div>
         </div>
       </div>
+
+      <section className="mt-12 border-t border-slate-200 pt-9 dark:border-neutral-800" aria-labelledby="tshirt-examples-heading">
+        <div className="mb-6 max-w-2xl">
+          <h2 id="tshirt-examples-heading" className="text-xl font-extrabold text-slate-900 dark:text-neutral-100 sm:text-2xl">
+            {isAr ? "أمثلة لتصميمات التيشيرتات" : "T-Shirt Design Examples"}
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-neutral-400">
+            {isAr
+              ? "أفكار للطباعة للعائلة والأطفال. ابعتي تصميمك أو اكتبي فكرتك، وهنأكد معاكي الشكل النهائي قبل الطباعة."
+              : "Ideas for family and kids' prints. Upload your design or describe your idea, and we'll confirm the final artwork before printing."}
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
+          {tshirtExamples.map((example) => (
+            <a
+              key={example.file}
+              href={`/products/t-shirts/examples/${example.file}.jpeg`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 dark:border-neutral-800 dark:bg-neutral-900"
+              aria-label={isAr ? `عرض صورة ${example.ar} بحجم أكبر` : `View larger image: ${example.en}`}
+            >
+              <div className="relative aspect-square overflow-hidden bg-slate-100 dark:bg-neutral-800">
+                <Image
+                  src={`/products/t-shirts/examples/${example.file}.jpeg`}
+                  alt={isAr ? example.ar : example.en}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  className="object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <p className="px-3 py-2.5 text-xs font-semibold leading-snug text-slate-700 dark:text-neutral-200">
+                {isAr ? example.ar : example.en}
+              </p>
+            </a>
+          ))}
+        </div>
+      </section>
 
       {/* Accessible Size Guide Modal */}
       <TShirtSizeGuideModal
