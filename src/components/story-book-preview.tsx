@@ -662,7 +662,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
             <div className="sb-fact">
               <span className="sb-fact__label">{isAr ? "المقاس والغلاف" : "Specs"}</span>
               <span className="sb-fact__detail">
-                {isAr ? "مقاس A4 فاخر مع غلاف متين وطباعة كوشيه" : "A4 softcover with premium print"}
+                {isAr ? "مقاس A5 ‏(١٤٫٨ × ٢١ سم) مع غلاف متين وطباعة كوشيه" : "A5 (148 × 210 mm) softcover with premium print"}
               </span>
             </div>
 
@@ -1419,7 +1419,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
                 </p>
 
                 <div className="mt-4 pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
-                  <span>{isAr ? "طباعة ورقية فاخرة A4" : "A4 Premium Print"}</span>
+                  <span>{isAr ? "طباعة ورقية فاخرة A5" : "A5 Premium Print"}</span>
                   <span>{isAr ? "١٠ صفحات ملونة كاملة" : "10 Color Pages"}</span>
                 </div>
               </div>
