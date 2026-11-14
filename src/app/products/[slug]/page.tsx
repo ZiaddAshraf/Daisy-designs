@@ -18,6 +18,8 @@ import rewardCardsData from "@/data/reward-cards-product.json";
 import storyData from "@/data/story-product.json";
 import tshirtData from "@/data/tshirt-product.json";
 import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
+import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
+import { stickerPackageVariants } from "@/lib/product-pricing";
 
 const PRODUCT_SLUG_ALIASES: Record<string, string> = {
     "stickers": "custom-waterproof-stickers",
@@ -199,6 +201,7 @@ export default async function ProductPage({
     let product: Awaited<ReturnType<typeof getPublishedProduct>> | CoreFallbackProduct | null = null;
     let unavailable = false;
     try {
+        if (resolvedSlug === "custom-waterproof-stickers") await ensureStickerPackages();
         if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo"].includes(resolvedSlug)) {
             await ensureKeychainCatalogProducts();
         }
@@ -247,7 +250,7 @@ export default async function ProductPage({
                 <span>/</span>
                 <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
             </nav>
-            {"price" in product && <StickersPreview locale={locale} catalog={{ price: product.price, stock: product.stock, variants: product.variants }} />}
+            {"price" in product && <StickersPreview locale={locale} catalog={{ price: product.price, stock: product.stock, variants: stickerPackageVariants(product.variants) }} />}
         </main>;
     }
 

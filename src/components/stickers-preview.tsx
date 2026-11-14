@@ -98,8 +98,8 @@ const CRAFTSMANSHIP = [
     icon: Palette,
     titleAr: "اختاري محتويات الباقة",
     titleEn: "Choose your package",
-    descAr: "٢٥ تيكت + ٣٠ ليبل، أو ٢٥ تيكت فقط، أو ٣٠ ليبل فقط.",
-    descEn: "25 tickets + 30 labels, 25 tickets only, or 30 labels only.",
+    descAr: "٢٠ تيكت + ٢٥ ليبل بـ٣٠٠ جنيه، أو ٢٠ تيكت بـ١٥٠ جنيه، أو ٢٥ ليبل بـ١٥٠ جنيه.",
+    descEn: "20 tickets + 25 labels for EGP 300, or a pack of 20 tickets or 25 labels for EGP 150.",
   },
 ];
 
@@ -111,6 +111,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
     ? (catalog.variants.find(v => v.id === selectedPackageId) || catalog.variants[0])
     : undefined;
   const product = { ...stickersData.product, price: selectedPackage?.price ?? catalog.price };
+  const startingPrice = catalog.variants.length ? Math.min(...catalog.variants.map(v => v.price ?? catalog.price)) : catalog.price;
   const inStock = catalog.stock > 0;
   const { add } = useCart();
 
@@ -394,10 +395,10 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
               </span>
               <div className="flex items-baseline gap-2">
                 <strong className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
-                  {formatPrice(product.price, locale)}
+                  {formatPrice(startingPrice, locale)}
                 </strong>
                 <span className="text-xs font-medium text-[var(--muted-foreground)]">
-                  {isAr ? "لكل باقة" : "per package"}
+                  {isAr ? "تبدأ من / للباقة" : "from / pack"}
                 </span>
               </div>
             </div>

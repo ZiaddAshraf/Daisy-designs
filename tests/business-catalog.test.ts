@@ -7,9 +7,9 @@ import { prisma } from "../src/lib/prisma";
 import { POST as createOrder } from "../src/app/api/orders/route";
 
 const variants = [
-  { id: "combined", sku: "PK-C", name: "٢٥ تيكت + ٣٠ ليبل", price: 300, stock: 0, options: { inventory: "product", tickets: 25, labels: 30 } },
-  { id: "tickets", sku: "PK-T", name: "٢٥ تيكت", price: 150, stock: 0, options: { inventory: "product", tickets: 25, labels: 0 } },
-  { id: "labels", sku: "PK-L", name: "٣٠ ليبل", price: 150, stock: 0, options: { inventory: "product", tickets: 0, labels: 30 } },
+  { id: "combined", sku: "DD-STK-050-COMBINED", name: "٢٠ تيكت + ٢٥ ليبل", price: 300, stock: 0, options: { inventory: "product", tickets: 20, labels: 25 } },
+  { id: "tickets", sku: "DD-STK-050-TICKETS", name: "٢٠ تيكت", price: 150, stock: 0, options: { inventory: "product", tickets: 20, labels: 0 } },
+  { id: "labels", sku: "DD-STK-050-LABELS", name: "٢٥ ليبل", price: 150, stock: 0, options: { inventory: "product", tickets: 0, labels: 25 } },
 ];
 const product = { id: "p1", slug: "custom-waterproof-stickers", name: "Tickets & Labels", arabicName: "تيكت وليبل", sku: "PK", price: 300, stock: 10, published: true, tags: [], variants, images: [], customizationFields: [] };
 
@@ -22,6 +22,7 @@ test("packages use DB prices, require a valid selection, and share unchanged pro
   }
   assert.throws(() => resolveProductPrice(product), /VARIANT_REQUIRED/);
   assert.throws(() => resolveProductPrice(product, "other-product-variant"), /INVALID_VARIANT/);
+  assert.throws(() => resolveProductPrice({ ...product, variants: [...variants, { ...variants[0], id: "single", sku: "DD-STK-050-SINGLE" }] }, "single"), /INVALID_VARIANT/);
   assert.equal(resolveProductPrice({ ...product, variants: [{ ...variants[0], price: 321 }] }, "combined").unitPrice, 321);
 });
 
@@ -61,7 +62,7 @@ test("actual order handler ignores forged prices, aggregates shared inventory an
     const snapshots = (saved?.items as { create: { unitPrice: number; selectedVariant: unknown; productName: string }[] }).create;
     assert.deepEqual(snapshots.map(i => i.unitPrice), [300, 150, 150]);
     assert.deepEqual(snapshots.map(i => i.selectedVariant), variants.map(v => v.options));
-    assert.match(snapshots[0].productName, /٢٥ تيكت/);
+  assert.match(snapshots[0].productName, /٢٠ تيكت/);
     assert.deepEqual(decrements, [{ where: { id: product.id, stock: { gte: 3 } }, data: { stock: { decrement: 3 } } }]);
     assert.equal((await createOrder(request({ ...input, items: [{ slug: product.slug, quantity: 1 }] }))).status, 422);
     assert.equal((await createOrder(request({ ...input, items: [{ slug: product.slug, quantity: 1, variantId: "foreign" }] }))).status, 422);

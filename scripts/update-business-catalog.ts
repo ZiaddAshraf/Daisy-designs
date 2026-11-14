@@ -2,9 +2,9 @@ import { prisma } from "../src/lib/prisma";
 
 // Targeted, repeatable catalog change. No deletes, stock resets, or order rewrites.
 const packages = [
-  { code: "combined", price: 300, arabicName: "٢٥ تيكت + ٣٠ ليبل", englishName: "25 tickets + 30 labels", tickets: 25, labels: 30 },
-  { code: "tickets", price: 150, arabicName: "تيكت فقط — ٢٥ تيكت", englishName: "Tickets only — 25 tickets", tickets: 25, labels: 0 },
-  { code: "labels", price: 150, arabicName: "ليبل فقط — ٣٠ ليبل", englishName: "Labels only — 30 labels", tickets: 0, labels: 30 },
+  { code: "combined", price: 300, arabicName: "٢٠ تيكت + ٢٥ ليبل", englishName: "20 tickets + 25 labels", tickets: 20, labels: 25 },
+  { code: "tickets", price: 150, arabicName: "٢٠ تيكت", englishName: "20 tickets", tickets: 20, labels: 0 },
+  { code: "labels", price: 150, arabicName: "٢٥ ليبل", englishName: "25 labels", tickets: 0, labels: 25 },
 ];
 async function main() {
   const apply = process.argv.includes("--apply");
@@ -28,7 +28,7 @@ async function main() {
     console.log(JSON.stringify({ mode: apply ? "apply" : "dry-run", tickets: { id: tickets.id, slug: tickets.slug, price: 300, stockUnchanged: tickets.stock, packages }, tshirt: { id: tshirt.id, price: 450, stockUnchanged: tshirt.stock }, products: matches.map(({ spec, existing }) => ({ slug: existing?.slug ?? spec.slug, price: spec.price, action: existing ? "update" : "create with zero stock", stock: existing?.stock ?? 0 })) }, null, 2));
     if (!apply) return;
     await tx.category.updateMany({ where: { OR: [{ id: tickets.categoryId }, { arabicName: { in: ["ستيكرات وملصقات", "استيكرات وملصقات"] } }] }, data: { arabicName: "تيكت وليبل", name: "Tickets & Labels" } });
-    await tx.product.update({ where: { id: tickets.id }, data: { price: 300, compareAtPrice: null, name: "Tickets & Labels", arabicName: "تيكت وليبل", description: "Choose 25 tickets + 30 labels, 25 tickets only, or 30 labels only.", arabicDescription: "اختاري ٢٥ تيكت + ٣٠ ليبل، أو ٢٥ تيكت فقط، أو ٣٠ ليبل فقط." } });
+    await tx.product.update({ where: { id: tickets.id }, data: { price: 300, compareAtPrice: null, name: "Tickets & Labels", arabicName: "تيكت وليبل", description: "Choose a pack of 20 tickets and 25 labels, 20 tickets, or 25 labels.", arabicDescription: "اختاري باقة ٢٠ تيكت و٢٥ ليبل، أو ٢٠ تيكت، أو ٢٥ ليبل." } });
     for (const pack of packages) {
       const sku = `${tickets.sku}-${pack.code.toUpperCase()}`;
       const existing = tickets.variants.find(v => v.sku === sku);

@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
 import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
+import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
 import stickersData from "@/data/stickers-product.json";
 import { ProductsCatalogClient, type CatalogProductItem } from "@/components/products-catalog-client";
 
@@ -27,6 +28,7 @@ export default async function ProductsPage() {
   let records: Awaited<ReturnType<typeof getPublishedProducts>>;
   try {
     await ensureKeychainCatalogProducts();
+    await ensureStickerPackages();
     records = await getPublishedProducts();
   } catch { return <main className="catalog-page"><DatabaseUnavailable /></main>; }
   const priceFor = (slug: string) => records.find(p => p.slug === slug)?.price ?? 0;
@@ -198,8 +200,8 @@ export default async function ProductsPage() {
       : "Personalized Waterproof Sheet",
     category: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
     categoryId: "stickers",
-    price: priceFor("custom-waterproof-stickers"),
-    priceUnit: isRtl ? "للباقة الكاملة — خيارات أخرى متاحة" : "combined package — more options available",
+    price: 150,
+    priceUnit: isRtl ? "تبدأ من / للباقة" : "starting price per pack",
     badge: isRtl ? `${design.arabicThemeGroup}` : `${design.themeGroup}`,
     image: design.url,
     description: isRtl
