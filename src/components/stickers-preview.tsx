@@ -101,8 +101,8 @@ const CRAFTSMANSHIP = [
     icon: Palette,
     titleAr: "اختاري محتويات الباقة",
     titleEn: "Choose your package",
-    descAr: "الباقة المجمعة بـ٣٠٠ جنيه أو ٤٠٠ بصورة AI. التيكت أو الليبل منفردًا بـ١٥٠ جنيه أو ٢٠٠ بصورة AI.",
-    descEn: "The combined pack is EGP 300, or EGP 400 with an AI image. Tickets or labels alone are EGP 150, or EGP 200 with an AI image.",
+    descAr: "الباقة المجمعة بـ٣٠٠ جنيه أو ٤٠٠ بصورة AI من صورة الطفل. التيكت أو الليبل منفردًا بـ١٥٠ جنيه أو ٢٠٠ بصورة AI من صورة الطفل.",
+    descEn: "The combined pack is EGP 300, or EGP 400 with an AI image made from the child's photo. Tickets or labels alone are EGP 150, or EGP 200 with the AI image.",
   },
 ];
 
@@ -141,6 +141,8 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
   const packageCounts = selectedPackage ? STICKER_PACKAGE_COUNTS[selectedPackage.sku ?? ""] : undefined;
   const mixValid = Boolean(packageCounts && stickerMixTotal(ticketMix) === packageCounts.tickets && stickerMixTotal(labelMix) === packageCounts.labels);
   const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"] || selectedPackage?.sku?.endsWith("-AI"));
+  const aiImageSelected = selectedPackage?.sku?.endsWith("-AI") ?? false;
+  const customIdeaRequired = Boolean(ticketMix["custom-design"] || labelMix["custom-design"]);
   const [phoneError, setPhoneError] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [customTextError, setCustomTextError] = useState(false);
@@ -280,7 +282,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
   // Add to cart with full validation
   const handleAddToCart = (e?: FormEvent, andCheckout?: boolean) => {
     if (e) e.preventDefault();
-    if (!inStock || customizingIndex === null || photoUpload.blocked || !selectedPackage || !mixValid) return;
+    if (!inStock || customizingIndex === null || photoUpload.blocked || (aiImageSelected && !photoUrl) || !selectedPackage || !mixValid) return;
 
     const trimmedName = childName.trim();
     if (!trimmedName) {
@@ -297,7 +299,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
     setPhoneError(false);
 
     const chosenDesign = product.designs[customizingIndex];
-    if (includesCustomDesign && !customDesignText.trim()) {
+    if (customIdeaRequired && !customDesignText.trim()) {
       setCustomTextError(true);
       return;
     }
@@ -738,7 +740,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
   setTicketMix(initialStickerMix(activeDesign.slug, counts?.tickets ?? 0));
   setLabelMix(initialStickerMix(activeDesign.slug, counts?.labels ?? 0));
 }} locale={locale} basePrice={catalog.price} />
-              {selectedPackage?.sku?.endsWith("-AI") && <p className="text-sm text-teal-800 dark:text-teal-300">{isAr ? "اختيار صورة AI: اكتبي فكرتك ويمكنك رفع صورة الطفل كمرجع." : "AI image option: describe your idea. You can upload a child’s photo as a reference."}</p>}
+              {aiImageSelected && <p className="text-sm text-teal-800 dark:text-teal-300">{isAr ? "صورة الطفل الأصلية مطلوبة لعمل صورته بتصميم AI." : "The child's original photo is required for the AI image."}</p>}
               {packageCounts && <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} />}
 
               {/* Custom Design Idea / Character (Shown for Custom Sticker) */}
@@ -746,13 +748,13 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                 <div className="p-4 rounded-2xl border-2 border-teal-500/40 bg-teal-50/60 dark:bg-teal-950/30 space-y-2">
                   <label htmlFor="customDesignTextInput" className="block text-xs font-black text-teal-900 dark:text-teal-200">
                     {isAr ? "فكرة أو شخصية التصميم المطلوب" : "Requested Design Theme or Character"}{" "}
-                    <span className="text-rose-500 font-black">*</span>
+                    {customIdeaRequired && <span className="text-rose-500 font-black">*</span>}
                   </label>
                   <div className="relative">
                     <input
                       id="customDesignTextInput"
                       type="text"
-                      required
+                      required={customIdeaRequired}
                       value={customDesignText}
                       onChange={(e) => {
                         setCustomDesignText(e.target.value);
@@ -771,8 +773,8 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     </p>
                   )}
                   <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium leading-relaxed">
-                    {selectedPackage?.sku?.endsWith("-AI")
-                      ? isAr ? "اكتبي شكل صورة AI المطلوب للباقة، ويمكنك رفع صورة الطفل كمرجع." : "Describe the AI image for this pack. You can upload the child’s photo as a reference."
+                    {aiImageSelected
+                      ? isAr ? "وصف شكل صورة AI اختياري؛ صورة الطفل الأصلية مطلوبة تحت." : "Describing the AI image is optional; the child's original photo is required below."
                       : isAr ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا." : "Describe the artwork for the pieces you assigned to a custom design."}
                   </p>
                 </div>
@@ -910,7 +912,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
               {/* Optional Child Photo / Artwork Upload */}
               <div>
                 <label className="block text-xs font-bold text-[var(--foreground)] mb-1">
-                  {activeDesign.id === 0
+                  {aiImageSelected ? (isAr ? "صورة الطفل الأصلية" : "Child's Original Photo") : activeDesign.id === 0
                     ? isAr
                       ? "صورة التصميم أو صورة الطفل"
                       : "Design Artwork or Child's Photo"
@@ -918,7 +920,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     ? "صورة الطفل"
                     : "Child's Photo"}{" "}
                   <span className="text-[var(--muted-foreground)] font-normal text-[11px]">
-                    {activeDesign.id === 0
+                    {aiImageSelected ? (isAr ? "(مطلوبة لتصميم صورة الطفل بـAI)" : "(Required for the child's AI image)") : activeDesign.id === 0
                       ? isAr
                         ? "(اختياري - يمكنك رفع رسمة أو فكرة أو صورة خاصة)"
                         : "(Optional - Upload artwork, reference, or child photo)"
@@ -940,7 +942,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     <div className="flex flex-col items-center justify-center">
                       <Camera size={20} className="text-amber-500 mb-1" />
                       <span className="text-xs font-bold text-[var(--foreground)]">
-                        {activeDesign.id === 0
+                          {aiImageSelected ? (isAr ? "انقر لاختيار صورة طفلك الأصلية" : "Click to upload the child's original photo") : activeDesign.id === 0
                           ? isAr
                             ? "انقر لاختيار رسمة التصميم أو صورة الطفل"
                             : "Click to upload design artwork or child's photo"
@@ -1034,7 +1036,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                 <button
                   type="button"
                   onClick={() => handleAddToCart(undefined, false)}
-                  disabled={!inStock || quantity > catalog.stock || photoUpload.blocked || !mixValid}
+                  disabled={!inStock || quantity > catalog.stock || photoUpload.blocked || (aiImageSelected && !photoUrl) || !mixValid}
                   className="w-full sm:flex-1 py-3 px-4 rounded-xl border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--surface-hover)] text-[var(--foreground)] font-bold text-xs sm:text-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <ShoppingBag size={16} />
@@ -1044,7 +1046,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                 <button
                   type="button"
                   onClick={() => handleAddToCart(undefined, true)}
-                  disabled={!inStock || quantity > catalog.stock || photoUpload.blocked}
+                  disabled={!inStock || quantity > catalog.stock || photoUpload.blocked || (aiImageSelected && !photoUrl)}
                   className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs sm:text-sm shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <Zap size={16} className="fill-current text-amber-200" />

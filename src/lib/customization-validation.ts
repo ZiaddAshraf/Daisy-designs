@@ -123,7 +123,10 @@ export function validateStickerPackageCustomization(
         ? label_designs === undefined ? initialStickerMix(primary, counts.labels) : parseStickerMix(label_designs, counts.labels)
         : label_designs ? null : {};
     if (!tickets || !labels) return { success: false, reason: "INVALID_CUSTOMIZATION" };
-    if ((tickets["custom-design"] || labels["custom-design"] || sku?.endsWith("-AI")) && !base.data.custom_design_text?.trim()) {
+    if ((tickets["custom-design"] || labels["custom-design"]) && !base.data.custom_design_text?.trim()) {
+        return { success: false, reason: "INVALID_CUSTOMIZATION" };
+    }
+    if (sku?.endsWith("-AI") && !/^private:story_child_[a-f0-9-]+\.(jpg|png|webp)$/.test(base.data.child_photo ?? "")) {
         return { success: false, reason: "INVALID_CUSTOMIZATION" };
     }
     return { success: true, data: {

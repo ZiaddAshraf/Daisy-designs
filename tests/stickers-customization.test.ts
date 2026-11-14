@@ -114,9 +114,9 @@ test("a sticker pack can contain several designs with exact ticket and label tot
   const combined = validateStickerPackageCustomization(fields, input, "DD-STK-050-COMBINED");
   assert.equal(combined.success, true);
   assert.equal(validateStickerPackageCustomization(fields, input, "DD-STK-050-COMBINED-AI").success, false);
-  const aiCombined = validateStickerPackageCustomization(fields, { ...input, custom_design_text: "صورة الطفل بأسلوب كرتوني" }, "DD-STK-050-COMBINED-AI");
+  const aiCombined = validateStickerPackageCustomization(fields, { ...input, child_photo: "private:story_child_12345678-1234-1234-1234-123456789abc.jpg" }, "DD-STK-050-COMBINED-AI");
   assert.equal(aiCombined.success, true);
-  if (aiCombined.success) assert.equal(aiCombined.data?.custom_design_text, "صورة الطفل بأسلوب كرتوني");
+  if (aiCombined.success) assert.match(aiCombined.data?.child_photo ?? "", /^private:story_child_/);
   if (combined.success) {
     assert.deepEqual(parseStickerMix(combined.data?.ticket_designs, 20), { "kuromi-sanrio": 8, "super-cool-dino": 12 });
     assert.match(formatCustomizationValue("label_designs", combined.data?.label_designs ?? "", "ar").displayValue, /15/);
@@ -131,7 +131,8 @@ test("a sticker pack can contain several designs with exact ticket and label tot
   ] as const) {
     const aiInput = { design_theme: "super-cool-dino", child_name: "Omar", [mixKey]: mix };
     assert.equal(validateStickerPackageCustomization(fields, aiInput, sku).success, false);
-    assert.equal(validateStickerPackageCustomization(fields, { ...aiInput, custom_design_text: "صورة فضاء بأسلوب كرتوني" }, sku).success, true);
+    assert.equal(validateStickerPackageCustomization(fields, { ...aiInput, child_photo: "private:story_child_12345678-1234-1234-1234-123456789abc.png" }, sku).success, true);
+    assert.equal(validateStickerPackageCustomization(fields, { ...aiInput, child_photo: "private:not-a-child-photo.jpg" }, sku).success, false);
   }
   assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: serializeStickerMix({ "super-cool-dino": 19 }) }, "DD-STK-050-COMBINED").success, false);
   assert.equal(validateStickerPackageCustomization(fields, input, "DD-STK-050-TICKETS").success, false);

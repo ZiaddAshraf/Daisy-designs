@@ -20,8 +20,8 @@ export async function ensureStickerPackages(): Promise<void> {
       where: { id: product.id },
       data: {
         price: 300,
-        description: "The combined pack costs EGP 300 with a real photo or EGP 400 with an AI image. Tickets or labels alone cost EGP 150, or EGP 200 with an AI image.",
-        arabicDescription: "الباقة المجمعة بـ٣٠٠ ج.م بصورة حقيقية أو ٤٠٠ ج.م بصورة AI. التيكت أو الليبل منفردًا بـ١٥٠ ج.م، أو ٢٠٠ ج.م بصورة AI.",
+        description: "The combined pack costs EGP 300 with a real photo or EGP 400 with an AI image made from your child's photo. Tickets or labels alone cost EGP 150, or EGP 200 with an AI image made from your child's photo.",
+        arabicDescription: "الباقة المجمعة بـ٣٠٠ ج.م بصورة الطفل الحقيقية أو ٤٠٠ ج.م بصورة AI معمولة من صورة طفلك. التيكت أو الليبل منفردًا بـ١٥٠ ج.م، أو ٢٠٠ ج.م بصورة AI معمولة من صورة طفلك.",
       },
     });
     for (const pack of packages) {

@@ -115,6 +115,7 @@ export function StickersCatalogClient({
   const packageCounts = selectedPackage ? STICKER_PACKAGE_COUNTS[selectedPackage.sku ?? ""] : undefined;
   const mixValid = Boolean(packageCounts && stickerMixTotal(ticketMix) === packageCounts.tickets && stickerMixTotal(labelMix) === packageCounts.labels);
   const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"] || aiImageSelected);
+  const customIdeaRequired = Boolean(ticketMix["custom-design"] || labelMix["custom-design"]);
   const currentKind: StickerKind = packageCounts?.[activeKind] ? activeKind : packageCounts?.tickets ? "tickets" : "labels";
   const primarySlug = Object.keys(ticketMix)[0] ?? Object.keys(labelMix)[0];
   const primaryDesign = product.designs.find(design => design.slug === primarySlug);
@@ -262,7 +263,7 @@ export function StickersCatalogClient({
   // Add to cart with full validation
   const handleAddToCart = (e: FormEvent) => {
     e.preventDefault();
-    if (!customizingDesign || photoUpload.blocked || !selectedPackage || !mixValid || catalog.stock < quantity) return;
+    if (!customizingDesign || photoUpload.blocked || (aiImageSelected && !photoUrl) || !selectedPackage || !mixValid || catalog.stock < quantity) return;
 
     // 1. Validate Child's Name (Required & Preserves Exact Case)
     const trimmedName = childName.trim();
@@ -281,7 +282,7 @@ export function StickersCatalogClient({
     setPhoneError(false);
 
     // 3. Validate Custom Design Description (Required for ID 0)
-    if (includesCustomDesign && !customDesignText.trim()) {
+    if (customIdeaRequired && !customDesignText.trim()) {
       setCustomTextError(true);
       return;
     }
@@ -373,7 +374,7 @@ export function StickersCatalogClient({
           setLabelMix({});
           setActiveKind(counts?.tickets ? "tickets" : "labels");
         }} locale={locale} basePrice={catalog.price} />
-        {aiImageSelected && <p className="mb-3 text-sm text-teal-800 dark:text-teal-300">{isAr ? "اختيار صورة AI: اكتبي فكرتك عند استكمال بيانات الباقة، ويمكنك رفع صورة الطفل كمرجع." : "AI image option: describe your idea when completing the pack details. You can upload a child’s photo as a reference."}</p>}
+        {aiImageSelected && <p className="mb-3 text-sm text-teal-800 dark:text-teal-300">{isAr ? "صورة الطفل الأصلية مطلوبة لعمل صورته بتصميم AI. هترفعيها عند استكمال بيانات الباقة." : "Upload the child's original photo when completing the pack so it can be transformed into an AI image."}</p>}
         {thermalLabelsSelected && <div className="flex flex-col gap-4 rounded-2xl border border-teal-200 bg-teal-50 p-4 dark:border-teal-900 dark:bg-teal-950/30 sm:flex-row sm:items-center">
           <div className="relative aspect-[3/2] w-full shrink-0 overflow-hidden rounded-xl bg-white sm:w-48">
             <SiteImage src="/products/stickers/thermal-labels-10-pack.jpg" alt={isAr ? "ليبل حراري مخصص - ١٠ قطع" : "Custom thermal labels - 10 pack"} fill sizes="(max-width: 640px) 100vw, 192px" className="object-contain" />
@@ -760,13 +761,13 @@ export function StickersCatalogClient({
                   <div className="p-3.5 rounded-2xl bg-teal-50/70 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/50 space-y-2">
                     <label htmlFor="customDesignTextInput" className="block text-xs font-bold text-teal-900 dark:text-teal-200">
                       {isAr ? "فكرة أو وصف التصميم المطلوب" : "Custom Design Description"}{" "}
-                      <span className="text-rose-500 font-black">*</span>
+                      {customIdeaRequired && <span className="text-rose-500 font-black">*</span>}
                     </label>
                     <div className="relative">
                       <input
                         id="customDesignTextInput"
                         type="text"
-                        required
+                        required={customIdeaRequired}
                         value={customDesignText}
                         onChange={(e) => {
                           setCustomDesignText(e.target.value);
@@ -786,7 +787,7 @@ export function StickersCatalogClient({
                     )}
                     <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium">
                       {aiImageSelected
-                        ? isAr ? "اكتبي شكل صورة AI المطلوب للباقة، ويمكنك رفع صورة الطفل كمرجع." : "Describe the AI image for this pack. You can upload the child’s photo as a reference."
+                        ? isAr ? "وصف شكل صورة AI اختياري؛ صورة الطفل الأصلية مطلوبة تحت." : "Describing the AI image is optional; the child's original photo is required below."
                         : isAr ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا." : "Describe the artwork for the pieces you assigned to a custom design."}
                     </p>
                   </div>
@@ -924,7 +925,7 @@ export function StickersCatalogClient({
                 {/* 5. Optional Child Photo or Design Reference Upload */}
                 <div>
                   <label className="block text-xs font-bold text-[var(--foreground)] mb-1">
-                    {customizingDesign.id === 0
+                    {aiImageSelected ? (isAr ? "صورة الطفل الأصلية" : "Child's Original Photo") : customizingDesign.id === 0
                       ? isAr
                         ? "صورة التصميم أو صورة الطفل"
                         : "Design Artwork or Child's Photo"
@@ -932,7 +933,7 @@ export function StickersCatalogClient({
                       ? "صورة الطفل"
                       : "Child's Photo"}{" "}
                     <span className="text-[var(--muted-foreground)] font-normal text-[11px]">
-                      {isAr ? "(اختياري - يمكنك رفع رسمة أو صورة خاصة)" : "(Optional - Upload reference or photo)"}
+                      {aiImageSelected ? (isAr ? "(مطلوبة لتصميم صورة الطفل بـAI)" : "(Required for the child's AI image)") : (isAr ? "(اختياري - يمكنك رفع رسمة أو صورة خاصة)" : "(Optional - Upload reference or photo)")}
                     </span>
                   </label>
 
@@ -1028,7 +1029,7 @@ export function StickersCatalogClient({
                   {/* Primary Action Button: "أضف للسلة" */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || photoUpload.blocked || !selectedPackage || !mixValid || catalog.stock < quantity}
+                    disabled={isSubmitting || photoUpload.blocked || (aiImageSelected && !photoUrl) || !selectedPackage || !mixValid || catalog.stock < quantity}
                     className="w-full py-3.5 px-6 rounded-2xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-extrabold text-sm sm:text-base shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-h-[48px]"
                   >
                     <ShoppingBag size={18} />
