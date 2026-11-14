@@ -5,7 +5,7 @@ import { shippingProgress } from "@/lib/commerce-rules";
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Camera, Heart, Menu, Minus, Music2, Plus, Search, ShoppingBag, ShoppingCart, UsersRound, UserRound, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Camera, Heart, Menu, Minus, Plus, Search, ShoppingBag, ShoppingCart, UsersRound, UserRound, X } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import type { Product } from "@/lib/products";
@@ -592,7 +592,6 @@ function Footer({ locale }: { locale: Locale }) {
             <h2>{t("followUs")}</h2>
             <a href="https://www.instagram.com/daisydesign23" target="_blank" rel="noreferrer"><Camera aria-hidden="true" />Instagram<ArrowUpRight aria-hidden="true" /></a>
             <a href="https://www.facebook.com/share/1PwXqKfKAq/" target="_blank" rel="noreferrer"><UsersRound aria-hidden="true" />Facebook<ArrowUpRight aria-hidden="true" /></a>
-            <a href="https://tiktok.com" target="_blank" rel="noreferrer"><Music2 aria-hidden="true" />TikTok<ArrowUpRight aria-hidden="true" /></a>
           </div>
         </nav>
       </div>
