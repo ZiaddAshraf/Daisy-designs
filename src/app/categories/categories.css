@@ -21,7 +21,7 @@ main.category-directory {
 }
 
 .category-directory .store-category-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(12px, 1.6vw, 20px);
 }
 

@@ -17,7 +17,7 @@ import stickersData from "@/data/stickers-product.json";
 import rewardCardsData from "@/data/reward-cards-product.json";
 import storyData from "@/data/story-product.json";
 import tshirtData from "@/data/tshirt-product.json";
-import { ensureKeychainCategory } from "@/lib/ensure-keychain-category";
+import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
 import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
 import { stickerPackageVariants } from "@/lib/product-pricing";
 
@@ -153,7 +153,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
     const resolvedSlug = PRODUCT_SLUG_ALIASES[slug] ?? slug;
     if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo"].includes(resolvedSlug)) {
-        try { await ensureKeychainCategory(); }
+        try { await ensureKeychainCatalogProducts(); }
         catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
     }
     try {
@@ -203,7 +203,7 @@ export default async function ProductPage({
     try {
         if (resolvedSlug === "custom-waterproof-stickers") await ensureStickerPackages();
         if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo"].includes(resolvedSlug)) {
-            await ensureKeychainCategory();
+            await ensureKeychainCatalogProducts();
         }
         product = await getPublishedProduct(resolvedSlug);
     } catch (error) {

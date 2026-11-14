@@ -461,4 +461,26 @@ export async function ensureKeychainCatalogProducts(): Promise<void> {
       if (!created) throw error;
     }
   }
+
+  // Keychains share the parent tickets, labels and keychains category.
+  // Move products back if an earlier release placed them in a separate category.
+  await prisma.$transaction(async (tx) => {
+    const category = await tx.category.upsert({
+      where: { slug: "stickers" },
+      update: { name: "Tickets, Labels & Keychains", arabicName: "تيكت وليبل وميدالية", published: true },
+      create: {
+        slug: "stickers",
+        name: "Tickets, Labels & Keychains",
+        arabicName: "تيكت وليبل وميدالية",
+        description: "Waterproof tickets, clothing labels and personalized acrylic keychains.",
+        image: "/products/stickers/tickets-labels-studio.jpeg",
+        published: true,
+      },
+    });
+    await tx.product.updateMany({
+      where: { slug: { in: [...KEYCHAIN_SLUGS] }, categoryId: { not: category.id } },
+      data: { categoryId: category.id },
+    });
+    await tx.category.updateMany({ where: { slug: "keychains" }, data: { published: false } });
+  });
 }

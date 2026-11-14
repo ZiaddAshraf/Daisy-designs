@@ -152,7 +152,7 @@ export default async function Home() {
   const featuredRecords = records.filter((product) => product.featured || product.slug === "custom-printed-tshirt");
   const featured = (featuredRecords.length >= 4 ? featuredRecords : records).slice(0, 4).map((product) => toStorefrontProduct(product, locale));
   
-  const categoryOrder = ["customized-stories", "stickers", "keychains", "reward-cards", "printed-t-shirts"];
+  const categoryOrder = ["customized-stories", "stickers", "reward-cards", "printed-t-shirts"];
   const homepageCategories = categoryOrder
     .map((slug) => storeCategories.find((category) => category.slug === slug))
     .filter((category): category is (typeof storeCategories)[number] => Boolean(category));

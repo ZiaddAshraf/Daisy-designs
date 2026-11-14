@@ -10,30 +10,28 @@ import {
   categoryNoticeForLocale,
 } from "../src/lib/store-categories";
 
-test("store categories contains five confirmed categories in stable order", () => {
+test("store categories contains exactly four confirmed categories in stable order", () => {
   const categories = getStoreCategories();
-  assert.equal(categories.length, 5);
+  assert.equal(categories.length, 4);
   assert.deepEqual(
     categories.map((c) => c.slug),
-    ["stickers", "keychains", "reward-cards", "customized-stories", "printed-t-shirts"],
+    ["stickers", "reward-cards", "customized-stories", "printed-t-shirts"],
   );
   assert.deepEqual(
     categories.map((c) => c.letter),
-    ["S", "K", "R", "C", "T"],
+    ["S", "R", "C", "T"],
   );
 });
 
-test("tickets, labels and keychains have separate categories", () => {
+test("stickers category has updated Tickets, Labels & Keychains content in English and Arabic", () => {
   const stickers = getStoreCategory("stickers");
   assert.ok(stickers, "stickers category should exist");
   assert.equal(stickers.id, "stickers");
   assert.equal(stickers.letter, "S");
-  assert.equal(categoryNameForLocale(stickers, "en"), "Tickets & Labels");
-  assert.equal(categoryNameForLocale(stickers, "ar"), "تيكت وليبل");
-  const keychains = getStoreCategory("keychains");
-  assert.ok(keychains, "keychains category should exist");
-  assert.equal(categoryNameForLocale(keychains, "en"), "Personalized Keychains");
-  assert.equal(categoryNameForLocale(keychains, "ar"), "ميداليات مخصصة");
+  assert.equal(categoryNameForLocale(stickers, "en"), "Tickets, Labels & Keychains");
+  assert.equal(categoryNameForLocale(stickers, "ar"), "تيكت وليبل وميدالية");
+  assert.ok(categoryTaglineForLocale(stickers, "ar")?.includes("ميداليات"));
+  assert.ok(categoryTaglineForLocale(stickers, "en")?.includes("keychains"));
 });
 
 test("printed-t-shirts category has valid English and Arabic content and typographic mark", () => {
