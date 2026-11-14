@@ -112,9 +112,6 @@ export function StickersCatalogClient({
   const mixValid = Boolean(packageCounts && stickerMixTotal(ticketMix) === packageCounts.tickets && stickerMixTotal(labelMix) === packageCounts.labels);
   const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"]);
   const currentKind: StickerKind = packageCounts?.[activeKind] ? activeKind : packageCounts?.tickets ? "tickets" : "labels";
-  const currentMix = currentKind === "tickets" ? ticketMix : labelMix;
-  const currentCount = packageCounts?.[currentKind] ?? 0;
-  const canAddDesign = stickerMixTotal(currentMix) < currentCount || Object.values(currentMix).some(count => count > 1);
   const primarySlug = Object.keys(ticketMix)[0] ?? Object.keys(labelMix)[0];
   const primaryDesign = product.designs.find(design => design.slug === primarySlug);
 
@@ -240,13 +237,16 @@ export function StickersCatalogClient({
     setCustomTextError(false);
   }, [clearPhoto]);
 
-  const handleSelectDesign = (design: StickerDesign) => {
-    if (!currentCount || currentMix[design.slug] || !canAddDesign) return;
-    const next = Object.keys(currentMix).length
-      ? addStickerDesign(currentMix, design.slug, currentCount)
-      : initialStickerMix(design.slug, currentCount);
-    if (currentKind === "tickets") setTicketMix(next);
+  const handleSelectDesign = (design: StickerDesign, kind: StickerKind = currentKind) => {
+    const count = packageCounts?.[kind] ?? 0;
+    const mix = kind === "tickets" ? ticketMix : labelMix;
+    if (!count || mix[design.slug] || (stickerMixTotal(mix) >= count && !Object.values(mix).some(quantity => quantity > 1))) return;
+    const next = Object.keys(mix).length
+      ? addStickerDesign(mix, design.slug, count)
+      : initialStickerMix(design.slug, count);
+    if (kind === "tickets") setTicketMix(next);
     else setLabelMix(next);
+    setActiveKind(kind);
   };
 
   // Handle Photo File Upload
@@ -370,7 +370,7 @@ export function StickersCatalogClient({
       <section className="mb-6 rounded-3xl border border-teal-200 bg-[var(--card)] p-4 sm:p-6 shadow-sm dark:border-teal-900" aria-label={isAr ? "كوّني باقة التيكت والليبل" : "Build your ticket and label pack"}>
         <h2 className="text-lg sm:text-xl font-extrabold">{isAr ? "كوّني باقتك من التصميمات اللي تحت" : "Build your pack from the designs below"}</h2>
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-          {isAr ? "اختاري الباقة، وبعدها اضغطي على صور التصميمات لإضافتها. ممكن توزّعي العدد على أكتر من تصميم." : "Choose a pack, then add designs from the photo cards below. Mix several designs in one pack."}
+          {isAr ? "اختاري الباقة، وبعدها أضيفي التيكت أو الليبل من الأزرار تحت كل تصميم. ممكن توزّعي العدد على أكتر من تصميم." : "Choose a pack, then add tickets or labels using the buttons under each design. Mix several designs in one pack."}
         </p>
         <PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={id => {
           setSelectedPackageId(id);
@@ -543,7 +543,7 @@ export function StickersCatalogClient({
             const tagLabel = badge.en;
             const categoryLabel = isAr ? design.arabicThemeGroup : design.themeGroup;
             const titleLabel = isAr ? design.arabicTitle : design.title;
-            const designSelected = Boolean(currentMix[design.slug]);
+            const availableKinds = (["tickets", "labels"] as const).filter(kind => (packageCounts?.[kind] ?? 0) > 0);
 
             return (
               <article
@@ -639,17 +639,23 @@ export function StickersCatalogClient({
                 </div>
 
                 {/* Card action */}
-                <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-2 border-t border-[var(--border)]/70 flex items-center justify-end gap-3">
-                  {/* Primary CTA: "خصص الآن" (Customize Now) */}
-                  <button
-                    type="button"
-                    onClick={() => handleSelectDesign(design)}
-                    disabled={designSelected || !canAddDesign}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 hover:bg-teal-700 text-white dark:bg-white dark:text-neutral-950 dark:hover:bg-teal-400 px-4 py-2.5 text-xs sm:text-sm font-extrabold shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer min-h-[42px]"
-                  >
-                    <span>{designSelected ? (isAr ? "✓ تم الاختيار" : "✓ Selected") : (isAr ? currentKind === "tickets" ? "أضيفي للتيكت" : "أضيفي للليبل" : `Add to ${currentKind}`)}</span>
-                    {isAr ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-                  </button>
+                <div className={`grid gap-2 px-4 pb-4 pt-2 sm:px-5 sm:pb-5 border-t border-[var(--border)]/70 ${availableKinds.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+                  {availableKinds.map(kind => {
+                    const mix = kind === "tickets" ? ticketMix : labelMix;
+                    const selected = Boolean(mix[design.slug]);
+                    const count = packageCounts?.[kind] ?? 0;
+                    const canAdd = stickerMixTotal(mix) < count || Object.values(mix).some(quantity => quantity > 1);
+                    return <button
+                      key={kind}
+                      type="button"
+                      onClick={() => handleSelectDesign(design, kind)}
+                      disabled={selected || !canAdd}
+                      aria-label={`${isAr ? "إضافة تصميم" : "Add design"} ${titleLabel} ${kind === "tickets" ? (isAr ? "للتيكت" : "to tickets") : (isAr ? "للليبل" : "to labels")}`}
+                      className="inline-flex min-h-[42px] items-center justify-center gap-1 rounded-xl bg-neutral-900 px-2 py-2.5 text-xs font-extrabold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-teal-700 hover:shadow-md active:scale-95 disabled:cursor-default disabled:opacity-55 disabled:hover:translate-y-0 dark:bg-white dark:text-neutral-950 dark:hover:bg-teal-400 sm:text-sm"
+                    >
+                      <span>{selected ? (isAr ? "✓ تم الاختيار" : "✓ Selected") : kind === "tickets" ? (isAr ? "أضيفي للتيكت" : "Add tickets") : (isAr ? "أضيفي للليبل" : "Add labels")}</span>
+                    </button>;
+                  })}
                 </div>
               </article>
             );
