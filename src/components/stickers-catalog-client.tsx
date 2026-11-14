@@ -638,18 +638,8 @@ export function StickersCatalogClient({
                   </div>
                 </div>
 
-                {/* Card Action & Price Footer */}
-                <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-2 border-t border-[var(--border)]/70 flex items-center justify-between gap-3">
-                  {/* Database package price */}
-                  <div className="text-start">
-                    <span className="text-[11px] text-[var(--muted-foreground)] block">
-                      {isAr ? "الباقة المجمعة" : "Combined pack"}
-                    </span>
-                    <strong className="text-base sm:text-lg font-black text-teal-700 dark:text-teal-400">
-                      {formatPrice(catalog.price, locale)}
-                    </strong>
-                  </div>
-
+                {/* Card action */}
+                <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-2 border-t border-[var(--border)]/70 flex items-center justify-end gap-3">
                   {/* Primary CTA: "خصص الآن" (Customize Now) */}
                   <button
                     type="button"
