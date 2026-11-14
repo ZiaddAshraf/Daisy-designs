@@ -1,4 +1,6 @@
 "use client";
+import { DiscountRows } from "@/components/story-cards-offer";
+import { shippingProgress } from "@/lib/commerce-rules";
 import { usesProductStock, variantLabel } from "@/lib/product-pricing";
 
 import Image from "@/components/site-image";
@@ -103,13 +105,11 @@ export function ProductDetail({ product, images = [], variants = [], customizati
 
 export function CartView() {
   const { items, update, remove, demoMode, quote, pricingError } = useCart();
-  const FREE_SHIPPING_THRESHOLD = quote?.threshold ?? 0;
+  const progress = shippingProgress(quote);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const locale = useLocale();
   const t = useTranslation();
   const totalItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const freeShippingProgress = Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
-  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - total);
 
   if (demoMode) {
     return (
@@ -147,7 +147,6 @@ export function CartView() {
             <ShoppingBag size={36} />
           </div>
           <h2 className="mt-5 text-2xl font-bold text-[var(--foreground)]">{t("emptyCart")}</h2>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)] max-w-md mx-auto">{t("emptyCartMessage")}</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/products/stickers"
@@ -255,17 +254,17 @@ export function CartView() {
               </h2>
 
               {/* Free shipping progress bar */}
-              <div className="rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
+              {progress && (<div className="rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
                 <div className="text-xs font-semibold text-[var(--foreground)] flex items-center gap-1.5">
                   <Truck size={14} className="text-teal-600 dark:text-teal-400 shrink-0" />
-                  {total >= FREE_SHIPPING_THRESHOLD ? (
+                  {progress.remaining === 0 ? (
                     <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                       {t("freeShippingUnlocked")}
                     </span>
                   ) : (
                     <span>
                       {formatMessage(t("freeShippingProgress"), {
-                        amount: amountToFreeShipping.toLocaleString(locale === "ar" ? "ar-EG" : "en-US"),
+                        amount: progress.remaining.toLocaleString(locale === "ar" ? "ar-EG" : "en-US"),
                       })}
                     </span>
                   )}
@@ -273,10 +272,10 @@ export function CartView() {
                 <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--border)]">
                   <div
                     className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300"
-                    style={{ width: `${freeShippingProgress}%` }}
+                    style={{ width: `${progress.percent}%` }}
                   />
                 </div>
-              </div>
+              </div>)}
 
               {/* Pricing lines */}
               <div className="space-y-3 text-sm">
@@ -284,10 +283,11 @@ export function CartView() {
                   <span>{t("subtotal")}</span>
                   <span className="font-medium text-[var(--foreground)]">{formatPrice(total, locale)}</span>
                 </div>
+                {quote && <DiscountRows locale={locale} {...quote} />}
                 <div className="flex justify-between text-[var(--muted-foreground)]">
                   <span>{t("shippingFee")}</span>
                   <span>
-                    {total >= FREE_SHIPPING_THRESHOLD ? (
+                    {quote?.shipping === 0 ? (
                       <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
                         <CheckCircle2 size={12} />
                         {t("freeShipping")}
@@ -299,7 +299,7 @@ export function CartView() {
                 </div>
                 <div className="flex justify-between border-t border-[var(--border)] pt-3 text-base font-bold text-[var(--foreground)]">
                   <span>{t("total")}</span>
-                  <span className="text-xl text-[var(--foreground)]">{formatPrice(quote?.total ?? total, locale)}</span>
+                  <span className="text-xl text-[var(--foreground)]">{quote ? formatPrice(quote.total, locale) : "—"}</span>
                 </div>
               </div>
 

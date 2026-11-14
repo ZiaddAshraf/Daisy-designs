@@ -1,3 +1,4 @@
+import { BundleOffer } from "@/components/story-cards-offer";
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, BookOpen } from "lucide-react";
@@ -31,7 +32,7 @@ const CORE_FALLBACK_PRODUCTS: HomeProductRecord[] = [
     slug: "reward-cards-box-set",
     name: "Daisy Designs Reward Cards Box Set",
     arabicName: "علبة كروت التشجيع",
-    price: 200,
+    price: 150,
     compareAtPrice: null,
     description: "An exclusive collection of 10 inspiring, heartwarming affirmation and reward cards in a beautifully branded Daisy Designs keepsake box.",
     arabicDescription: "مجموعة حصرية من كروت التحفيز الملهمة تضم 10 كروت متنوعة ورسائل إيجابية دافئة داخل علبة هدايا أنيقة بشعار Daisy Designs.",
@@ -53,7 +54,7 @@ const CORE_FALLBACK_PRODUCTS: HomeProductRecord[] = [
     slug: "first-year-at-school",
     name: "Daisy Designs First Year at School Storybook",
     arabicName: "قصة أول سنة في المدرسة",
-    price: 200,
+    price: 300,
     compareAtPrice: null,
     description: "An inspiring personalized children's storybook starring your child with their uploaded photograph.",
     arabicDescription: "قصة أطفال ملهمة ومصممة بحب من Daisy Designs تضع طفلك بطلاً للقصة.",
@@ -185,6 +186,8 @@ export default async function Home() {
         </div>
       </section>
 
+      <div className="mx-auto w-[92%] pt-6"><BundleOffer locale={locale} /></div>
+
       <section className="daisy-featured daisy-home-products" aria-labelledby="featured-title">
         <header className="daisy-home-heading" data-scroll-reveal suppressHydrationWarning>
           <h2 id="featured-title">{isRtl ? "المنتجات المميزة" : "Featured products"}</h2>
@@ -224,7 +227,6 @@ export default async function Home() {
         <header className="daisy-home-heading" data-scroll-reveal suppressHydrationWarning>
           <h2 id="home-social-title">{isRtl ? "من عالم دايزي" : "From the Daisy world"}</h2>
           <span aria-hidden="true" />
-          <p>{isRtl ? "اكتشفي لحظات دايزي وشاركي إبداعك" : "Explore Daisy moments and share your creations"}</p>
         </header>
         <HomeProductMarquee isRtl={isRtl} />
         <div className="flex flex-wrap items-center justify-center gap-3">

@@ -5,7 +5,8 @@ import { notFound } from "next/navigation";
 import { CatalogControls, CatalogPagination } from "@/components/catalog-controls";
 import { ProductCard } from "@/components/storefront";
 import { DatabaseUnavailable } from "@/components/database-state";
-import { PRODUCT_IMAGE_PLACEHOLDER, getProductImageUrl } from "@/lib/product-image";
+import { PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
+import { collectionCover } from "@/lib/collection-cover";
 import { collectionTextForLocale, getCatalogCategories, getCatalogCollection, getCatalogPage, selectLocalizedText, toStorefrontProduct } from "@/lib/catalog";
 import { formatMessage, getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
@@ -49,7 +50,7 @@ export default async function CollectionPage({ params, searchParams }: { params:
   } catch (error) { if (isDatabaseUnavailable(error)) unavailable = true; else throw error; }
   if (unavailable || !result) return <main className="catalog-page"><DatabaseUnavailable messageKey="collectionProductsUnavailable" /></main>;
   const collectionName = collectionTextForLocale(collection.name, locale) ?? collection.name;
-  const collectionImage = getProductImageUrl(collection.image);
+  const collectionImage = collectionCover(collection.image, slug);
   const isBrandCover = collectionImage === PRODUCT_IMAGE_PLACEHOLDER;
   const pageFilters = { ...filters, collection: slug, page: String(result.page) };
   return <main className="catalog-page collections-page collection-detail-page">

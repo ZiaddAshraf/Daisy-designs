@@ -13,11 +13,11 @@ import {
 import { validateCustomization } from "../src/lib/customization-validation";
 import { cartLineId } from "../src/lib/cart-line-state";
 
-test("story product JSON fixture has confirmed 200 EGP price, physical format, and 10 pages", () => {
+test("story product JSON fixture has confirmed 300 EGP price, physical format, and 10 pages", () => {
   const { product, category } = storyProductData;
   assert.equal(category.slug, "customized-stories");
   assert.equal(product.slug, "first-year-at-school");
-  assert.equal(product.price, 200);
+  assert.equal(product.price, 300);
   assert.equal(product.stock, 50);
   assert.equal(product.sku, "DD-ST-001");
   assert.equal(product.customizable, true);
@@ -78,7 +78,7 @@ test("database product and category exist with confirmed values and required chi
     },
   });
   assert.ok(product, "Product first-year-at-school must exist in database");
-  assert.equal(product.price, 200);
+  assert.equal(product.price, 300);
   assert.ok(typeof product.stock === "number" && product.stock >= 0, "Product stock must be non-negative integer");
   assert.equal(product.sku, "DD-ST-001");
   assert.equal(product.customizable, true);
@@ -162,9 +162,9 @@ test("customization validation enforces required child photo and isolates cart l
   });
   assert.notEqual(line1, line2, "Different children photos must generate isolated cart lines");
 
-  // Storybook unit price is strictly 200 EGP
-  const unitPrice = 200;
+  // Storybook unit price is strictly 300 EGP
+  const unitPrice = 300;
   const quantity = 3;
-  assert.equal(unitPrice * quantity, 600);
+  assert.equal(unitPrice * quantity, 900);
 });
 

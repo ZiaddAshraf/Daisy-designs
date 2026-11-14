@@ -1,11 +1,13 @@
 "use client";
 
+import { Globe } from "lucide-react";
 import { useState } from "react";
 import { getAlternativeLocale, type Locale } from "@/lib/locale";
 import { getTranslation } from "@/lib/i18n/messages";
 
 export function LocaleSwitcher({ locale, compact = false }: { locale: Locale; compact?: boolean }) {
   const alternativeLocale = getAlternativeLocale(locale);
+  const languageLabel = getTranslation(locale, alternativeLocale === "ar" ? "languageArabic" : "languageEnglish");
   const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const [error, setError] = useState(false);
   const pending = pendingLocale !== null && pendingLocale !== locale;
@@ -33,8 +35,8 @@ export function LocaleSwitcher({ locale, compact = false }: { locale: Locale; co
 
   return <div className={`daisy-locale-switcher${compact ? " daisy-locale-switcher--compact" : ""}`}>
     <div className="daisy-locale-switcher__buttons" role="group" aria-label={getTranslation(locale, "languageGroup")} aria-busy={pending}>
-      <button type="button" onClick={() => selectLocale(alternativeLocale)} aria-label={getTranslation(locale, alternativeLocale === "ar" ? "languageArabic" : "languageEnglish")} disabled={pending} lang={alternativeLocale}>
-        {alternativeLocale === "ar" ? "AR" : "EN"}
+      <button className={compact ? undefined : "daisy-icon-button"} type="button" onClick={() => selectLocale(alternativeLocale)} aria-label={languageLabel} title={languageLabel} disabled={pending} lang={alternativeLocale}>
+        {compact ? alternativeLocale.toUpperCase() : <Globe size={18} strokeWidth={1.5} aria-hidden="true" />}
       </button>
     </div>
     {pending && <span className="daisy-locale-switcher__status" role="status">{getTranslation(locale, "languageSwitching")}</span>}

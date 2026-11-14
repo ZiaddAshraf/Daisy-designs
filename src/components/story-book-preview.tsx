@@ -1,12 +1,15 @@
 "use client";
 import { CustomizationReview } from "@/components/customization-review";
 import { uploadErrorMessage } from "@/lib/upload-feedback";
+import { prepareStoryPhoto } from "@/lib/prepare-story-photo";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SiteImage from "@/components/site-image";
 import type { Locale } from "@/lib/locale";
+import cardsData from "@/data/reward-cards-product.json";
+import { STORY_CARDS_BUNDLE_PRICE } from "@/lib/commerce-rules";
 import storyProductData from "@/data/story-product.json";
 import { TinyDaisyDoodle } from "@/components/decorative-marks";
 import { useCart, useWishlist } from "@/components/storefront";
@@ -37,6 +40,7 @@ type StoryBookPreviewProps = {
   locale: Locale;
   inStock?: boolean;
   initialStoryId?: string;
+  initialBundle?: boolean;
 };
 
 export type StoryItem = {
@@ -115,9 +119,99 @@ export const AVAILABLE_STORIES: StoryItem[] = [
     sampleHero: "علي",
     dimensions: { width: 1127, height: 1600 },
   },
+  {
+    id: "where-is-the-cat-mariam", slug: "where-is-the-cat-mariam",
+    titleAr: "فين القطة يا مريم؟", titleEn: "Where Is the Cat, Mariam?",
+    badgeAr: "مغامرة لطيفة", badgeEn: "Little Mystery",
+    descriptionAr: "مريم تدور على القطة المختبئة في البيت في مغامرة لطيفة مع صديقها الكلب.",
+    descriptionEn: "Mariam searches the house for a hiding cat with her puppy friend.",
+    coverUrl: "/products/customized-stories/story-05-where-is-the-cat-mariam.jpeg",
+    sampleHero: "مريم", dimensions: { width: 1054, height: 1492 },
+  },
+  {
+    id: "lana-magic-ribbon", slug: "lana-magic-ribbon",
+    titleAr: "لانا والشريطة السحرية", titleEn: "Lana and the Magic Ribbon",
+    badgeAr: "خيال وجمباز", badgeEn: "Magic & Gymnastics",
+    descriptionAr: "لانا تكتشف شريطة سحرية تأخذها في مغامرة مليئة بالحركة والألوان.",
+    descriptionEn: "Lana discovers a magic ribbon and a colorful gymnastics adventure.",
+    coverUrl: "/products/customized-stories/story-06-lana-magic-ribbon.jpeg",
+    sampleHero: "لانا", dimensions: { width: 1053, height: 1494 },
+  },
+  {
+    id: "selim-sonic-lightning-race", slug: "selim-sonic-lightning-race",
+    titleAr: "سليم وسونيك في سباق البرق", titleEn: "Selim and Sonic's Lightning Race",
+    badgeAr: "سباق ومغامرة", badgeEn: "Racing Adventure",
+    descriptionAr: "سليم يدخل سباق البرق مع سونيك وسط الحلقات والمناظر المليئة بالحماس.",
+    descriptionEn: "Selim joins Sonic for a lightning-fast race through a colorful world.",
+    coverUrl: "/products/customized-stories/story-07-selim-sonic-lightning-race.jpeg",
+    sampleHero: "سليم", dimensions: { width: 1054, height: 1493 },
+  },
+  {
+    id: "salah-animal-friends", slug: "salah-animal-friends",
+    titleAr: "صلاح وأصدقاء الحيوانات", titleEn: "Salah and His Animal Friends",
+    badgeAr: "عالم الحيوانات", badgeEn: "Animal Friends",
+    descriptionAr: "صلاح يتعرف على أصدقاء من الحيوانات في مغامرة مليئة بالمرح واللطف.",
+    descriptionEn: "Salah meets friendly animals in a cheerful outdoor adventure.",
+    coverUrl: "/products/customized-stories/story-08-salah-animal-friends.jpeg",
+    sampleHero: "صلاح", dimensions: { width: 1086, height: 1448 },
+  },
+  {
+    id: "ali-celia-lost-island", slug: "ali-celia-lost-island",
+    titleAr: "علي وسيليا وسر الجزيرة المفقودة", titleEn: "Ali, Celia and the Lost Island Secret",
+    badgeAr: "جزيرة وكنز", badgeEn: "Island Adventure",
+    descriptionAr: "علي وسيليا يبحثان عن سر الجزيرة المفقودة بخريطة وبوصلة وروح المغامرة.",
+    descriptionEn: "Ali and Celia follow a map to uncover the secret of a lost island.",
+    coverUrl: "/products/customized-stories/story-09-ali-celia-lost-island.jpeg",
+    sampleHero: "علي", dimensions: { width: 1055, height: 1491 },
+  },
+  {
+    id: "layan-roblox-kingdom", slug: "layan-roblox-kingdom",
+    titleAr: "ليان ومملكة روبلوكس المسحورة", titleEn: "Layan and the Enchanted Roblox Kingdom",
+    badgeAr: "مملكة الألعاب", badgeEn: "Gaming Kingdom",
+    descriptionAr: "ليان تدخل مملكة روبلوكس المسحورة وتبدأ مغامرة مع أصدقاء جدد.",
+    descriptionEn: "Layan enters an enchanted Roblox kingdom and meets new friends.",
+    coverUrl: "/products/customized-stories/story-10-layan-roblox-kingdom.jpeg",
+    sampleHero: "ليان", dimensions: { width: 1055, height: 1491 },
+  },
+  {
+    id: "omar-champions-stadium", slug: "omar-champions-stadium",
+    titleAr: "عمر في استاد الأبطال", titleEn: "Omar in the Champions Stadium",
+    badgeAr: "كرة قدم", badgeEn: "Football",
+    descriptionAr: "عمر يعيش حلم كرة القدم وسط أجواء استاد الأبطال والنجوم.",
+    descriptionEn: "Omar lives his football dream among the stars in the champions stadium.",
+    coverUrl: "/products/customized-stories/story-11-omar-champions-stadium.jpeg",
+    sampleHero: "عمر", dimensions: { width: 1055, height: 1491 },
+  },
+  {
+    id: "ezz-aunt-reem-airport", slug: "ezz-aunt-reem-airport",
+    titleAr: "عز وخالتو ريم في مغامرة المطار", titleEn: "Ezz and Aunt Reem's Airport Adventure",
+    badgeAr: "سفر ومطار", badgeEn: "Airport Adventure",
+    descriptionAr: "عز وخالتو ريم ينطلقان في مغامرة شيقة بين الطائرات وأجواء السفر.",
+    descriptionEn: "Ezz and Aunt Reem explore the airport and the excitement of travel.",
+    coverUrl: "/products/customized-stories/story-12-ezz-aunt-reem-airport.jpeg",
+    sampleHero: "عز", dimensions: { width: 1054, height: 1492 },
+  },
+  {
+    id: "ashraf-lulu-giraffe", slug: "ashraf-lulu-giraffe",
+    titleAr: "أشرف وصديقته الزرافة لولو", titleEn: "Ashraf and Lulu the Giraffe",
+    badgeAr: "حديقة الحيوانات", badgeEn: "Zoo Friends",
+    descriptionAr: "أشرف يتعرف على الزرافة لولو وأصدقاء جدد في حديقة الحيوانات.",
+    descriptionEn: "Ashraf makes friends with Lulu the giraffe on a joyful zoo visit.",
+    coverUrl: "/products/customized-stories/story-13-ashraf-lulu-giraffe.jpeg",
+    sampleHero: "أشرف", dimensions: { width: 1076, height: 1462 },
+  },
+  {
+    id: "selim-dream-match", slug: "selim-dream-match",
+    titleAr: "سليم ومباراة الأحلام", titleEn: "Selim and the Dream Match",
+    badgeAr: "حلم البطولة", badgeEn: "Football Dream",
+    descriptionAr: "سليم يدخل الملعب ليخوض مباراة أحلامه بروح الشجاعة واللعب الجماعي.",
+    descriptionEn: "Selim steps onto the pitch for the football match of his dreams.",
+    coverUrl: "/products/customized-stories/story-14-selim-dream-match.jpeg",
+    sampleHero: "سليم", dimensions: { width: 1055, height: 1491 },
+  },
 ];
 
-export function StoryBookPreview({ locale, inStock = true, initialStoryId }: StoryBookPreviewProps) {
+export function StoryBookPreview({ locale, inStock = true, initialStoryId, initialBundle = false }: StoryBookPreviewProps) {
   const isAr = locale === "ar";
   const { add } = useCart();
 
@@ -142,7 +236,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
     );
   });
 
-  // Selected story from the 4 available titles
+  // Selected ready-made story
   const [selectedStoryId, setSelectedStoryId] = useState<string>(
     initialStoryId && AVAILABLE_STORIES.some((s) => s.id === initialStoryId)
       ? initialStoryId
@@ -162,17 +256,18 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
   const [childName, setChildName] = useState("");
   const [childGender, setChildGender] = useState<"boy" | "girl">("boy");
 
-  // Multiple photos upload state (up to 5 photos) & WhatsApp alternative
+  // Multiple photos upload state (up to 5 photos)
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedStoryPhoto[]>([]);
-  const [sendPhotosViaWhatsApp, setSendPhotosViaWhatsApp] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Commerce controls
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
-  const unitPrice = product.price ?? 200;
-  const totalPrice = unitPrice * quantity;
+  const [withCards, setWithCards] = useState(initialBundle);
+  const unitPrice = product.price;
+  const selectionPrice = withCards ? STORY_CARDS_BUNDLE_PRICE : unitPrice;
+  const totalPrice = selectionPrice * quantity;
   const [addedToCart, setAddedToCart] = useState(false);
   const { toggle: toggleStoreWishlist, has: inStoreWishlist } = useWishlist();
   const isWishlisted = inStoreWishlist("first-year-at-school");
@@ -197,7 +292,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
   };
 
   const handleDirectBuy = () => {
-    if (uploadedPhotos.length === 0 && !sendPhotosViaWhatsApp) {
+    if (uploadedPhotos.length === 0) {
       scrollToPhotoUpload();
       return;
     }
@@ -287,8 +382,13 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
           );
         }
 
+        const preparedFile = await prepareStoryPhoto(file).catch(() => {
+          throw new Error(isAr
+            ? `تعذر تجهيز الصورة ${file.name}. اختاري صورة أصغر أو بصيغة JPG.`
+            : `Could not prepare ${file.name}. Choose a smaller JPG photo.`);
+        });
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", preparedFile);
 
         const res = await fetch("/api/uploads/story-child-photo", {
           method: "POST",
@@ -339,7 +439,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
   const handleAddToCart = (openDrawer: boolean | unknown = true) => {
     if (!inStock || isUploadingPhoto) return;
     const shouldOpen = typeof openDrawer === "boolean" ? openDrawer : true;
-    if (uploadedPhotos.length === 0 && !sendPhotosViaWhatsApp) {
+    if (uploadedPhotos.length === 0) {
       scrollToPhotoUpload();
       return;
     }
@@ -363,11 +463,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       summaryParts.push(`القصة المختارة: ${isAr ? activeStory.titleAr : activeStory.titleEn}`);
     }
 
-    if (uploadedPhotos.length > 0) {
-      summaryParts.push(`عدد الصور المرفقة: ${uploadedPhotos.length}`);
-    } else if (sendPhotosViaWhatsApp) {
-      summaryParts.push("الصور: سيتم إرسالها عبر الواتساب لاحقاً");
-    }
+    summaryParts.push(`عدد الصور المرفقة: ${uploadedPhotos.length}`);
 
     const customText = summaryParts.join(" | ");
 
@@ -387,10 +483,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       ? `${activeStory.titleEn} (${childName.trim()})`
       : activeStory.titleEn;
 
-    const aggregateStorageKey =
-      uploadedPhotos.length > 0
-        ? uploadedPhotos.map((p) => p.storageKey).join(",")
-        : "private:story_child_whatsapp_pending.jpg";
+    const aggregateStorageKey = uploadedPhotos.map((p) => p.storageKey).join(",");
 
     add(
       {
@@ -420,13 +513,24 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       shouldOpen
     );
 
+    if (withCards) {
+      const cards = cardsData.product;
+      add({
+        slug: cards.slug,
+        name: isAr ? cards.arabicName : cards.name,
+        category: isAr ? cardsData.category.arabicName : cardsData.category.name,
+        price: cards.price,
+        description: isAr ? cards.arabicDescription : cards.description,
+        image: "/products/reward-cards/reward-cards-box-set.jpeg",
+      }, undefined, undefined, quantity, false);
+    }
     setAddedToCart(true);
   };
 
   // Direct WhatsApp contact URL
   const storePhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "201152606234";
   const whatsappUrl = `https://wa.me/${storePhone}?text=${encodeURIComponent(
-    isAr
+    (withCards ? (isAr ? "باقة القصة والكروت — ٤٠٠ جنيه للباقة، " : "Story and cards bundle — 400 EGP per bundle. ") : "") + (isAr
       ? `أهلاً Daisy Designs! عايزة أطلب ${
           isCustomMode ? "قصة مصممة خاصة بالكامل لطفلي ✨" : activeStory.titleAr
         }${childName.trim() ? ` (باسم: ${childName.trim()})` : ""}${
@@ -435,7 +539,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       : `Hello Daisy Designs! I'd like to order ${
           isCustomMode ? "a custom bespoke storybook ✨" : activeStory.titleEn
         } for my child${childName.trim() ? ` (${childName.trim()})` : ""}`
-  )}`;
+  ))}`;
 
   const displayedTitle = isCustomMode
     ? isAr
@@ -596,7 +700,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                   {formatPrice(totalPrice, locale)}
                 </span>
                 <span className="sb-purchase-card__price-note">
-                  {quantity > 1
+                  {withCards ? (isAr ? "القصة + علبة كروت التشجيع" : "Storybook + reward cards box") : quantity > 1
                     ? isAr
                       ? `إجمالي ${quantity} قصص (${formatPrice(unitPrice, locale)} للقصة المطبوعة)`
                       : `Total for ${quantity} books (${formatPrice(unitPrice, locale)} each)`
@@ -616,7 +720,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
               </span>
             </div>
 
-            {/* Mode Switcher: 4 Ready Stories vs Bespoke Custom Story */}
+            {/* Mode switcher: ready stories and custom story */}
             <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/80 mb-5">
               <button
                 type="button"
@@ -628,7 +732,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                 }`}
               >
                 <BookOpen size={15} className="text-amber-500" />
-                <span>{isAr ? "القصص الجاهزة (٤ قصص)" : "Ready Stories (4 Titles)"}</span>
+                <span>{isAr ? `القصص الجاهزة (${AVAILABLE_STORIES.length.toLocaleString("ar-EG")} قصة)` : `Ready Stories (${AVAILABLE_STORIES.length} Titles)`}</span>
               </button>
 
               <button
@@ -645,12 +749,12 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
               </button>
             </div>
 
-            {/* If Ready Stories: 4 Story Cards (هم اللي يختاروا وبس) */}
+            {/* Ready story cards */}
             {!isCustomMode ? (
               <div className="sb-input-group">
                 <label className="sb-input-label text-zinc-900 dark:text-zinc-100">
                   <BookOpen size={15} className="text-amber-500" />
-                  <span>{isAr ? "اختاري القصة المطلوبة (٤ قصص متاحة):" : "Select Story Title:"}</span>
+                  <span>{isAr ? `اختاري القصة المطلوبة من ${AVAILABLE_STORIES.length.toLocaleString("ar-EG")} قصة:` : "Select Story Title:"}</span>
                 </label>
 
                 <div className="grid grid-cols-2 gap-2.5" role="radiogroup" aria-label={isAr ? "اختيار القصة" : "Select Story"}>
@@ -969,51 +1073,45 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                 </div>
               )}
 
-              {/* WhatsApp Alternative Toggle */}
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => setSendPhotosViaWhatsApp((prev) => !prev)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setSendPhotosViaWhatsApp((prev) => !prev);
-                  }
-                }}
-                className={`mt-3 p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none ${
-                  sendPhotosViaWhatsApp
-                    ? "bg-emerald-500/10 border-emerald-500/80 text-emerald-950 dark:text-emerald-200 ring-2 ring-emerald-500/20"
-                    : "bg-white/80 dark:bg-zinc-800/60 border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-100/80 dark:hover:bg-zinc-700/50"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  id="send-whatsapp-later"
-                  checked={sendPhotosViaWhatsApp}
-                  onChange={(e) => setSendPhotosViaWhatsApp(e.target.checked)}
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-0.5 w-4 h-4 accent-emerald-600 rounded cursor-pointer shrink-0"
-                />
-                <div className="text-xs space-y-0.5">
-                  <span className="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
-                    <MessageCircle size={14} className="shrink-0" />
-                    <span>{isAr ? "مش معاكي صورة واضحة دلوقتي؟ هبعت صور طفلي على الواتساب بعد الطلب" : "Send child photos via WhatsApp after ordering"}</span>
-                  </span>
-                  <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-normal">
-                    {isAr
-                      ? "تقدري تكملي طلبك وتأكديه دلوقتي، وفريق Daisy Designs هيتواصل معاكي على الواتساب لاستلام الصور قبل الطباعة."
-                      : "Place your order now, and our team will contact you on WhatsApp to collect child photos before printing."}
-                  </p>
-                </div>
-              </div>
             </div>
+
+            <fieldset className="sb-package-choice" id="story-bundle-section">
+              <legend>{isAr ? "كمّلي الهدية" : "Complete the gift"}</legend>
+              <p>{isAr ? "اختاري القصة لوحدها، أو ضيفي علبة كروت التشجيع بسعر أوفر." : "Choose the story on its own, or add the reward cards box and save."}</p>
+              <div className="sb-package-choice__options">
+                <label className={`sb-package-option${!withCards ? " sb-package-option--selected" : ""}`}>
+                  <input className="sr-only" type="radio" name="story-package" checked={!withCards} onChange={() => setWithCards(false)} />
+                  <span className="sb-package-option__visual sb-package-option__visual--book"><BookOpen size={22} strokeWidth={1.4} aria-hidden="true" /></span>
+                  <span className="sb-package-option__details">
+                    <strong>{isAr ? "القصة فقط" : "Storybook only"}</strong>
+                    <small>{isAr ? "كتاب مطبوع باسم وصورة طفلك" : "Printed with your child's name and photo"}</small>
+                    <span className="sb-package-option__prices"><b>{formatPrice(unitPrice, locale)}</b></span>
+                  </span>
+                  <span className="sb-package-option__check" aria-hidden="true"><Check size={14} strokeWidth={3} /></span>
+                </label>
+                <label className={`sb-package-option sb-package-option--bundle${withCards ? " sb-package-option--selected" : ""}`}>
+                  <input className="sr-only" type="radio" name="story-package" checked={withCards} onChange={() => setWithCards(true)} />
+                  <span className="sb-package-option__visual"><SiteImage src={cardsData.product.primaryImage.url} alt="" width={58} height={58} className="h-full w-full object-cover" /></span>
+                  <span className="sb-package-option__details">
+                    <strong>{isAr ? "القصة + كروت التشجيع" : "Storybook + reward cards"}</strong>
+                    <small>{isAr ? "علبة فيها ١٠ كروت تشجيع" : "A box of 10 encouragement cards"}</small>
+                    <span className="sb-package-option__prices">
+                      <b>{formatPrice(STORY_CARDS_BUNDLE_PRICE, locale)}</b>
+                      <del>{formatPrice(unitPrice + cardsData.product.price, locale)}</del>
+                      <em>{isAr ? "وفّري" : "Save"} {formatPrice(unitPrice + cardsData.product.price - STORY_CARDS_BUNDLE_PRICE, locale)}</em>
+                    </span>
+                  </span>
+                  <span className="sb-package-option__check" aria-hidden="true"><Check size={14} strokeWidth={3} /></span>
+                </label>
+              </div>
+            </fieldset>
 
             <CustomizationReview isAr={isAr} editTarget="sb-child-name-input" rows={[
               [isAr ? "القصة" : "Story", displayedTitle],
               [isAr ? "اسم الطفل" : "Child's name", childName.trim() || (isAr ? "لم يُضف — اختياري" : "Not added \u2014 optional")],
               [isAr ? "بطل القصة" : "Main character", childGender === "boy" ? (isAr ? "ولد" : "Boy") : (isAr ? "بنت" : "Girl")],
               ...(isCustomMode ? [[isAr ? "فكرة القصة" : "Story idea", customIdeaText.trim()], [isAr ? "الإهداء" : "Dedication", dedicationText.trim() || (isAr ? "بدون إهداء" : "No dedication")]] as [string, string][] : []),
-              [isAr ? "الصور" : "Photos", `${uploadedPhotos.length} ${isAr ? "صورة مرفوعة" : "uploaded"}${sendPhotosViaWhatsApp ? (isAr ? " — إرسال عبر واتساب" : " \u2014 send via WhatsApp") : ""}`],
+              [isAr ? "الصور" : "Photos", `${uploadedPhotos.length} ${isAr ? "صورة مرفوعة" : "uploaded"}`],
               [isAr ? "الكمية" : "Quantity", String(quantity)],
               [isAr ? "الإجمالي" : "Total", formatPrice(totalPrice, locale)],
             ]} />
@@ -1052,10 +1150,10 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                   onClick={() => handleAddToCart()}
                   disabled={!inStock || isUploadingPhoto}
                   title={
-                    uploadedPhotos.length === 0 && !sendPhotosViaWhatsApp
+                    uploadedPhotos.length === 0
                       ? isAr
-                        ? "يرجى رفع صورة الطفل أو اختيار إرسالها لاحقاً عبر الواتساب"
-                        : "Please upload child photo or choose WhatsApp option"
+                        ? "يرجى رفع صورة الطفل"
+                        : "Please upload a photo of your child"
                       : undefined
                   }
                 >
@@ -1069,11 +1167,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
                       <ShoppingBag size={18} />
                       <span>
                         {uploadedPhotos.length === 0
-                          ? sendPhotosViaWhatsApp
-                            ? isAr
-                              ? "أضيفي للسلة (الصور بالواتساب) 💬"
-                              : "Add to Cart (WhatsApp Photos) 💬"
-                            : isAr
+                          ? isAr
                             ? "ارفعي صورة الطفل للإضافة"
                             : "Upload photo to add"
                           : isAr
@@ -1337,7 +1431,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId }: Sto
       {/* Mobile Sticky Quick-Purchase Bar */}
       <aside
         aria-label={isAr ? "شريط الشراء السريع" : "Quick purchase bar"}
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+        className="mobile-sticky-bar md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
       >
         <div className="flex items-center justify-between gap-2.5 max-w-[500px] mx-auto">
           <div className="flex items-center gap-2 min-w-0">

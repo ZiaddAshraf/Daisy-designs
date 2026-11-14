@@ -22,11 +22,6 @@ export default function RegisterPage() {
         <h1 className="mt-3 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
           {isAr ? "إنشاء حساب جديد" : "Create Account"}
         </h1>
-        <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-          {isAr
-            ? "انضم إلينا لمتابعة طلباتك وتخصيصاتك وحفظ مفضلاتك"
-            : "Join us to track orders, save customizations, and manage your wishlist"}
-        </p>
 
         <form
           className="mt-8 space-y-5"

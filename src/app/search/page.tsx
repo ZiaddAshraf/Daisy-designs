@@ -93,7 +93,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const productViews = products.map(product => toStorefrontProduct(product, locale));
 
   return <main className="catalog-page">
-    <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning><div><p className="eyebrow">DAISY DESIGNS / {t("search")}</p><h1>{t("searchPageTitle")}</h1><p>{t("searchPageIntro")}</p></div></header>
+    <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning><div><p className="eyebrow">DAISY DESIGNS / {t("search")}</p><h1>{t("searchPageTitle")}</h1></div></header>
     <form action="/search" className="catalog-search-form" role="search"><input name="q" type="search" defaultValue={query} maxLength={80} placeholder={t("searchPlaceholder")} aria-label={t("searchProduct")} /><button aria-label={t("submitSearch")}><Search size={18} /></button></form>
     {query && <div className="catalog-result-line" data-scroll-reveal suppressHydrationWarning><span>{formatMessage(t("searchResultQuery"), { query })}</span><span>{formatMessage(t("searchResultCount"), { count: formatLocaleNumber(locale, total) })}</span></div>}
     {query && <CatalogControls action="/search" filters={filters} locale={locale} categories={categories.map(item => ({ slug: item.slug, label: selectLocalizedText(locale, item.name, item.arabicName) }))} collections={collections.map(item => ({ slug: item.slug, label: item.name }))} />}

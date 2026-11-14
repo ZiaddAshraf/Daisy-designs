@@ -41,7 +41,6 @@ export default async function FaqPage() {
         <p className="faq-eyebrow">DAISY DESIGNS <span aria-hidden="true">/</span> {t("faqEyebrow")}</p>
         <div className="faq-intro-copy">
           <h1>{t("faqTitle")}</h1>
-          <p>{t("faqIntro")}</p>
         </div>
       </header>
 
@@ -64,7 +63,6 @@ export default async function FaqPage() {
       <section className="faq-contact" aria-labelledby="faq-contact-title" data-scroll-reveal suppressHydrationWarning>
         <div>
           <h2 id="faq-contact-title">{t("faqContactTitle")}</h2>
-          <p>{t("faqContactIntro")}</p>
         </div>
         <Link href="/contact">{t("faqContactCta")}<span aria-hidden="true">↗</span></Link>
       </section>

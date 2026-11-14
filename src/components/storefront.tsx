@@ -1,5 +1,7 @@
 "use client";
 
+import { DiscountRows } from "@/components/story-cards-offer";
+import { shippingProgress } from "@/lib/commerce-rules";
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -22,7 +24,7 @@ import { WhatsAppFloatingButton } from "@/components/whatsapp-floating-button";
 
 type CartVariant = { id: string; name: string; stock: number };
 type CartItem = Product & { lineId: string; quantity: number; customization?: Record<string, string>; variantId?: string; variantName?: string };
-type CartQuote = { subtotal: number; discount: number; shipping: number; total: number; fee: number; threshold: number };
+type CartQuote = { bundleDiscount: number; subtotal: number; discount: number; shipping: number; total: number; fee: number; threshold: number };
 type CartContextType = { quote: CartQuote | null; pricingError: string; pricingPending: boolean; couponCode: string; setCouponCode: (value: string) => void; items: CartItem[]; demoMode: boolean; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number, openDrawer?: boolean) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
 const CartContext = createContext<CartContextType | null>(null);
 export function useCart() { const context = useContext(CartContext); if (!context) throw new Error("useCart must be used inside StoreShell"); return context; }
@@ -51,9 +53,11 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
   const { status } = useSession();
   const mergedSession = useRef(false);
 
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setCartOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     if (demoMode) return;
@@ -122,7 +126,7 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
   };
   const update = (lineId: string, amount: number) => setItems(current => adjustCartLine(current, lineId, amount));
   const remove = (lineId: string) => setItems(current => removeCartLine(current, lineId));
-  const clear = () => setItems([]);
+  const clear = () => { setItems([]); setCouponCode(""); };
   const [wishlistToast, setWishlistToast] = useState<{ message: string; actionText?: string; actionHref?: string; isAdded: boolean } | null>(null);
 
   const toggle = (product: Product) => {
@@ -155,7 +159,7 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
 
   return <LocaleContext.Provider value={locale}>
     <WishlistContext.Provider value={{ items: wishlist, demoMode, toggle, has: slug => wishlist.some(item => item.slug === slug) }}>
-      <CartContext.Provider value={{ items, demoMode, add, update, remove, clear, quote, pricingError, pricingPending, couponCode, setCouponCode }}>
+      <CartContext.Provider value={{ items, demoMode, add, update, remove, clear, quote: pricingPending ? null : quote, pricingError: pricingPending ? "" : pricingError, pricingPending, couponCode, setCouponCode }}>
         <ScrollReveal />
         <Header count={items.reduce((sum, item) => sum + item.quantity, 0)} wishlistCount={wishlist.length} onCart={() => setCartOpen(true)} locale={locale} />
         {demoMode && <div className="daisy-demo-notice" role="status" dir={directionForLocale(locale)}><strong>{getTranslation(locale, "previewBannerTitle")}</strong><span>{getTranslation(locale, "previewBannerDescription")}</span></div>}
@@ -202,6 +206,7 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
 function Header({ count, wishlistCount, onCart, locale }: { count: number; wishlistCount: number; onCart: () => void; locale: Locale }) {
   const t = (key: TranslationKey) => getTranslation(locale, key);
   const isAr = locale === "ar";
+  const { quote } = useCart();
   const SearchArrow = isAr ? ArrowLeft : ArrowRight;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -261,7 +266,9 @@ function Header({ count, wishlistCount, onCart, locale }: { count: number; wishl
   };
   if (pathname.startsWith("/admin")) return null;
   return <>
-    <div className="daisy-announcement">{t("announcement")}</div>
+    <div className="daisy-announcement">{quote && quote.fee > 0 && quote.threshold > 0
+      ? formatMessage(t("shippingAnnouncement"), { amount: formatPrice(quote.threshold, locale) })
+      : t("announcement")}</div>
     <header className={`daisy-header daisy-header--storefront ${pathname === "/" ? "daisy-header--home" : ""}`}>
       <div className="daisy-header__inner">
         <button ref={menuButtonRef} className="daisy-icon-button daisy-menu-toggle" aria-label={t("menuOpen")} aria-expanded={mobileOpen} aria-controls="daisy-mobile-menu" onClick={() => setMobileOpen(true)}><Menu size={19} strokeWidth={1.5} /></button>
@@ -454,13 +461,11 @@ export function WishlistButton({ product }: { product: Product }) {
 
 function CartDrawer({ onClose }: { onClose: () => void }) {
   const { items, update, remove, demoMode, quote } = useCart();
-  const FREE_SHIPPING_THRESHOLD = quote?.threshold ?? 0;
+  const progress = shippingProgress(quote);
   const t = useTranslation();
   const locale = useLocale();
   const Arrow = locale === "ar" ? ArrowLeft : ArrowRight;
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const freeShippingProgress = Math.min(100, Math.round((total / (FREE_SHIPPING_THRESHOLD || 1)) * 100));
-  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - total);
 
   return (
     <div className="daisy-drawer-backdrop" onClick={onClose}>
@@ -472,20 +477,20 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        {items.length > 0 && !demoMode && (
+        {items.length > 0 && !demoMode && progress && (
           <div className="daisy-cart-drawer__shipping-bar px-4 py-3 bg-[var(--surface-soft)] border-b border-[var(--border)] text-xs">
             <div className="flex items-center justify-between font-medium mb-1.5 text-[var(--foreground)]">
               <span>
-                {amountToFreeShipping === 0
+                {progress.remaining === 0
                   ? t("freeShippingProgressAchieved")
-                  : formatMessage(t("freeShippingProgress"), { amount: formatLocaleNumber(locale, amountToFreeShipping) })}
+                  : formatMessage(t("freeShippingProgress"), { amount: formatLocaleNumber(locale, progress.remaining) })}
               </span>
-              <span className="font-bold text-amber-600 dark:text-amber-400">{freeShippingProgress}%</span>
+              <span className="font-bold text-amber-600 dark:text-amber-400">{progress.percent}%</span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
               <div
                 className="h-full rounded-full bg-amber-500 transition-all duration-300"
-                style={{ width: `${freeShippingProgress}%` }}
+                style={{ width: `${progress.percent}%` }}
               />
             </div>
           </div>
@@ -538,9 +543,10 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
             <p className="daisy-demo-cart-message">{t("previewCartMessage")}</p>
           ) : (
             <>
+              {quote && <DiscountRows locale={locale} {...quote} />}
               <div>
-                <span>{t("total")}</span>
-                <strong>{formatPrice(total, locale)}</strong>
+                <span>{quote && quote.discount > 0 ? (locale === "ar" ? "المجموع بعد الخصم" : "Subtotal after discount") : t("subtotal")}</span>
+                <strong>{formatPrice(quote ? quote.subtotal - quote.discount : total, locale)}</strong>
               </div>
               <Link href="/checkout" onClick={onClose} className="daisy-button daisy-button--dark">
                 {t("checkout")} <Arrow size={16} />
@@ -565,7 +571,6 @@ function Footer({ locale }: { locale: Locale }) {
           <Link href="/" className="daisy-wordmark daisy-wordmark--footer" aria-label={t("brandHome")}>
             <BrandLogo variant="full" />
           </Link>
-          <p>{t("footerIntro")}<br />{t("footerIntroSecond")}</p>
           <span className="daisy-footer__signature">✳&nbsp; DAISY DESIGNS</span>
         </div>
         <nav className="daisy-footer__links" aria-label={t("mainNavigation")}>

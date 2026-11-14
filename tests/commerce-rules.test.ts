@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { calculateDiscount, calculateShipping, mergeQuantities } from "@/lib/commerce-rules";
+import { calculateDiscount, calculateShipping, storyCardsDiscount, mergeQuantities, shippingProgress } from "@/lib/commerce-rules";
 import { adjustCartLine, cartLineId, checkoutLinePayload, removeCartLine } from "@/lib/cart-line-state";
 import { checkoutSchema } from "@/lib/order-validation";
 import { getProductGalleryImage } from "@/lib/product-gallery";
@@ -48,4 +48,20 @@ test("customization validation checks required text, allowed choices, and unsupp
   assert.equal(validateCustomization(fields, { name: "", theme: "stars" }).success, false);
   assert.equal(validateCustomization(fields, { name: "Mira", theme: "invalid" }).success, false);
   assert.equal(validateCustomization(fields, { name: "Mira", photo: "https://example.com/photo.jpg" }).success, false);
+});
+
+test("shipping progress reflects the confirmed fee and the subtotal after discount", () => {
+  assert.equal(shippingProgress(null), null);
+  assert.deepEqual(shippingProgress({ subtotal: 750, discount: 100, threshold: 700, shipping: 60 }), { remaining: 50, percent: 92 });
+  assert.deepEqual(shippingProgress({ subtotal: 750, discount: 50, threshold: 700, shipping: 0 }), { remaining: 0, percent: 100 });
+  assert.deepEqual(shippingProgress({ subtotal: 100, discount: 0, threshold: 0, shipping: 0 }), { remaining: 0, percent: 100 });
+});
+
+test("story and card bundles pair quantities across customized lines", () => {
+  const story = { slug: "first-year-at-school", price: 300, quantity: 1 };
+  const cards = { slug: "reward-cards-box-set", price: 150, quantity: 3 };
+  assert.equal(storyCardsDiscount([story]), 0);
+  assert.equal(storyCardsDiscount([cards]), 0);
+  assert.equal(storyCardsDiscount([story, cards]), 50);
+  assert.equal(storyCardsDiscount([story, story, cards]), 100);
 });

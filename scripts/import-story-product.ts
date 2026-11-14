@@ -30,7 +30,7 @@ const PRODUCT_PAYLOAD = {
     "An inspiring personalized children's storybook crafted with care by Daisy Designs. Starring your child with their uploaded photograph integrated into a beautifully printed keepsake paper book. Fixed narrative celebrating friendship, confidence, and courage on their first year at school.",
   arabicDescription:
     "قصة أطفال ملهمة ومصممة بحب من Daisy Designs. تضع طفلك بطلاً للقصة من خلال رفع صورته لتُطبع داخل كتاب ورقي فاخر يبقى ذكرى لا تُنسى. نصوص ورسومات ثابتة ومحفزة تروي تفاصيل أول سنة في المدرسة بمشاعر الحماس والثقة بالنفس والصداقة.",
-  price: 200,
+  price: 300,
   compareAtPrice: null,
   sku: "DD-ST-001",
   stock: 50,
@@ -94,7 +94,7 @@ async function main() {
     console.log(`  Category [${CATEGORY_PAYLOAD.slug}]: ${existingCategory ? "Update" : "Create"}`);
     console.log(`  Product  [${PRODUCT_PAYLOAD.slug}]: ${existingProduct ? "Update" : "Create"}`);
     console.log(`  Images   [10 assets in public/products/customized-stories/first-year-at-school/]: Sync positions 0-9`);
-    console.log(`  Price:   200 EGP per physical printed storybook`);
+    console.log(`  Price:   300 EGP per physical printed storybook`);
     console.log(`  Stock:   50 books`);
     console.log(`  SKU:     DD-ST-001 (internal only)`);
     console.log(`  Customization: child_photo (IMAGE, required)`);

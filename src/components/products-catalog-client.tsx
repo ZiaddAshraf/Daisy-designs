@@ -1,5 +1,6 @@
 "use client";
 
+import { BundlePhotos } from "@/components/story-cards-offer";
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "@/components/site-image";
@@ -101,10 +102,10 @@ export function ProductsCatalogClient({
   return (
     <div className="w-full">
       {/* Filter and Search Bar */}
-      <div className="mb-8 flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--border)] pb-5">
+      <div className="mb-8 flex flex-col gap-3.5 xl:flex-row xl:items-center xl:justify-between border-b border-[var(--border)] pb-5">
         {/* Category Pills - Smooth horizontal swipeable strip on mobile */}
-        <div className="relative max-w-full overflow-hidden">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 max-w-full touch-pan-x scroll-smooth" role="tablist" aria-label="Product Categories">
+        <div className="relative min-w-0 max-w-full">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 max-w-full touch-pan-x scroll-smooth md:flex-wrap" role="tablist" aria-label={isRtl ? "أقسام المنتجات" : "Product categories"}>
             {categories.map((cat) => {
               const isActive = activeCategory === cat.id;
               return (
@@ -137,7 +138,7 @@ export function ProductsCatalogClient({
         </div>
 
         {/* Search Input */}
-        <div className="relative w-full sm:w-64 sm:shrink-0">
+        <div className="relative w-full xl:w-64 xl:shrink-0">
           <Search size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
           <input
             type="text"
@@ -197,7 +198,7 @@ export function ProductsCatalogClient({
         </div>
       ) : (
         /* Reference-Matching 3-Column Luxury Product Cards Grid */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-7 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-7 lg:gap-8" data-scroll-reveal-stagger>
           {filteredProducts.map((prod, idx) => {
             const isFavorite = has(prod.slug);
 
@@ -220,6 +221,7 @@ export function ProductsCatalogClient({
             return (
               <article
                 key={prod.id}
+                data-scroll-reveal="card"
                 className="catalog-card group relative flex flex-col justify-between overflow-hidden rounded-[26px] border shadow-[0_2px_14px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)] hover:shadow-[0_14px_34px_rgba(0,0,0,0.09)] dark:hover:shadow-[0_14px_36px_rgba(0,0,0,0.65)] hover:border-teal-600/50 dark:hover:border-teal-400/50 transition-all duration-300 hover:-translate-y-1"
               >
                 {/* Wishlist Heart Button - Top Start */}
@@ -250,14 +252,14 @@ export function ProductsCatalogClient({
                     {/* Image Container with Arched Tab */}
                     <div className="catalog-card__frame relative aspect-[4/3] p-2 sm:p-3 w-full overflow-hidden flex items-center justify-center transition-colors">
                       <div className="relative h-full w-full">
-                        <Image
+                        {prod.id === "story-and-reward-cards" ? <BundlePhotos /> : <Image
                           src={prod.image}
                           alt={prod.title}
                           fill
                           priority={idx < 6}
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className="object-contain transition-transform duration-500 group-hover:scale-105"
-                        />
+                        />}
                       </div>
 
                       {/* Arched Bottom Cutout Tab (Variant/Design Badge) */}
@@ -289,7 +291,8 @@ export function ProductsCatalogClient({
 
                   {/* Line 4: Price & Clear Direct CTA Button */}
                   <div className="px-4 pb-5 sm:px-6 sm:pb-6 pt-2 border-t border-[var(--border)]/50 flex items-center justify-between gap-2">
-                    <div className="flex items-baseline gap-1">
+                    <div className="flex flex-wrap items-baseline gap-1">
+                      {prod.id === "story-and-reward-cards" && <del className="text-xs text-[var(--muted-foreground)]">{isRtl ? "٤٥٠" : "450"}</del>}
                       <span className="catalog-card__price text-xl sm:text-2xl font-black transition-colors">
                         {prod.price.toFixed(0)}
                       </span>

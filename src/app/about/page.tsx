@@ -39,7 +39,6 @@ export default async function AboutPage() {
         <div className="about-story-copy">
           <h2 id="about-question-title">{t("aboutQuestionTitle")}</h2>
           <blockquote>{t("aboutQuestion")}</blockquote>
-          <p>{t("aboutQuestionAnswer")}</p>
         </div>
       </section>
 
@@ -55,7 +54,6 @@ export default async function AboutPage() {
       <section className="about-closing" aria-labelledby="about-closing-title" data-scroll-reveal suppressHydrationWarning>
         <p className="about-section-label">{t("aboutEyebrow")}</p>
         <h2 id="about-closing-title">{t("aboutClosingTitle")}</h2>
-        <p>{t("aboutClosingBody")}</p>
         <Link className="about-cta" href="/products">
           {t("aboutExploreProducts")}
           <Arrow aria-hidden="true" size={16} strokeWidth={1.5} />

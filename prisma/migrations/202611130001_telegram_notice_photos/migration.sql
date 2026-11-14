@@ -1,0 +1,1 @@
+ALTER TABLE "TelegramOrderNotice" ADD COLUMN "nextPhoto" INTEGER NOT NULL DEFAULT 0;

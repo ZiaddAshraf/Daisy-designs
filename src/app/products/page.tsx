@@ -1,3 +1,4 @@
+import { STORY_CARDS_BUNDLE_PRICE } from "@/lib/commerce-rules";
 import { getPublishedProducts, toStorefrontProduct } from "@/lib/catalog";
 import { DatabaseUnavailable } from "@/components/database-state";
 import Link from "next/link";
@@ -25,7 +26,7 @@ export default async function ProductsPage() {
   let records: Awaited<ReturnType<typeof getPublishedProducts>>;
   try { records = await getPublishedProducts(); } catch { return <main className="catalog-page"><DatabaseUnavailable /></main>; }
   const priceFor = (slug: string) => records.find(p => p.slug === slug)?.price ?? 0;
-  // 1. All 4 Authentic Customized Storybook Products
+  // Ready-made customized storybooks
   const storySchoolProduct: CatalogProductItem = {
     id: "story-01-first-year-at-school",
     slug: "first-year-at-school",
@@ -109,6 +110,34 @@ export default async function ProductsPage() {
       : ["Physical Printed Storybook", "Child as the Hero", "Minecraft-Themed Artwork"],
     ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
+
+  const newStoryProducts: CatalogProductItem[] = [
+    ["where-is-the-cat-mariam", "فين القطة يا مريم؟", "Where Is the Cat, Mariam?", "مريم تبحث عن قطتها المختبئة بمساعدة صديقها الكلب.", "Mariam and her puppy search for a hiding cat.", "story-05-where-is-the-cat-mariam.jpeg"],
+    ["lana-magic-ribbon", "لانا والشريطة السحرية", "Lana and the Magic Ribbon", "مغامرة لانا مع شريطة سحرية مليئة بالألوان والحركة.", "Lana discovers a magic ribbon in a colorful adventure.", "story-06-lana-magic-ribbon.jpeg"],
+    ["selim-sonic-lightning-race", "سليم وسونيك في سباق البرق", "Selim and Sonic's Lightning Race", "سباق سريع يخوضه سليم مع سونيك.", "Selim joins Sonic in a lightning-fast race.", "story-07-selim-sonic-lightning-race.jpeg"],
+    ["salah-animal-friends", "صلاح وأصدقاء الحيوانات", "Salah and His Animal Friends", "صلاح يلتقي بأصدقاء جدد من الحيوانات.", "Salah meets cheerful animal friends.", "story-08-salah-animal-friends.jpeg"],
+    ["ali-celia-lost-island", "علي وسيليا وسر الجزيرة المفقودة", "Ali, Celia and the Lost Island Secret", "علي وسيليا يبحثان عن سر الجزيرة المفقودة.", "Ali and Celia uncover the secret of a lost island.", "story-09-ali-celia-lost-island.jpeg"],
+    ["layan-roblox-kingdom", "ليان ومملكة روبلوكس المسحورة", "Layan and the Enchanted Roblox Kingdom", "ليان تخوض مغامرة في مملكة روبلوكس المسحورة.", "Layan explores an enchanted Roblox kingdom.", "story-10-layan-roblox-kingdom.jpeg"],
+    ["omar-champions-stadium", "عمر في استاد الأبطال", "Omar in the Champions Stadium", "عمر يعيش حلم كرة القدم في استاد الأبطال.", "Omar lives his football dream in the champions stadium.", "story-11-omar-champions-stadium.jpeg"],
+    ["ezz-aunt-reem-airport", "عز وخالتو ريم في مغامرة المطار", "Ezz and Aunt Reem's Airport Adventure", "عز وخالتو ريم يستكشفان عالم السفر والطائرات.", "Ezz and Aunt Reem explore the airport and airplanes.", "story-12-ezz-aunt-reem-airport.jpeg"],
+    ["ashraf-lulu-giraffe", "أشرف وصديقته الزرافة لولو", "Ashraf and Lulu the Giraffe", "أشرف يقابل الزرافة لولو في حديقة الحيوانات.", "Ashraf meets Lulu the giraffe at the zoo.", "story-13-ashraf-lulu-giraffe.jpeg"],
+    ["selim-dream-match", "سليم ومباراة الأحلام", "Selim and the Dream Match", "سليم يخوض مباراة كرة القدم التي يحلم بها.", "Selim plays the football match of his dreams.", "story-14-selim-dream-match.jpeg"],
+  ].map(([slug, titleAr, titleEn, descriptionAr, descriptionEn, image], index) => ({
+    id: `story-${String(index + 5).padStart(2, "0")}-${slug}`,
+    slug,
+    href: `/products/first-year-at-school?story=${slug}`,
+    title: isRtl ? titleAr : titleEn,
+    subtitle: isRtl ? "كتاب ورقي مخصص باسم وصورة طفلك" : "Personalized printed storybook",
+    category: isRtl ? "قصص مخصصة" : "Customized Stories",
+    categoryId: "customized-stories",
+    price: priceFor("first-year-at-school"),
+    priceUnit: isRtl ? "للكتاب المطبوع" : "per printed book",
+    badge: isRtl ? "قصة جديدة" : "New Story",
+    image: `/products/customized-stories/${image}`,
+    description: isRtl ? descriptionAr : descriptionEn,
+    features: isRtl ? ["كتاب ورقي مطبوع", "باسم وصورة طفلك"] : ["Printed Storybook", "Your Child's Name & Photo"],
+    ctaText: isRtl ? "اشتري الآن" : "Buy Now",
+  }));
 
   // 1b. Bespoke "Design Your Story" Product
   const customStoryProduct: CatalogProductItem = {
@@ -201,7 +230,7 @@ export default async function ProductsPage() {
     ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
-  
+
   // 4b. Custom Acrylic Name Keychains
   const keychainAssortedProduct: CatalogProductItem = {
     id: "keychain-assorted",
@@ -269,7 +298,19 @@ export default async function ProductsPage() {
 // 5. Deterministic Interleaved / "عشوائي متناسق" Shuffle
   // Interleaving storybooks, t-shirt, stickers of different themes, and reward cards box set
   const shuffledCatalog: CatalogProductItem[] = [
-    storySchoolProduct,                               // 1. Story 1: First Year at School
+    ...(records.some(p => p.slug === "reward-cards-box-set" && p.stock > 0) ? [{
+      ...storySchoolProduct,
+      id: "story-and-reward-cards",
+      href: "/products/first-year-at-school?bundle=cards",
+      title: isRtl ? "باقة القصة وكروت التشجيع" : "Story & Reward Cards Bundle",
+      subtitle: isRtl ? "قصة مخصصة وعلبة ١٠ كروت" : "One personalized story and a box of 10 cards",
+      price: STORY_CARDS_BUNDLE_PRICE,
+      priceUnit: isRtl ? "للباقة" : "per bundle",
+      badge: isRtl ? "وفّري ٥٠ جنيه" : "Save 50 EGP",
+      ctaText: isRtl ? "خصّصي الباقة" : "Customize bundle",
+      description: isRtl ? "اختاري القصة وخصّصيها لطفلك مع علبة كروت التشجيع." : "Customize a story for your child and add a box of reward cards.",
+    }] : []),
+    storySchoolProduct,
     customStoryProduct,                               // 1b. Bespoke: Design Your Story
     tshirtProduct,                                    // 2. Custom Printed Children's T-Shirt
     storyMinecraftProduct,                            // 3. Story 4: Minecraft Adventure
@@ -282,6 +323,7 @@ export default async function ProductsPage() {
     stickerProducts[3],                               // 8. Little Princess
     keychainRonaldoProduct,                           // 8b. Cristiano Ronaldo Real Madrid Keychain
     storyCatsProduct,                                 // 9. Story 3: Yahya & Meow Friends
+    ...newStoryProducts,
     stickerProducts[8],                               // 10. Gaming Zone
     stickerProducts[2],                               // 11. Space Astronaut
     stickerProducts[4],                               // 12. Super Heroes
@@ -346,12 +388,11 @@ export default async function ProductsPage() {
         <div>
           <p className="eyebrow">DAISY DESIGNS / {t("catalogTitle")}</p>
           <h1>{t("catalogHeading")}</h1>
-          <p>{t("productsLiveCatalogIntro")}</p>
         </div>
       </header>
 
       {/* Full Products Catalog View */}
-      <section className="mb-20" aria-label={t("productsLiveCatalogTitle")} data-scroll-reveal suppressHydrationWarning>
+      <section className="mb-20" aria-label={t("productsLiveCatalogTitle")}>
         <ProductsCatalogClient
           initialProducts={catalog}
           locale={locale}

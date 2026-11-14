@@ -30,7 +30,7 @@ const PRODUCT_PAYLOAD = {
     "An exclusive collection of 10 inspiring, heartwarming affirmation and reward cards in a beautifully branded Daisy Designs keepsake box. Thoughtfully created as daily uplifting surprises for lunchboxes, study desks, or a delightful gift for little ones.",
   arabicDescription:
     "مجموعة حصرية من كروت التحفيز الملهمة تضم 10 كروت متنوعة ورسائل إيجابية دافئة داخل علبة هدايا أنيقة بشعار Daisy Designs. صُممت لتكون لمسة جميلة للمكتب، أو مفاجأة يومية مبهجة داخل اللانش بوكس والحقيبة المدرسية، أو هدية تُسعد من تحب.",
-  price: 200,
+  price: 150,
   compareAtPrice: null,
   sku: "DD-RC-010",
   stock: 50,
@@ -95,7 +95,7 @@ async function main() {
     console.log(`  Category [${CATEGORY_PAYLOAD.slug}]: ${existingCategory ? "Update" : "Create"}`);
     console.log(`  Product  [${PRODUCT_PAYLOAD.slug}]: ${existingProduct ? "Update" : "Create"}`);
     console.log(`  Images   [11 assets in public/products/reward-cards/]: Sync positions 0-10`);
-    console.log(`  Price:   200 EGP per complete box`);
+    console.log(`  Price:   150 EGP per complete box`);
     console.log(`  Stock:   50 complete boxes`);
     console.log(`  SKU:     DD-RC-010 (internal only)`);
 

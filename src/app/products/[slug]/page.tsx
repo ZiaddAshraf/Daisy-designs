@@ -178,12 +178,12 @@ export default async function ProductPage({
     searchParams,
 }: {
     params: Promise<{ slug: string }>;
-    searchParams?: Promise<{ story?: string; mode?: string }>;
+    searchParams?: Promise<{ story?: string; mode?: string; bundle?: string }>;
 }) {
     const locale = await getRequestLocale();
     const [{ slug }, search] = await Promise.all([
         params,
-        searchParams ? searchParams : Promise.resolve<{ story?: string; mode?: string }>({}),
+        searchParams ? searchParams : Promise.resolve<{ story?: string; mode?: string; bundle?: string }>({}),
     ]);
     if (slug.startsWith("sticker-")) {
         const match = slug.match(/^sticker-(\d+)/);
@@ -263,7 +263,7 @@ export default async function ProductPage({
                 <span>/</span>
                 <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
             </nav>
-            <StoryBookPreview locale={locale} inStock={product.stock > 0} initialStoryId={initialStoryId} />
+            <StoryBookPreview locale={locale} inStock={product.stock > 0} initialStoryId={initialStoryId} initialBundle={search?.bundle === "cards"} />
         </main>;
     }
 

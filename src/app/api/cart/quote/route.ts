@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { resolveProductPrice, variantLabel } from "@/lib/product-pricing";
-import { calculateDiscount, calculateShipping } from "@/lib/commerce-rules";
+import { calculateDiscount, calculateShipping, storyCardsDiscount } from "@/lib/commerce-rules";
 import { isOrderableCatalogProduct } from "@/lib/demo-preview-safety";
 
 const schema = z.object({
@@ -23,18 +23,19 @@ export async function POST(request: Request) {
       return { price: unitPrice, variantId: variant?.id, variantName: variant ? variantLabel(variant, locale) : undefined };
     });
     const subtotal = lines.reduce((sum, line, index) => sum + line.price * items[index].quantity, 0);
-    let discount = 0;
+    const bundleDiscount = storyCardsDiscount(items.map((item, index) => ({ ...item, price: lines[index].price })));
+    let discount = bundleDiscount;
     if (couponCode) {
       const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
       const now = new Date();
-      if (!coupon || !coupon.active || (coupon.startsAt && coupon.startsAt > now) || (coupon.expiresAt && coupon.expiresAt < now) || (coupon.usageLimit !== null && coupon.usageCount >= coupon.usageLimit) || subtotal < coupon.minimumOrder) throw new Error("INVALID_COUPON");
-      discount = calculateDiscount(subtotal, coupon);
+      if (!coupon || !coupon.active || (coupon.startsAt && coupon.startsAt > now) || (coupon.expiresAt && coupon.expiresAt < now) || (coupon.usageLimit !== null && coupon.usageCount >= coupon.usageLimit) || subtotal - bundleDiscount < coupon.minimumOrder) throw new Error("INVALID_COUPON");
+      discount += calculateDiscount(subtotal - bundleDiscount, coupon);
     }
     const settings = await prisma.siteSetting.findMany({ where: { key: { in: ["shippingFee", "freeShippingThreshold"] } } });
     const fee = Number(settings.find(s => s.key === "shippingFee")?.value ?? 60);
     const threshold = Number(settings.find(s => s.key === "freeShippingThreshold")?.value ?? 700);
     const shipping = items.length ? calculateShipping(subtotal - discount, fee, threshold) : 0;
-    return NextResponse.json({ lines, subtotal, discount, shipping, total: subtotal - discount + shipping, fee, threshold });
+    return NextResponse.json({ lines, subtotal, discount, bundleDiscount, shipping, total: subtotal - discount + shipping, fee, threshold });
   } catch (error) {
     const message = error instanceof Error ? error.message : "QUOTE_UNAVAILABLE";
     return NextResponse.json({ error: ["INVALID_VARIANT", "VARIANT_REQUIRED", "INVALID_PRICE", "PRODUCT_NOT_FOUND", "INVALID_COUPON"].includes(message) ? message : "QUOTE_UNAVAILABLE" }, { status: 422 });

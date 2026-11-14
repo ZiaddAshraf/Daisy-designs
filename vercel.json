@@ -1,0 +1,4 @@
+{
+  "buildCommand": "PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK=1 npm run db:deploy && npm run build",
+  "crons": [{ "path": "/api/cron/whatsapp-orders", "schedule": "0 6 * * *" }]
+}

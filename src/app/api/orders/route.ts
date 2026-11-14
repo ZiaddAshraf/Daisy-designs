@@ -1,16 +1,19 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { createHash, randomBytes } from "node:crypto";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
 import { CashOnDeliveryProvider } from "@/lib/payments";
 import { checkoutSchema } from "@/lib/order-validation";
-import { calculateDiscount, calculateShipping } from "@/lib/commerce-rules";
+import { calculateDiscount, calculateShipping, storyCardsDiscount } from "@/lib/commerce-rules";
 import { validateCustomization, validateTshirtCustomization } from "@/lib/customization-validation";
 import { isDemoCatalogProduct } from "@/lib/demo-preview-safety";
 import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
 import { resolveProductPrice, usesProductStock } from "@/lib/product-pricing";
 import { ORDER_RECEIPT_COOKIE, ORDER_RECEIPT_MAX_AGE, receiptSecret, signOrderReceipt } from "@/lib/order-receipt";
+
+import { whatsappConfigured, dispatchOrderNotice } from "@/lib/whatsapp-order-notice";
+import { telegramConfigured, dispatchTelegramOrderNotice } from "@/lib/telegram-order-notice";
 
 export const runtime = "nodejs";
 
@@ -87,12 +90,13 @@ export async function POST(request: Request) {
             }
 
             const subtotal = pricedItems.reduce((sum, entry) => sum + entry.unitPrice * entry.item.quantity, 0);
-            let discount = 0;
+            const bundleDiscount = storyCardsDiscount(pricedItems.map(({ item, unitPrice }) => ({ ...item, price: unitPrice })));
+            let discount = bundleDiscount;
             let couponCode: string | undefined;
             if (input.couponCode) {
                 const coupon = await transaction.coupon.findFirst({ where: { code: input.couponCode.toUpperCase(), active: true } });
-                if (!coupon || (coupon.startsAt && coupon.startsAt > new Date()) || (coupon.expiresAt && coupon.expiresAt < new Date()) || (coupon.usageLimit !== null && coupon.usageCount >= coupon.usageLimit) || subtotal < coupon.minimumOrder) throw new Error("INVALID_COUPON");
-                discount = calculateDiscount(subtotal, coupon);
+                if (!coupon || (coupon.startsAt && coupon.startsAt > new Date()) || (coupon.expiresAt && coupon.expiresAt < new Date()) || (coupon.usageLimit !== null && coupon.usageCount >= coupon.usageLimit) || subtotal - bundleDiscount < coupon.minimumOrder) throw new Error("INVALID_COUPON");
+                discount += calculateDiscount(subtotal - bundleDiscount, coupon);
                 couponCode = coupon.code;
                 const claimed = await transaction.coupon.updateMany({
                     where: { id: coupon.id, active: true, ...(coupon.usageLimit !== null ? { usageCount: { lt: coupon.usageLimit } } : {}) },
@@ -118,6 +122,8 @@ export async function POST(request: Request) {
                 data: {
                     number, status: "PENDING", paymentStatus: paymentResult.status, paymentMethod: "COD",
                     subtotal, shipping, discount, couponCode, total, notes: input.notes,
+                    ...(whatsappConfigured() ? { whatsappNotice: { create: {} } } : {}),
+                    ...(telegramConfigured() ? { telegramNotice: { create: {} } } : {}),
                     ...(session?.user?.id ? { userId: session.user.id } : {}),
                     shippingAddress: { fullName: input.fullName, phone: input.phone, email: input.email, governorate: input.governorate, city: input.city, address: input.address },
                     items: { create: pricedItems.map(entry => ({
@@ -136,6 +142,8 @@ export async function POST(request: Request) {
             });
             return { id: order.id, number: order.number, total: order.total, items: order.items.map(item => ({ productName: item.productName, quantity: item.quantity, unitPrice: item.unitPrice, customization: item.customization as Record<string, string> | undefined })) };
         });
+        if (whatsappConfigured()) after(() => dispatchOrderNotice(result.id));
+        if (telegramConfigured()) after(() => dispatchTelegramOrderNotice(result.id));
         return orderResponse(result);
     } catch (error) {
         if (input.requestId && typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {

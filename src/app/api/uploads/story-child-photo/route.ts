@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: "FILE_TOO_LARGE",
-          message: "Photo size exceeds 10MB limit / حجم الصورة يتجاوز الحد الأقصى (١٠ ميجابايت)",
+          message: "Photo size exceeds 4MB limit / حجم الصورة يتجاوز الحد الأقصى (٤ ميجابايت)",
         },
         { status: 400 }
       );
@@ -70,7 +70,8 @@ export async function POST(request: Request) {
       },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error('[story-child-photo] upload failed', error instanceof Error ? error.message : 'unknown error');
     return NextResponse.json({ error: "UPLOAD_FAILED" }, { status: 500 });
   }
 }

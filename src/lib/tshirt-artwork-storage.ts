@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB for high-resolution print artwork
+export const MAX_FILE_SIZE = 4 * 1024 * 1024; // Stay below Vercel's 4.5 MB request limit.
 export const MIN_DIMENSION = 1; // Any image dimension accepted
 export const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 

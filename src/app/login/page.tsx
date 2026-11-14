@@ -22,11 +22,6 @@ export default function LoginPage() {
         <h1 className="mt-3 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
           {isAr ? "تسجيل الدخول" : "Sign In"}
         </h1>
-        <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-          {isAr
-            ? "مرحباً بك مجدداً! أدخل بيانات حسابك للمتابعة"
-            : "Welcome back! Enter your details to access your account"}
-        </p>
 
         <form
           className="mt-8 space-y-5"

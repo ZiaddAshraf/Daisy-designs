@@ -73,7 +73,7 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
   };
 
   // Artwork Upload state
-  const artworkUpload = useImageUpload("/api/uploads/tshirt-artwork", "storageKey", 10, isAr);
+  const artworkUpload = useImageUpload("/api/uploads/tshirt-artwork", "storageKey", 4, isAr);
   const { file: artworkFile, preview: artworkPreviewUrl, key: artworkStorageKey, busy: isUploading, error: uploadError, setError: setUploadError } = artworkUpload;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -479,7 +479,7 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
                       : "Click to browse, or drag & drop file here"}
                   </p>
                   <p className="text-[11px] text-slate-400 dark:text-neutral-500 mt-0.5">
-                    PNG, JPG, WebP ({isAr ? "بحد أقصى ١٠ ميجابايت" : "up to 10MB"})
+                    PNG, JPG, WebP ({isAr ? "بحد أقصى ٤ ميجابايت" : "up to 4MB"})
                   </p>
                 </div>
               ) : (

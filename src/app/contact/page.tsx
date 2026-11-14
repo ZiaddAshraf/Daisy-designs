@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { getStoreWhatsAppNumber } from "@/lib/whatsapp-order-message";
 import { useLocale, useTranslation } from "@/components/storefront";
 import { directionForLocale } from "@/lib/locale";
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
 import { DaisyFlower } from "@/components/decorative-marks";
 
 function InstagramIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
@@ -28,41 +28,29 @@ export default function ContactPage() {
   const locale = useLocale();
   const t = useTranslation();
   const isRtl = locale === "ar";
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
-  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const whatsappNumber = getStoreWhatsAppNumber();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLoading(true);
-    setStatus("idle");
-    setFeedbackMessage("");
-
-    const form = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(form.entries());
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        setStatus("success");
-        setFeedbackMessage(t("contactSuccess"));
-        (event.target as HTMLFormElement).reset();
-      } else {
-        setStatus("error");
-        setFeedbackMessage(t("contactError"));
-      }
-    } catch {
-      setStatus("error");
-      setFeedbackMessage(t("contactError"));
-    } finally {
-      setLoading(false);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const value = (key: string) => String(data.get(key) ?? "").trim();
+    const message = form.elements.namedItem("message") as HTMLTextAreaElement;
+    if (!value("message")) {
+      message.setCustomValidity(isRtl ? "اكتبي رسالتك." : "Enter your message.");
+      message.reportValidity();
+      return;
     }
-  };
+
+    const text = [
+      value("subject"),
+      value("name") && `${t("contactName")}: ${value("name")}`,
+      value("email") && `${t("contactEmail")}: ${value("email")}`,
+      value("phone") && `${t("contactPhone")}: ${value("phone")}`,
+    ].filter(Boolean).join("\n");
+    const body = [text, value("message")].filter(Boolean).join("\n\n");
+    window.location.assign(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(body)}`);
+  }
 
   return (
     <main
@@ -70,15 +58,9 @@ export default function ContactPage() {
       className="mx-auto max-w-[1180px] px-6 py-16 sm:py-24"
     >
       <header className="mb-12 max-w-2xl" data-scroll-reveal suppressHydrationWarning>
-        <p className="text-xs font-semibold tracking-[.2em] text-[var(--muted-foreground)]">
-          DAISY DESIGNS / {t("contactUs").toUpperCase()}
-        </p>
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
-          {t("contactHeading")}
+          {t("contactUs")}
         </h1>
-        <p className="mt-4 text-base leading-relaxed text-[var(--muted-foreground)]">
-          {t("contactIntro")}
-        </p>
       </header>
 
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-16 items-start">
@@ -89,20 +71,18 @@ export default function ContactPage() {
           data-scroll-reveal
           suppressHydrationWarning
         >
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form method="post" className="space-y-6" onSubmit={handleSubmit}>
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
                 <label
                   htmlFor="contact-name"
                   className="block text-xs font-semibold text-[var(--foreground)] mb-2"
                 >
-                  {t("contactName")} <span className="text-red-500">*</span>
+                  {t("contactName")}
                 </label>
                 <input
                   id="contact-name"
                   name="name"
-                  required
-                  minLength={2}
                   maxLength={100}
                   autoComplete="name"
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none"
@@ -115,12 +95,11 @@ export default function ContactPage() {
                   htmlFor="contact-email"
                   className="block text-xs font-semibold text-[var(--foreground)] mb-2"
                 >
-                  {t("contactEmail")} <span className="text-red-500">*</span>
+                  {t("contactEmail")}
                 </label>
                 <input
                   id="contact-email"
                   name="email"
-                  required
                   type="email"
                   autoComplete="email"
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none"
@@ -152,13 +131,11 @@ export default function ContactPage() {
                   htmlFor="contact-subject"
                   className="block text-xs font-semibold text-[var(--foreground)] mb-2"
                 >
-                  {t("contactSubject")} <span className="text-red-500">*</span>
+                  {t("contactSubject")}
                 </label>
                 <input
                   id="contact-subject"
                   name="subject"
-                  required
-                  minLength={3}
                   maxLength={120}
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none"
                   placeholder={isRtl ? "استفسار عن طلب أو تخصيص" : "Inquiry about order or customization"}
@@ -177,7 +154,7 @@ export default function ContactPage() {
                 id="contact-message"
                 name="message"
                 required
-                minLength={10}
+                onInput={event => event.currentTarget.setCustomValidity("")}
                 maxLength={1000}
                 rows={5}
                 className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none"
@@ -185,28 +162,12 @@ export default function ContactPage() {
               />
             </div>
 
-            {status !== "idle" && (
-              <div
-                role="alert"
-                aria-live="polite"
-                className={`flex items-center gap-3 rounded-xl p-4 text-sm ${
-                  status === "success"
-                    ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
-                    : "bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300 border border-red-200 dark:border-red-800"
-                }`}
-              >
-                {status === "success" ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-                <span>{feedbackMessage}</span>
-              </div>
-            )}
-
             <button
-              disabled={loading}
               type="submit"
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-neutral-950 dark:bg-white px-8 text-sm font-semibold text-white dark:text-neutral-950 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] cursor-pointer disabled:cursor-wait disabled:opacity-50"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-neutral-950 dark:bg-white px-8 text-sm font-semibold text-white dark:text-neutral-950 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] cursor-pointer"
             >
               <Send size={16} />
-              <span>{loading ? t("contactSending") : t("contactSendButton")}</span>
+              <span>{isRtl ? "فتح الرسالة في واتساب" : "Open message in WhatsApp"}</span>
             </button>
           </form>
         </section>
@@ -244,13 +205,13 @@ export default function ContactPage() {
                     {isRtl ? "واتساب وخدمة العملاء" : "Customer Care & WhatsApp"}
                   </span>
                   <a
-                    href="https://wa.me/201152606234"
+                    href={`https://wa.me/${whatsappNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     dir="ltr"
                     className="block font-bold text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
                   >
-                    +20 11 52606234
+                    +{whatsappNumber}
                   </a>
                 </div>
               </div>

@@ -13,7 +13,7 @@ export function HomeFeaturedGrid({ products }: { products: Product[] }) {
   const Arrow = isAr ? ArrowLeft : ArrowRight;
 
   return (
-    <div className="home-featured-grid">
+    <div className="home-featured-grid" data-scroll-reveal-stagger>
       {products.map((product) => {
         // Keep the catalog's sticker-design navigation into the customizer.
         const designId = product.slug.match(/^sticker-(\d+)/)?.[1] ?? "0";
@@ -30,7 +30,7 @@ export function HomeFeaturedGrid({ products }: { products: Product[] }) {
               : (isAr ? "شوفي تفاصيل المنتج" : "View product details");
 
         return (
-          <article className="home-featured-card group" key={product.slug}>
+          <article className="home-featured-card group" key={product.slug} data-scroll-reveal="card">
             <div className="home-featured-media">
               <Link href={href} aria-label={product.name}>
                 <Image

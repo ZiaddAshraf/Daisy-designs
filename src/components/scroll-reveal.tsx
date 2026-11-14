@@ -25,6 +25,11 @@ export function ScrollReveal() {
     let stopped = false;
     const revealed = new WeakSet<Element>();
     const animations = new Set<Animation>();
+    const updateProgress = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollable > 0 ? Math.min(Math.max(window.scrollY / scrollable, 0), 1) : 0;
+      document.documentElement.style.setProperty("--daisy-scroll-progress", String(progress));
+    };
     const revealTarget = (element: HTMLElement, isInstant: boolean) => {
       if (revealed.has(element)) return;
       revealed.add(element);
@@ -34,9 +39,12 @@ export function ScrollReveal() {
       if (isInstant) return;
 
       try {
+        const isCard = element.getAttribute("data-scroll-reveal") === "card";
         const animation = element.animate(
-          [{ opacity: 0, transform: "translate3d(0, 12px, 0)" }, { opacity: 1, transform: "translate3d(0, 0, 0)" }],
-          { duration: 520, delay: revealDelay(element), easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "both" },
+          isCard
+            ? [{ opacity: 0, transform: "translate3d(0, 24px, 0) scale(.985)" }, { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" }]
+            : [{ opacity: 0, transform: "translate3d(0, 22px, 0)" }, { opacity: 1, transform: "translate3d(0, 0, 0)" }],
+          { duration: isCard ? 660 : 580, delay: revealDelay(element), easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "both" },
         );
         animations.add(animation);
         animation.onfinish = () => {
@@ -87,6 +95,7 @@ export function ScrollReveal() {
 
     // Mark viewport and near-fold elements before enabling the hidden styles
     checkVisibleElements();
+    updateProgress();
     document.documentElement.setAttribute("data-scroll-reveal-ready", "true");
 
     let scrollScheduled = false;
@@ -95,10 +104,12 @@ export function ScrollReveal() {
       scrollScheduled = true;
       requestAnimationFrame(() => {
         scrollScheduled = false;
+        updateProgress();
         checkVisibleElements();
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
 
     const mutationObserver = new MutationObserver(records => {
       for (const record of records) record.addedNodes.forEach(node => {
@@ -116,10 +127,12 @@ export function ScrollReveal() {
       animations.forEach(animation => animation.cancel());
       animations.clear();
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       mutationObserver.disconnect();
       observer.disconnect();
       document.removeEventListener("focusin", revealFocusedTarget);
       document.documentElement.removeAttribute("data-scroll-reveal-ready");
+      document.documentElement.style.removeProperty("--daisy-scroll-progress");
       document.querySelectorAll(`${TARGET_SELECTOR}[data-scroll-revealed]`).forEach(element => element.removeAttribute("data-scroll-revealed"));
     };
     motionPreference.addEventListener("change", handleMotionChange);
@@ -129,14 +142,16 @@ export function ScrollReveal() {
       animations.forEach(animation => animation.cancel());
       animations.clear();
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       motionPreference.removeEventListener("change", handleMotionChange);
       document.removeEventListener("focusin", revealFocusedTarget);
       mutationObserver.disconnect();
       observer.disconnect();
       document.documentElement.removeAttribute("data-scroll-reveal-ready");
+      document.documentElement.style.removeProperty("--daisy-scroll-progress");
       document.querySelectorAll(`${TARGET_SELECTOR}[data-scroll-revealed]`).forEach(element => element.removeAttribute("data-scroll-revealed"));
     };
   }, []);
 
-  return null;
+  return <span className="daisy-scroll-progress" aria-hidden="true" />;
 }

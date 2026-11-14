@@ -63,7 +63,7 @@ export async function ensureCatalogProductInTransaction(
           "An exclusive collection of 10 inspiring, heartwarming affirmation and reward cards in a beautifully branded Daisy Designs keepsake box.",
         arabicDescription:
           "مجموعة حصرية من كروت التحفيز الملهمة تضم 10 كروت متنوعة ورسائل إيجابية دافئة داخل علبة هدايا أنيقة بشعار Daisy Designs.",
-        price: 200,
+        price: 150,
         sku: "DD-RC-010",
         stock: 50,
         lowStockThreshold: 5,
@@ -143,7 +143,7 @@ export async function ensureCatalogProductInTransaction(
         arabicName: "قصة أول سنة في المدرسة",
         description: "An inspiring personalized children's storybook starring your child with their uploaded photograph.",
         arabicDescription: "قصة أطفال ملهمة ومصممة بحب من Daisy Designs تضع طفلك بطلاً للقصة.",
-        price: 200,
+        price: 300,
         sku: "DD-ST-001",
         stock: 50,
         lowStockThreshold: 5,

@@ -8,8 +8,6 @@ import type { Locale } from "@/lib/locale";
 import rewardCardsData from "@/data/reward-cards-product.json";
 import {
   TinyDaisyDoodle,
-  PlayfulWiggle,
-  DaisyFlower,
 } from "@/components/decorative-marks";
 import { useCart, useWishlist } from "@/components/storefront";
 import { formatPrice } from "@/lib/products";
@@ -187,7 +185,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
   const { add } = useCart();
   const { toggle: toggleStoreWishlist, has: inStoreWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
-  const unitPrice = product.price ?? 200;
+  const unitPrice = product.price;
   const totalPrice = unitPrice * quantity;
   const [added, setAdded] = useState(false);
   // State
@@ -210,7 +208,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
         slug: product.slug,
         name: productName,
         category: isAr ? "كروت التشجيع" : "Reward Cards",
-        price: product.price ?? 200,
+        price: product.price,
         image: product.primaryImage.url,
         description: productDescription,
         customizable: false,
@@ -359,7 +357,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
       slug: product.slug,
       name: productName,
       category: isAr ? "كروت التشجيع" : "Reward Cards",
-      price: product.price ?? 200,
+      price: product.price,
       image: product.primaryImage.url,
       description: productDescription,
       customizable: false,
@@ -814,8 +812,8 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
           </h2>
           <p className="rc-gallery__subtitle">
             {isAr
-              ? "تصميمات ملهمة ومتنوعة صنعت بكل حب لترافق أطفالكم كل يوم. انقر على أي كارت لمعاينته بالحجم الكامل."
-              : "Ten inspiring, cheerful designs crafted to uplift and delight your child every day. Click any card for a full-size preview."}
+              ? "اضغطي على الكارت لتكبيره."
+              : "Select a card to enlarge it."}
           </p>
 
           {/* Filter Tabs */}
@@ -919,15 +917,6 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
           })}
         </div>
 
-        <footer className="rc-gallery__footer">
-          <DaisyFlower size={20} className="rc-closing-flower" />
-          <p className="rc-gallery__closing">
-            {isAr
-              ? "صنع بكل حب — لمسة جميلة للمكتب أو هدية تُسعد من تحب"
-              : "Crafted with love — A lovely touch for desks or a gift to brighten someone's day"}
-          </p>
-          <PlayfulWiggle className="rc-closing-wiggle" />
-        </footer>
       </section>
 
       {/* 5. Lightbox Modal Dialog (Modern Web Guidance animate-to-from-top-layer) */}
@@ -1062,7 +1051,7 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
       {/* Mobile Sticky Quick-Purchase Bar */}
       <aside
         aria-label={isAr ? "شريط الشراء السريع" : "Quick purchase bar"}
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+        className="mobile-sticky-bar md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-3.5 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
       >
         <div className="flex items-center justify-between gap-2.5 max-w-[500px] mx-auto">
           <div className="flex items-center gap-2 min-w-0">

@@ -3,11 +3,11 @@ import test from "node:test";
 import rewardCardsData from "../src/data/reward-cards-product.json";
 import { prisma } from "../src/lib/prisma";
 
-test("reward cards JSON fixture has confirmed 200 EGP price, stock 50, and 10 card images", () => {
+test("reward cards JSON fixture has confirmed 150 EGP price, stock 50, and 10 card images", () => {
   const { product, category } = rewardCardsData;
   assert.equal(category.slug, "reward-cards");
   assert.equal(product.slug, "reward-cards-box-set");
-  assert.equal(product.price, 200);
+  assert.equal(product.price, 150);
   assert.equal(product.stock, 50);
   assert.equal(product.sku, "DD-RC-010");
   assert.equal(product.customizable, false);
@@ -31,7 +31,7 @@ test("reward cards database product and category are created with confirmed valu
     include: { images: { orderBy: { position: "asc" } }, category: true },
   });
   assert.ok(product, "Product reward-cards-box-set must exist in database");
-  assert.equal(product.price, 200);
+  assert.equal(product.price, 150);
   assert.ok(typeof product.stock === "number" && product.stock >= 0, "Product stock must be non-negative integer");
   assert.equal(product.sku, "DD-RC-010");
   assert.equal(product.customizable, false);

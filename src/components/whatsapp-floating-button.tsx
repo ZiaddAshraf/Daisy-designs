@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import type { Locale } from "@/lib/locale";
-import { X } from "lucide-react";
 
 type WhatsAppFloatingButtonProps = {
   locale?: Locale;
@@ -14,34 +12,14 @@ export function WhatsAppFloatingButton({
   phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "201152606234",
 }: WhatsAppFloatingButtonProps) {
   const isAr = locale === "ar";
-  const [showTooltip, setShowTooltip] = useState(true);
 
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
 
   return (
     <aside
       aria-label={isAr ? "خدمة العملاء والطلب المباشر عبر واتساب" : "WhatsApp customer care and instant ordering"}
-      className="fixed bottom-6 end-4 sm:end-6 z-40 flex items-center gap-2 pointer-events-none select-none"
+      className="whatsapp-floating-button fixed bottom-6 end-4 sm:end-6 z-40 flex items-center gap-2 pointer-events-none select-none"
     >
-      {/* Friendly Tooltip Pill */}
-      {showTooltip && (
-        <div className="pointer-events-auto relative hidden sm:flex items-center gap-1.5 rounded-full bg-white dark:bg-neutral-900 px-3.5 py-1.5 text-xs font-bold text-slate-800 dark:text-neutral-100 shadow-lg border border-slate-200/80 dark:border-neutral-700 animate-in fade-in slide-in-from-end-2 duration-300">
-          <span>{isAr ? "محتاجة مساعدة أو طلب سريع؟" : "Need help or quick order?"}</span>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowTooltip(false);
-            }}
-            className="ms-1 p-0.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-neutral-200 cursor-pointer"
-            aria-label={isAr ? "إغلاق التلميح" : "Close tooltip"}
-          >
-            <X size={12} />
-          </button>
-        </div>
-      )}
-
       {/* Main WhatsApp FAB Button */}
       <a
         href={whatsappUrl}

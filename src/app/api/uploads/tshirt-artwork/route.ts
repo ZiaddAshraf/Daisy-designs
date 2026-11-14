@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: "FILE_TOO_LARGE",
-          message: "حجم ملف التصميم يتجاوز الحد الأقصى (١٠ ميجابايت) / Artwork size exceeds 10MB limit",
+          message: "حجم ملف التصميم يتجاوز الحد الأقصى (٤ ميجابايت) / Artwork size exceeds 4MB limit",
         },
         { status: 400 }
       );

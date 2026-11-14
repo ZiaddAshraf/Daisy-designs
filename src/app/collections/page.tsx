@@ -2,7 +2,8 @@ import Image from "@/components/site-image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { DatabaseUnavailable } from "@/components/database-state";
-import { PRODUCT_IMAGE_PLACEHOLDER, getProductImageUrl } from "@/lib/product-image";
+import { PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
+import { collectionCover } from "@/lib/collection-cover";
 import { collectionTextForLocale, getCatalogCollections } from "@/lib/catalog";
 import { formatMessage, getTranslation } from "@/lib/i18n/messages";
 import { formatLocaleNumber } from "@/lib/locale";
@@ -26,10 +27,10 @@ export default async function CollectionsPage() {
   const t = (key: "collections" | "collectionsHeading" | "collectionsIntro" | "noCollections" | "browseProductsLink" | "productCount" | "exploreCollection" | "breadcrumb") => getTranslation(locale, key);
   return <main className="catalog-page collections-page">
     <nav className="catalog-breadcrumb" aria-label={t("breadcrumb")}><Link href="/">{getTranslation(locale, "home")}</Link><span aria-hidden="true">/</span><span aria-current="page">{t("collections")}</span></nav>
-    <header className="collections-intro" data-scroll-reveal suppressHydrationWarning><div><p className="eyebrow">DAISY DESIGNS / {t("collections")}</p><h1>{t("collectionsHeading")}</h1><p>{t("collectionsIntro")}</p></div></header>
+    <header className="collections-intro" data-scroll-reveal suppressHydrationWarning><div><p className="eyebrow">DAISY DESIGNS / {t("collections")}</p><h1>{t("collectionsHeading")}</h1></div></header>
     {collections.length ? <div className="collections-grid" data-scroll-reveal-stagger>{collections.map(collection => {
       const name = collectionTextForLocale(collection.name, locale) ?? collection.name;
-      const image = getProductImageUrl(collection.image);
+      const image = collectionCover(collection.image, collection.slug);
       const isBrandCover = image === PRODUCT_IMAGE_PLACEHOLDER;
       return <Link key={collection.id} href={`/collections/${collection.slug}`} className="collection-card" data-scroll-reveal suppressHydrationWarning>
         <div className={`collection-card__image${isBrandCover ? " collection-card__image--brand" : ""}`}><Image src={image} alt="" fill sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 50vw" className="daisy-image" />{isBrandCover && <span className="collection-cover-mark" aria-hidden="true"><span>{name.trim().slice(0, 1).toLocaleUpperCase(locale)}</span><small>DAISY DESIGNS / {t("collections")}</small></span>}</div>

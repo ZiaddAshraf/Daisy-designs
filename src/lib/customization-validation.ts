@@ -15,9 +15,11 @@ export type CustomizationValidation =
 const choiceTypes = new Set(["SELECT", "COLOR", "SIZE"]);
 
 export function validateEgyptianPhone(phone: string): boolean {
-    const cleaned = phone.replace(/[\s\-\+]/g, "");
-    const egyptRegex = /^(?:20|0)?1[0125]\d{8}$/;
-    return egyptRegex.test(cleaned);
+    const cleaned = phone
+        .replace(/[٠-٩]/g, digit => String(digit.charCodeAt(0) - 0x0660))
+        .replace(/[۰-۹]/g, digit => String(digit.charCodeAt(0) - 0x06f0))
+        .replace(/[\s-]/g, "");
+    return /^(?:(?:\+|00)?20|0)?1[0125]\d{8}$/.test(cleaned);
 }
 
 export function validateCustomization(

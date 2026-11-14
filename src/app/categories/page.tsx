@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "./categories.css";
 import type { Metadata } from "next";
 import { getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/locale-server";
@@ -23,7 +24,7 @@ export default async function CategoriesPage() {
   const categories = getStoreCategories();
 
   return (
-    <main className="catalog-page">
+    <main className="catalog-page category-directory">
       <nav className="catalog-breadcrumb" aria-label={t("breadcrumb")}>
         <Link href="/">{t("home")}</Link>
         <span aria-hidden="true">/</span>
@@ -31,11 +32,7 @@ export default async function CategoriesPage() {
       </nav>
 
       <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning>
-        <div>
-          <p className="eyebrow">DAISY DESIGNS / {t("categories")}</p>
-          <h1>{t("categoriesHeading")}</h1>
-          <p>{t("categoriesIntro")}</p>
-        </div>
+        <h1>{t("categoriesHeading")}</h1>
       </header>
 
       <div className="store-category-grid" data-scroll-reveal-stagger>

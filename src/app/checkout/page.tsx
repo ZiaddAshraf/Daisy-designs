@@ -1,5 +1,8 @@
 "use client";
 
+import { DiscountRows } from "@/components/story-cards-offer";
+import { validateEgyptianPhone } from "@/lib/customization-validation";
+import { shippingProgress } from "@/lib/commerce-rules";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -58,7 +61,7 @@ export const EGYPTIAN_GOVERNORATES = [
 
 export default function CheckoutPage() {
     const { items, clear, demoMode, quote, pricingError, pricingPending, couponCode, setCouponCode } = useCart();
-    const FREE_SHIPPING_THRESHOLD = quote?.threshold ?? 0;
+    const progress = shippingProgress(quote);
     const locale = useLocale();
     const t = useTranslation();
     const direction = directionForLocale(locale);
@@ -75,15 +78,11 @@ export default function CheckoutPage() {
     const [phone, setPhone] = useState(defaultPhone);
 
     const currentGov = EGYPTIAN_GOVERNORATES.find(g => g.id === selectedGov) || EGYPTIAN_GOVERNORATES[0];
-    const cleanedPhone = phone.trim().replace(/^(\+20|0020)/, "0");
-    const isEgyptianMobile = /^01[0125][0-9]{8}$/.test(cleanedPhone);
+    const isEgyptianMobile = validateEgyptianPhone(phone);
 
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const shipping = quote?.shipping ?? 0;
-    const discount = quote?.discount ?? 0;
-    const estimatedTotal = subtotal - discount + shipping;
-    const freeShippingProgress = Math.min(100, Math.round((subtotal / (FREE_SHIPPING_THRESHOLD || 1)) * 100));
-    const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+    const orderTotal = quote ? formatPrice(quote.total, locale) : "—";
     const totalItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
     async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -159,7 +158,8 @@ export default function CheckoutPage() {
             try { sessionStorage.removeItem("daisy-order-confirmation"); } catch { /* legacy browser data is no longer used */ }
             try { sessionStorage.removeItem("daisy-checkout-request-id"); } catch { /* the next page load will generate a fresh key */ }
             clear();
-            router.replace("/checkout/success");
+            const orderRefParam = data?.number ? `?ref=${encodeURIComponent(data.number)}` : "";
+            router.replace(`/checkout/success${orderRefParam}`);
         } catch {
             setMessage(t("checkoutErrConnection"));
         } finally {
@@ -210,7 +210,6 @@ export default function CheckoutPage() {
                         <ShoppingBag size={28} />
                     </div>
                     <h2 className="mt-4 text-lg font-semibold text-[var(--foreground)]">{t("checkoutEmptyCartTitle")}</h2>
-                    <p className="mt-1 text-sm text-[var(--muted-foreground)]">{t("emptyCartMessage")}</p>
                     <Link
                         href="/products"
                         className="mt-6 inline-flex items-center justify-center rounded-xl bg-neutral-950 dark:bg-white px-6 py-3 text-sm font-semibold text-white dark:text-neutral-950 shadow-sm transition-all hover:opacity-95 hover:-translate-y-0.5 hover:shadow-md active:scale-95 cursor-pointer"
@@ -237,7 +236,7 @@ export default function CheckoutPage() {
                             </span>
                             <span className="flex items-center gap-2">
                                 <strong className="text-base font-bold text-[var(--foreground)]">
-                                    {formatPrice(estimatedTotal, locale)}
+                                    {orderTotal}
                                 </strong>
                                 {showMobileSummary ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                             </span>
@@ -293,10 +292,11 @@ export default function CheckoutPage() {
                                         <span>{t("subtotal")}</span>
                                         <span>{formatPrice(subtotal, locale)}</span>
                                     </div>
+                                    {quote && <DiscountRows locale={locale} {...quote} />}
                                     <div className="flex justify-between text-[var(--muted-foreground)]">
-                                        <span>{t("shippingFee")}{discount > 0 && <small className="block">{locale === "ar" ? "الخصم: " : "Discount: "}{formatPrice(discount, locale)}</small>}</span>
+                                        <span>{t("shippingFee")}</span>
                                         <span>
-                                            {shipping === 0 ? (
+                                            {!quote ? "—" : shipping === 0 ? (
                                                 <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">{t("freeShipping")}</strong>
                                             ) : (
                                                 formatPrice(shipping, locale)
@@ -305,7 +305,7 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="flex justify-between border-t border-[var(--border)] pt-2 text-sm font-bold text-[var(--foreground)]">
                                         <span>{t("total")}</span>
-                                        <span>{formatPrice(estimatedTotal, locale)}</span>
+                                        <span>{orderTotal}</span>
                                     </div>
                                 </div>
                             </div>
@@ -360,25 +360,16 @@ export default function CheckoutPage() {
                                             placeholder="01012345678"
                                             className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                         />
-                                        {isEgyptianMobile ? (
-                                            <span className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
-                                                <CheckCircle2 size={13} />
-                                                <span>{locale === "ar" ? "رقم محمول مصري صحيح ومكتمل ✓" : "Valid Egyptian mobile number"}</span>
-                                            </span>
-                                        ) : phone.length > 0 ? (
-                                            <span className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
-                                                {locale === "ar" ? "رقم المحمول المصري يبدأ بـ 010 أو 011 أو 012 أو 015 ومكون من ١١ رقم" : "Egyptian mobile must be 11 digits starting with 010, 011, 012, or 015"}
-                                            </span>
-                                        ) : (
-                                            <span className="text-xs text-[var(--muted-foreground)]">
-                                                {t("egyptPhoneHelp")}
+                                        {phone.length > 0 && !isEgyptianMobile && (
+                                            <span className="text-xs text-amber-700 dark:text-amber-400">
+                                                {locale === "ar" ? "أدخلي رقم موبايل مصري صحيح." : "Enter a valid Egyptian mobile number."}
                                             </span>
                                         )}
                                     </label>
 
                                     <label className="grid gap-1.5 text-sm font-medium text-[var(--foreground)]">
                                         <span>
-                                            {locale === "ar" ? "رقم بديل أو واتساب (اختياري لمساعدة المندوب)" : "Backup / WhatsApp (Optional for courier)"}
+                                            {locale === "ar" ? "رقم بديل أو واتساب (اختياري)" : "Backup phone or WhatsApp (optional)"}
                                         </span>
                                         <input
                                             name="backupPhone"
@@ -489,23 +480,8 @@ export default function CheckoutPage() {
                                         </div>
                                         <div className="flex-1">
                                             <p className="font-semibold text-sm text-[var(--foreground)]">
-                                                {locale === "ar" ? "الدفع نقداً عند الاستلام بعد المعاينة الكاملة" : t("paymentMethodCod")}
+                                                {locale === "ar" ? "الدفع نقداً عند الاستلام بعد المعاينة الكاملة" : "Cash on delivery after inspection"}
                                             </p>
-                                            <p className="mt-1 text-xs text-[var(--muted-foreground)] leading-relaxed">
-                                                {locale === "ar"
-                                                    ? "مش هتدفعي أي مبالغ مسبقاً! افتحي الشحنة وعايني جودة المنتج والتفاصيل قبل سداد المبلغ لمندوب التوصيل."
-                                                    : t("paymentMethodCodDesc")}
-                                            </p>
-                                            <div className="mt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
-                                                <span className="flex items-center gap-1.5">
-                                                    <CheckCircle2 size={13} />
-                                                    <span>{locale === "ar" ? "معاينة مجانية كاملة قبل الدفع" : "Free inspection before pay"}</span>
-                                                </span>
-                                                <span className="flex items-center gap-1.5">
-                                                    <Truck size={13} />
-                                                    <span>{locale === "ar" ? "شحن آمن ومباشر لباب بيتك" : "Doorstep courier delivery"}</span>
-                                                </span>
-                                            </div>
                                         </div>
                                     </div>
 
@@ -518,7 +494,6 @@ export default function CheckoutPage() {
                                                 onChange={event => setCouponCode(event.target.value)}
                                                 maxLength={40}
                                                 autoComplete="off"
-                                                placeholder={locale === "ar" ? "اكتبي الكود لو معاكي كوبون" : "Enter code if available"}
                                                 className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                             />
                                         </label>
@@ -529,7 +504,6 @@ export default function CheckoutPage() {
                                                 name="notes"
                                                 maxLength={300}
                                                 autoComplete="off"
-                                                placeholder={locale === "ar" ? "أي ملاحظة تحبيها لمندوب الشحن" : "Notes for the courier"}
                                                 className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden"
                                             />
                                         </label>
@@ -634,18 +608,18 @@ export default function CheckoutPage() {
                                 </div>
 
                                 {/* Free Shipping Progress Bar */}
-                                <div className="mt-5 rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
+                                {progress && (<div className="mt-5 rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
                                     <div className="flex items-center justify-between text-xs">
                                         <span className="font-semibold text-[var(--foreground)] flex items-center gap-1.5">
                                             <Truck size={14} className="text-teal-600 dark:text-teal-400" />
-                                            {subtotal >= FREE_SHIPPING_THRESHOLD ? (
+                                            {progress.remaining === 0 ? (
                                                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                                                     {t("freeShippingUnlocked")}
                                                 </span>
                                             ) : (
                                                 <span>
                                                     {formatMessage(t("freeShippingProgress"), {
-                                                        amount: amountToFreeShipping.toLocaleString(locale === "ar" ? "ar-EG" : "en-US"),
+                                                        amount: progress.remaining.toLocaleString(locale === "ar" ? "ar-EG" : "en-US"),
                                                     })}
                                                 </span>
                                             )}
@@ -654,10 +628,10 @@ export default function CheckoutPage() {
                                     <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--border)]">
                                         <div
                                             className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300"
-                                            style={{ width: `${freeShippingProgress}%` }}
+                                            style={{ width: `${progress.percent}%` }}
                                         />
                                     </div>
-                                </div>
+                                </div>)}
 
                                 {/* Totals Breakdown */}
                                 <div className="mt-5 space-y-2.5 border-t border-[var(--border)] pt-4 text-sm">
@@ -665,10 +639,11 @@ export default function CheckoutPage() {
                                         <span>{t("subtotal")}</span>
                                         <span className="font-medium text-[var(--foreground)]">{formatPrice(subtotal, locale)}</span>
                                     </div>
+                                    {quote && <DiscountRows locale={locale} {...quote} />}
                                     <div className="flex justify-between text-[var(--muted-foreground)]">
-                                        <span>{t("shippingFee")}{discount > 0 && <small className="block">{locale === "ar" ? "الخصم: " : "Discount: "}{formatPrice(discount, locale)}</small>}</span>
+                                        <span>{t("shippingFee")}</span>
                                         <span>
-                                            {shipping === 0 ? (
+                                            {!quote ? "—" : shipping === 0 ? (
                                                 <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
                                                     <CheckCircle2 size={12} />
                                                     {t("freeShipping")}
@@ -680,26 +655,11 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="flex justify-between border-t border-[var(--border)] pt-3 text-base font-bold text-[var(--foreground)]">
                                         <span>{t("total")}</span>
-                                        <span className="text-lg text-[var(--foreground)]">{formatPrice(estimatedTotal, locale)}</span>
+                                        <span className="text-lg text-[var(--foreground)]">{orderTotal}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Trust Points */}
-                            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-xs space-y-3">
-                                <div className="flex items-center gap-3 text-xs font-medium text-[var(--muted-foreground)]">
-                                    <ShieldCheck size={18} className="text-amber-500 shrink-0" />
-                                    <span>{t("trustCashOnDelivery")}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-xs font-medium text-[var(--muted-foreground)]">
-                                    <Truck size={18} className="text-amber-500 shrink-0" />
-                                    <span>{t("trustNationwideDelivery")}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-xs font-medium text-[var(--muted-foreground)]">
-                                    <ShieldCheck size={18} className="text-teal-600 dark:text-teal-400 shrink-0" />
-                                    <span>{t("trustKidSafe")}</span>
-                                </div>
-                            </div>
                         </aside>
                     </div>
                 </div>

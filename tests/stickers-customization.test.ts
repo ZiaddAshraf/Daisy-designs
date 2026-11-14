@@ -12,6 +12,9 @@ test("validates Egyptian mobile numbers correctly", () => {
   assert.equal(validateEgyptianPhone("01512345678"), true);
   assert.equal(validateEgyptianPhone("+201012345678"), true);
   assert.equal(validateEgyptianPhone("201112345678"), true);
+  assert.equal(validateEgyptianPhone("٠١٠ ١٢٣٤ ٥٦٧٨"), true);
+  assert.equal(validateEgyptianPhone("00201012345678"), true);
+  assert.equal(validateEgyptianPhone("010+12345678"), false);
   assert.equal(validateEgyptianPhone("010 1234 5678"), true);
   assert.equal(validateEgyptianPhone("010-1234-5678"), true);
 

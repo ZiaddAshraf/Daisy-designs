@@ -279,9 +279,32 @@ model Order {
   address         Address?      @relation(fields: [addressId], references: [id])
   user            User?         @relation(fields: [userId], references: [id])
   items           OrderItem[]
+  whatsappNotice  WhatsAppOrderNotice?
+  telegramNotice  TelegramOrderNotice?
 
   @@index([status, createdAt])
   @@index([userId, createdAt])
+}
+
+model WhatsAppOrderNotice {
+  orderId     String   @id
+  nextPart    Int      @default(0)
+  availableAt DateTime @default(now())
+  acceptedAt  DateTime?
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([acceptedAt, availableAt])
+}
+
+model TelegramOrderNotice {
+  orderId     String   @id
+  nextPart    Int      @default(0)
+  nextPhoto   Int      @default(0)
+  availableAt DateTime @default(now())
+  acceptedAt  DateTime?
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([acceptedAt, availableAt])
 }
 
 model OrderItem {
@@ -372,6 +395,14 @@ model SiteSetting {
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model PrivateUpload {
+  key         String   @id
+  data        Bytes
+  contentType String
+  metadata    Json?
+  createdAt   DateTime @default(now())
 }
 
 enum UserRole {

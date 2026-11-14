@@ -268,7 +268,7 @@ a:hover {
   gap: 5px;
 }
 
-.daisy-locale-switcher__buttons button {
+.daisy-locale-switcher--compact .daisy-locale-switcher__buttons button {
   min-width: 24px;
   min-height: 34px;
   border: 0;
@@ -3609,6 +3609,18 @@ img[src*="daisy-designs-placeholder"] {
   aspect-ratio: 1.4 / 1;
 }
 
+@media (min-width: 761px) and (max-width: 900px) {
+  .collection-detail-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .collection-detail-hero__image {
+    min-height: 0;
+    aspect-ratio: 1.58 / 1;
+  }
+}
+
 .collections-loading__eyebrow,
 .collections-loading__heading span,
 .collections-loading__image,
@@ -5136,17 +5148,40 @@ img[src*="daisy-designs-placeholder"] {
 }
 
 /* Scroll reveal is an enhancement: without a ready observer, all content stays visible. */
+.daisy-scroll-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 90;
+  height: 3px;
+  background: var(--accent-daisy);
+  box-shadow: 0 1px 8px rgba(245, 206, 88, .35);
+  pointer-events: none;
+  transform: scaleX(var(--daisy-scroll-progress, 0));
+  transform-origin: left center;
+}
+
+[dir="rtl"] .daisy-scroll-progress {
+  transform-origin: right center;
+}
+
 html[data-scroll-reveal-ready="true"] [data-scroll-reveal]:not([data-scroll-revealed="true"]) {
   opacity: 0;
-  transform: translate3d(0, 12px, 0);
+  transform: translate3d(0, 22px, 0);
+}
+
+html[data-scroll-reveal-ready="true"] [data-scroll-reveal="card"]:not([data-scroll-revealed="true"]) {
+  transform: translate3d(0, 24px, 0) scale(.985);
 }
 
 html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed="true"] {
   opacity: 1;
-  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .daisy-scroll-progress {
+    display: none;
+  }
+
   html[data-scroll-reveal-ready="true"] [data-scroll-reveal] {
     opacity: 1 !important;
     transform: none !important;
@@ -10005,10 +10040,6 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
 }
 
 @media (min-width: 761px) {
-  .daisy-header--storefront {
-    position: relative;
-  }
-
   .daisy-header--storefront .daisy-header__inner {
     position: relative;
     display: block;
@@ -10664,7 +10695,293 @@ body:has(.daisy-home--storefront) .daisy-footer__bottom,
   }
 }
 
-/* Elevate WhatsApp FAB when page has a mobile sticky bar */
-body:has(.mobile-sticky-bar) aside[aria-label*="واتساب"] {
-  bottom: 5rem;
+/* Keep the customer support button clear of product purchase controls. */
+@media (max-width: 767px) {
+  body:has(.mobile-sticky-bar) .whatsapp-floating-button {
+    bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Story and reward cards offer: a quiet editorial card, not a checkout alert. */
+.bundle-offer {
+  display: grid;
+  grid-template-columns: 176px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(18px, 3vw, 36px);
+  width: 100%;
+  max-width: 1050px;
+  margin-inline: auto;
+  padding: 16px 24px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(120deg, var(--surface-soft), var(--card) 65%);
+  box-shadow: 0 12px 32px rgb(30 26 18 / 5%);
+  text-align: start;
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+.bundle-offer:hover,
+.bundle-offer:focus-visible {
+  border-color: color-mix(in srgb, var(--foreground) 35%, var(--border));
+  box-shadow: 0 18px 42px rgb(30 26 18 / 10%);
+  color: var(--foreground);
+}
+
+.bundle-offer__visual {
+  display: block;
+  height: 150px;
+  border-radius: 18px;
+  background: var(--surface-panel);
+  overflow: hidden;
+}
+
+.bundle-offer__content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.bundle-offer__eyebrow {
+  color: #85621e;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .05em;
+}
+
+.bundle-offer__content > strong {
+  font-size: clamp(19px, 2.2vw, 27px);
+  line-height: 1.35;
+}
+
+.bundle-offer__description {
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.bundle-offer__prices {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.bundle-offer__prices strong {
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.bundle-offer__prices del {
+  color: var(--muted-foreground);
+  font-size: 14px;
+}
+
+.bundle-offer__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.bundle-offer:hover .bundle-offer__action svg {
+  transform: translateX(-3px);
+}
+
+[dir="ltr"] .bundle-offer:hover .bundle-offer__action svg {
+  transform: translateX(3px);
+}
+
+.bundle-offer__action svg {
+  transition: transform .25s ease;
+}
+
+/* The story package choice belongs at the end of customization. */
+.sb-package-choice {
+  min-width: 0;
+  margin: 10px 0 0;
+  padding: 24px 0 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.sb-package-choice legend {
+  width: 100%;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.sb-package-choice > p {
+  margin: 7px 0 17px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sb-package-choice__options {
+  display: grid;
+  gap: 10px;
+}
+
+.sb-package-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  cursor: pointer;
+  transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+
+.sb-package-option:hover {
+  border-color: color-mix(in srgb, var(--foreground) 38%, var(--border));
+}
+
+.sb-package-option:has(input:focus-visible) {
+  outline: 2px solid var(--foreground);
+  outline-offset: 3px;
+}
+
+.sb-package-option--selected {
+  border-color: #b99459;
+  background: color-mix(in srgb, var(--accent-daisy-soft) 68%, var(--card));
+  box-shadow: 0 0 0 1px #b99459;
+}
+
+.sb-package-option__visual {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--foreground);
+}
+
+.sb-package-option__visual--book {
+  background: var(--accent-daisy-soft);
+}
+
+.sb-package-option__details {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.sb-package-option__details > strong {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.sb-package-option__details > small {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.sb-package-option__prices {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 9px;
+  margin-top: 4px;
+}
+
+.sb-package-option__prices b {
+  font-size: 17px;
+}
+
+.sb-package-option__prices del {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.sb-package-option__prices em {
+  color: #147d5a;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.sb-package-option__check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--surface-outline);
+  border-radius: 50%;
+  background: var(--card);
+  color: transparent;
+}
+
+.sb-package-option--selected .sb-package-option__check {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+}
+
+@media (max-width: 700px) {
+  .bundle-offer {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .bundle-offer__visual {
+    height: 116px;
+    border-radius: 13px;
+  }
+
+  .bundle-offer__content > strong {
+    font-size: 16px;
+  }
+
+  .bundle-offer__description {
+    font-size: 11px;
+  }
+
+  .bundle-offer__prices strong {
+    font-size: 19px;
+  }
+
+  .bundle-offer__action {
+    grid-column: 1 / -1;
+  }
+
+  .sb-package-option {
+    grid-template-columns: 48px minmax(0, 1fr) 20px;
+    gap: 10px;
+    padding: 11px;
+  }
+
+  .sb-package-option__visual {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bundle-offer,
+  .bundle-offer__action svg,
+  .sb-package-option {
+    transition: none;
+  }
 }
