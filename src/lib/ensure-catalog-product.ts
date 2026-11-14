@@ -286,7 +286,7 @@ export async function ensureCatalogProductInTransaction(
     return;
   }
 
-  if (slug === "custom-acrylic-name-keychain" || slug === "keychain-lamine-yamal" || slug === "keychain-cristiano-ronaldo") {
+  if (slug === "custom-acrylic-name-keychain" || slug === "keychain-lamine-yamal" || slug === "keychain-cristiano-ronaldo" || slug === "personalized-school-id-card") {
     let cat = await tx.category.findUnique({ where: { slug: "stickers" } });
     if (!cat) {
       cat = await tx.category.create({
@@ -397,6 +397,42 @@ export async function ensureCatalogProductInTransaction(
       });
       return;
     }
+
+    if (slug === "personalized-school-id-card") {
+      await tx.product.create({
+        data: {
+          slug,
+          name: "Personalized School ID Card",
+          arabicName: "ID مدرسي مخصص باسم الطفل",
+          description: "Personalized school ID card with a protective holder and neck strap, printed with your child's name and class.",
+          arabicDescription: "ID مدرسي باسم طفلك وصفه مع جراب حماية وحبل للتعليق. اختاري التصميم واكتبي البيانات المطلوبة.",
+          price: 80,
+          sku: "DD-ID-001",
+          stock: 100,
+          lowStockThreshold: 10,
+          featured: false,
+          customizable: true,
+          published: true,
+          categoryId: cat.id,
+          tags: ["school-id", "ميداليات", "Daisy Designs", "أطفال"],
+          images: {
+            create: [
+              { position: 0, url: "/products/keychains/personalized-school-id-front.jpg", alt: "School ID card in protective holder" },
+              { position: 1, url: "/products/keychains/personalized-school-id-set.jpg", alt: "School ID card, holder and neck strap" },
+            ],
+          },
+          customizationFields: {
+            create: [
+              { position: 0, label: "اسم الطفل المكتوب على الـID", key: "child_name", type: "TEXT", required: true, maxLength: 80 },
+              { position: 1, label: "الصف أو الفصل", key: "grade", type: "TEXT", required: true, maxLength: 80 },
+              { position: 2, label: "اسم المدرسة (اختياري)", key: "school_name", type: "TEXT", required: false, maxLength: 100 },
+              { position: 3, label: "الشخصية أو التصميم المطلوب (اختياري)", key: "design_theme", type: "TEXT", required: false, maxLength: 100 },
+            ],
+          },
+        },
+      });
+      return;
+    }
   }
 
 }
@@ -423,12 +459,14 @@ const KEYCHAIN_SLUGS = [
   "custom-acrylic-name-keychain",
   "keychain-lamine-yamal",
   "keychain-cristiano-ronaldo",
+  "personalized-school-id-card",
 ] as const;
 
 const KEYCHAIN_IMAGES: Record<(typeof KEYCHAIN_SLUGS)[number], string> = {
   "custom-acrylic-name-keychain": "/products/keychains/personalized-name-tags-examples.jpg",
   "keychain-lamine-yamal": "/products/keychains/yamal-name-keychain-example.jpg",
   "keychain-cristiano-ronaldo": "/products/keychains/ronaldo-name-keychain-example.jpg",
+  "personalized-school-id-card": "/products/keychains/personalized-school-id-front.jpg",
 };
 
 export async function ensureKeychainCatalogProducts(): Promise<void> {

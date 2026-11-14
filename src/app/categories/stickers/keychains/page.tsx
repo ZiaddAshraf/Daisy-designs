@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
-  return { title: `${locale === "ar" ? "الميداليات" : "Keychains"} | Daisy Designs` };
+  return { title: `${locale === "ar" ? "الميداليات والـID" : "Keychains & School ID"} | Daisy Designs` };
 }
 
 export default async function KeychainsPage() {
@@ -22,7 +22,7 @@ export default async function KeychainsPage() {
       <Link href="/">{locale === "ar" ? "الرئيسية" : "Home"}</Link><span>/</span>
       <Link href="/categories">{locale === "ar" ? "الأقسام" : "Categories"}</Link><span>/</span>
       <Link href="/categories/stickers">{locale === "ar" ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains"}</Link><span>/</span>
-      <span>{locale === "ar" ? "الميداليات" : "Keychains"}</span>
+      <span>{locale === "ar" ? "الميداليات والـID" : "Keychains & School ID"}</span>
     </nav>
     <KeychainExamples locale={locale} />
   </main>;

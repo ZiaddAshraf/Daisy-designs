@@ -301,6 +301,25 @@ export default async function ProductsPage() {
     ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
+  const schoolIdProduct: CatalogProductItem = {
+    id: "personalized-school-id-card",
+    slug: "personalized-school-id-card",
+    href: "/products/personalized-school-id-card",
+    title: isRtl ? "ID مدرسي مخصص باسم الطفل" : "Personalized School ID Card",
+    subtitle: isRtl ? "مع جراب حماية وحبل للتعليق" : "With protective holder and neck strap",
+    category: isRtl ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains",
+    categoryId: "stickers",
+    price: priceFor("personalized-school-id-card") || 80,
+    priceUnit: isRtl ? "للقطعة الواحدة" : "per ID card",
+    badge: isRtl ? "ID مخصص" : "Custom ID",
+    image: "/products/keychains/personalized-school-id-front.jpg",
+    description: isRtl
+      ? "ID مدرسي باسم طفلك وصفه مع جراب حماية وحبل للتعليق."
+      : "Personalized school ID card with your child's name and class, protective holder and neck strap.",
+    features: [],
+    ctaText: isRtl ? "اختاري التفاصيل" : "Customize",
+  };
+
 // 5. Deterministic Interleaved / "عشوائي متناسق" Shuffle
   // Interleaving storybooks, t-shirt, stickers of different themes, and reward cards box set
   const shuffledCatalog: CatalogProductItem[] = [
@@ -328,6 +347,7 @@ export default async function ProductsPage() {
     keychainYamalProduct,                             // 7b. Lamine Yamal Barça 19 Keychain
     stickerProducts[3],                               // 8. Little Princess
     keychainRonaldoProduct,                           // 8b. Cristiano Ronaldo Real Madrid Keychain
+    schoolIdProduct,
     storyCatsProduct,                                 // 9. Story 3: Yahya & Meow Friends
     ...newStoryProducts,
     stickerProducts[8],                               // 10. Gaming Zone
@@ -358,7 +378,7 @@ export default async function ProductsPage() {
     const slug = item.categoryId === "customized-stories" ? "first-year-at-school" : item.href.split("?")[0].split("/").pop();
     return records.some(p => p.slug === slug);
   });
-  const known = new Set(["custom-waterproof-stickers", "custom-printed-tshirt", "reward-cards-box-set", "first-year-at-school", "custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo"]);
+  const known = new Set(["custom-waterproof-stickers", "custom-printed-tshirt", "reward-cards-box-set", "first-year-at-school", "custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo", "personalized-school-id-card"]);
   for (const record of records.filter(p => !known.has(p.slug) && !p.slug.startsWith("demo-"))) {
     const product = toStorefrontProduct(record, locale);
     catalog.push({ id: record.id, slug: record.slug, href: `/products/${record.slug}`, title: product.name, subtitle: product.description, category: product.category, categoryId: record.category.slug, price: product.price, priceUnit: "", badge: "", image: product.image, description: product.description, features: [], ctaText: isRtl ? "عرض المنتج" : "View product" });

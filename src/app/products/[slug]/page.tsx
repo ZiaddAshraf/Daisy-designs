@@ -152,7 +152,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         };
     }
     const resolvedSlug = PRODUCT_SLUG_ALIASES[slug] ?? slug;
-    if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo"].includes(resolvedSlug)) {
+    if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo", "personalized-school-id-card"].includes(resolvedSlug)) {
         try { await ensureKeychainCatalogProducts(); }
         catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
     }
@@ -202,7 +202,7 @@ export default async function ProductPage({
     let unavailable = false;
     try {
         if (resolvedSlug === "custom-waterproof-stickers") await ensureStickerPackages();
-        if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo"].includes(resolvedSlug)) {
+        if (["custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo", "personalized-school-id-card"].includes(resolvedSlug)) {
             await ensureKeychainCatalogProducts();
         }
         product = await getPublishedProduct(resolvedSlug);

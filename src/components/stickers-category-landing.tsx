@@ -14,10 +14,10 @@ const sections = [
   {
     href: "/categories/stickers/keychains",
     image: "/products/keychains/keychains-collection.jpeg",
-    titleAr: "الميداليات",
-    titleEn: "Keychains",
-    descriptionAr: "ميداليات أكريليك باسم طفلك للشنط والمفاتيح.",
-    descriptionEn: "Personalized acrylic name keychains for bags and keys.",
+    titleAr: "الميداليات والـID",
+    titleEn: "Keychains & School ID",
+    descriptionAr: "ميداليات باسم طفلك وID مدرسي مع جراب وحبل للتعليق.",
+    descriptionEn: "Personalized keychains and school ID cards with a holder and neck strap.",
   },
 ];
 
