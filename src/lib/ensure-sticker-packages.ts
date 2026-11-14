@@ -4,7 +4,9 @@ const packages = [
   { code: "combined", price: 300, arabicName: "٢٠ تيكت + ٢٥ ليبل — صورة حقيقية", englishName: "20 tickets + 25 labels — real photo", tickets: 20, labels: 25 },
   { code: "combined-ai", price: 400, arabicName: "٢٠ تيكت + ٢٥ ليبل — صورة AI", englishName: "20 tickets + 25 labels — AI image", tickets: 20, labels: 25 },
   { code: "tickets", price: 150, arabicName: "٢٠ تيكت", englishName: "20 tickets", tickets: 20, labels: 0 },
+  { code: "tickets-ai", price: 200, arabicName: "٢٠ تيكت — صورة AI", englishName: "20 tickets — AI image", tickets: 20, labels: 0 },
   { code: "labels", price: 150, arabicName: "٢٥ ليبل", englishName: "25 labels", tickets: 0, labels: 25 },
+  { code: "labels-ai", price: 200, arabicName: "٢٥ ليبل — صورة AI", englishName: "25 labels — AI image", tickets: 0, labels: 25 },
 ] as const;
 
 export async function ensureStickerPackages(): Promise<void> {
@@ -18,8 +20,8 @@ export async function ensureStickerPackages(): Promise<void> {
       where: { id: product.id },
       data: {
         price: 300,
-        description: "Choose 20 tickets and 25 labels with a real photo for EGP 300 or an AI image for EGP 400, or choose 20 tickets or 25 labels.",
-        arabicDescription: "اختاري ٢٠ تيكت و٢٥ ليبل بصورة حقيقية بـ٣٠٠ ج.م أو بصورة AI بـ٤٠٠ ج.م، أو باقة التيكت أو الليبل منفردة.",
+        description: "The combined pack costs EGP 300 with a real photo or EGP 400 with an AI image. Tickets or labels alone cost EGP 150, or EGP 200 with an AI image.",
+        arabicDescription: "الباقة المجمعة بـ٣٠٠ ج.م بصورة حقيقية أو ٤٠٠ ج.م بصورة AI. التيكت أو الليبل منفردًا بـ١٥٠ ج.م، أو ٢٠٠ ج.م بصورة AI.",
       },
     });
     for (const pack of packages) {

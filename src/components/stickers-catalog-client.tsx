@@ -87,7 +87,7 @@ export function StickersCatalogClient({
   const isAr = locale === "ar";
   const [selectedPackageId, setSelectedPackageId] = useState(catalog.variants[0]?.id || "");
   const selectedPackage = catalog.variants.find(v => v.id === selectedPackageId);
-  const aiImageSelected = selectedPackage?.sku === "DD-STK-050-COMBINED-AI";
+  const aiImageSelected = selectedPackage?.sku?.endsWith("-AI") ?? false;
   const thermalLabelsSelected = selectedPackageId === THERMAL_LABEL_OPTION_ID;
   const product = { ...stickersData.product, price: selectedPackage?.price ?? catalog.price };
   const { toggle, has } = useWishlist();
@@ -166,7 +166,7 @@ export function StickersCatalogClient({
   // Mobile theme quick-filter pills
   const themes = useMemo(
     () => [
-      { id: "all", label: isAr ? `الكل (${product.designs.length.toLocaleString("ar-EG")})` : `All (${product.designs.length})` },
+      { id: "all", label: isAr ? `الكل (${stickersData.product.designs.length.toLocaleString("ar-EG")})` : `All (${stickersData.product.designs.length})` },
       { id: "custom", label: isAr ? "صمّم بنفسك" : "Custom Design" },
       { id: "girls", label: isAr ? "أناقة وبنات" : "Girls & Style" },
       { id: "cartoons", label: isAr ? "كرتون وشخصيات" : "Cartoons" },
@@ -176,12 +176,12 @@ export function StickersCatalogClient({
       { id: "educational", label: isAr ? "تعليمي ومكعبات" : "Educational" },
       { id: "sports", label: isAr ? "كرة قدم ورياضة" : "Sports" },
     ],
-    [isAr, product.designs.length]
+    [isAr]
   );
 
   // Filter & Sort designs
   const processedDesigns = useMemo(() => {
-    let list = [...product.designs];
+    let list = [...stickersData.product.designs];
 
     // Theme filter
     if (selectedTheme !== "all") {
@@ -223,7 +223,7 @@ export function StickersCatalogClient({
     });
 
     return list;
-  }, [product.designs, selectedTheme, searchQuery, sortBy, isAr]);
+  }, [selectedTheme, searchQuery, sortBy, isAr]);
 
   // Open inline customization for a selected design
   const handleOpenCustomize = useCallback((design: StickerDesign) => {
@@ -786,7 +786,7 @@ export function StickersCatalogClient({
                     )}
                     <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium">
                       {aiImageSelected
-                        ? isAr ? "اكتبي شكل صورة AI المطلوب للتيكت والليبل، ويمكنك رفع صورة الطفل كمرجع." : "Describe the AI image for the tickets and labels. You can upload the child’s photo as a reference."
+                        ? isAr ? "اكتبي شكل صورة AI المطلوب للباقة، ويمكنك رفع صورة الطفل كمرجع." : "Describe the AI image for this pack. You can upload the child’s photo as a reference."
                         : isAr ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا." : "Describe the artwork for the pieces you assigned to a custom design."}
                     </p>
                   </div>

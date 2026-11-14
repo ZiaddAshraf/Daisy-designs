@@ -125,6 +125,14 @@ test("a sticker pack can contain several designs with exact ticket and label tot
   const labelsOnly = validateStickerPackageCustomization(fields, { design_theme: "super-cool-dino", child_name: "Omar", label_designs: labelMix }, "DD-STK-050-LABELS");
   assert.equal(ticketsOnly.success, true);
   assert.equal(labelsOnly.success, true);
+  for (const [sku, mixKey, mix] of [
+    ["DD-STK-050-TICKETS-AI", "ticket_designs", ticketMix],
+    ["DD-STK-050-LABELS-AI", "label_designs", labelMix],
+  ] as const) {
+    const aiInput = { design_theme: "super-cool-dino", child_name: "Omar", [mixKey]: mix };
+    assert.equal(validateStickerPackageCustomization(fields, aiInput, sku).success, false);
+    assert.equal(validateStickerPackageCustomization(fields, { ...aiInput, custom_design_text: "صورة فضاء بأسلوب كرتوني" }, sku).success, true);
+  }
   assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: serializeStickerMix({ "super-cool-dino": 19 }) }, "DD-STK-050-COMBINED").success, false);
   assert.equal(validateStickerPackageCustomization(fields, input, "DD-STK-050-TICKETS").success, false);
   assert.equal(validateStickerPackageCustomization(fields, { ...input, label_designs: "" }, "DD-STK-050-COMBINED").success, false);

@@ -1,5 +1,5 @@
 export type PricedVariant = { id: string; sku?: string; name: string; price: number | null; stock: number; options: unknown };
-const STICKER_PACKAGE_ORDER = ["DD-STK-050-COMBINED", "DD-STK-050-COMBINED-AI", "DD-STK-050-TICKETS", "DD-STK-050-LABELS"];
+const STICKER_PACKAGE_ORDER = ["DD-STK-050-COMBINED", "DD-STK-050-COMBINED-AI", "DD-STK-050-TICKETS", "DD-STK-050-TICKETS-AI", "DD-STK-050-LABELS", "DD-STK-050-LABELS-AI"];
 const STICKER_PACKAGE_SKUS = new Set(STICKER_PACKAGE_ORDER);
 export function stickerPackageVariants<V extends PricedVariant>(variants: V[]): V[] {
   return variants.filter(variant => STICKER_PACKAGE_SKUS.has(variant.sku ?? ""))

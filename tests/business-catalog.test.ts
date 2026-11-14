@@ -36,6 +36,18 @@ test("AI combined pack is priced at 400 EGP and listed beside the real-photo pac
   assert.equal(resolveProductPrice(pricedProduct, "combined-ai").unitPrice, 400);
 });
 
+test("AI ticket and label packs each cost 200 EGP", () => {
+  const aiTickets = { ...variants[1], id: "tickets-ai", sku: "DD-STK-050-TICKETS-AI", price: 200 };
+  const aiLabels = { ...variants[2], id: "labels-ai", sku: "DD-STK-050-LABELS-AI", price: 200 };
+  const aiCombined = { ...variants[0], id: "combined-ai", sku: "DD-STK-050-COMBINED-AI", price: 400 };
+  const pricedProduct = { ...product, variants: [...variants, aiTickets, aiLabels, aiCombined] };
+  assert.deepEqual(stickerPackageVariants([...pricedProduct.variants].reverse()).map(v => v.id), ["combined", "combined-ai", "tickets", "tickets-ai", "labels", "labels-ai"]);
+  assert.equal(resolveProductPrice(pricedProduct, aiTickets.id).unitPrice, 200);
+  assert.equal(resolveProductPrice(pricedProduct, aiLabels.id).unitPrice, 200);
+  assert.equal(resolveProductPrice(pricedProduct, "tickets").unitPrice, 150);
+  assert.equal(resolveProductPrice(pricedProduct, "labels").unitPrice, 150);
+});
+
 test("three packages persist as distinct cart lines; merging and checkout preserve selection and quantity", () => {
   const lines = variants.map(v => ({ slug: product.slug, variantId: v.id, quantity: 2, price: v.price, lineId: cartLineId({ slug: product.slug, variantId: v.id }) }));
   const restored = (JSON.parse(JSON.stringify(lines)) as typeof lines).map(normalizeStoredCartLine);
