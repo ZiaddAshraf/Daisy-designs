@@ -22,7 +22,7 @@
     "lowStockThreshold": 20,
     "published": true,
     "description": "High-quality, durable waterproof stickers personalized with your child's name, school, and class. Specially crafted for school supplies, notebooks, water bottles, lunchboxes, and pencil cases.",
-    "arabicDescription": "استيكرات مدرسية عالية الجودة ومقاومة للماء مخصصة باسم طفلك ومدرسته وفصله. صُممت خصيصاً للدفاتر والكتب المدرسية وزجاجات المياه واللانش بوكس والمقالم.",
+    "arabicDescription": "استيكرات مدرسية عالية الجودة ومقاومة للماء. صُممت للدفاتر والكتب المدرسية وزجاجات المياه واللانش بوكس والمقالم.",
     "primaryImage": {
       "url": "/products/stickers/sticker-02-super-cool-dino.jpeg",
       "alt": "Daisy Designs Custom Waterproof Stickers",
@@ -817,8 +817,8 @@
       {
         "id": 54,
         "slug": "ticket-label-mario-photo",
-        "title": "Mario Photo Ticket & Label",
-        "arabicTitle": "تيكت وليبل ماريو مع صورة الطفل",
+        "title": "Mario Ticket & Label — New Design",
+        "arabicTitle": "تيكت وليبل ماريو — تصميم جديد",
         "themeGroup": "gaming",
         "arabicThemeGroup": "ألعاب وشخصيات",
         "url": "/products/stickers/sticker-54-mario-photo.jpeg",
@@ -831,8 +831,8 @@
       {
         "id": 55,
         "slug": "ticket-label-mermaid-photo",
-        "title": "Mermaid Photo Ticket & Label",
-        "arabicTitle": "تيكت وليبل حورية البحر مع صورة الطفل",
+        "title": "Mermaid Ticket & Label — New Design",
+        "arabicTitle": "تيكت وليبل حورية البحر — تصميم جديد",
         "themeGroup": "girls",
         "arabicThemeGroup": "أميرات وبنات",
         "url": "/products/stickers/sticker-55-mermaid-photo.jpeg",
@@ -845,8 +845,8 @@
       {
         "id": 56,
         "slug": "ticket-label-elsa-photo",
-        "title": "Elsa Photo Ticket & Label",
-        "arabicTitle": "تيكت وليبل إلسا مع صورة الطفل",
+        "title": "Elsa Ticket & Label — New Design",
+        "arabicTitle": "تيكت وليبل إلسا — تصميم جديد",
         "themeGroup": "girls",
         "arabicThemeGroup": "أميرات وبنات",
         "url": "/products/stickers/sticker-56-elsa-photo.jpeg",
@@ -859,8 +859,8 @@
       {
         "id": 57,
         "slug": "ticket-label-superheroes-photo",
-        "title": "Superheroes Photo Ticket & Label",
-        "arabicTitle": "تيكت وليبل الأبطال الخارقون مع صورة الطفل",
+        "title": "Superheroes Ticket & Label — New Design",
+        "arabicTitle": "تيكت وليبل الأبطال الخارقون — تصميم جديد",
         "themeGroup": "superheroes",
         "arabicThemeGroup": "أبطال وخوارق",
         "url": "/products/stickers/sticker-57-superheroes-photo.jpeg",

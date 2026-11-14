@@ -79,7 +79,7 @@ const CORE_FALLBACK_PRODUCTS: HomeProductRecord[] = [
     price: 50,
     compareAtPrice: null,
     description: "High-quality, durable waterproof stickers personalized with your child's name, school, and class.",
-    arabicDescription: "استيكرات مدرسية عالية الجودة ومقاومة للماء مخصصة باسم طفلك ومدرسته وفصله.",
+    arabicDescription: "استيكرات مدرسية عالية الجودة ومقاومة للماء بتصميمات متنوعة.",
     customizable: true,
     featured: true,
     published: true,

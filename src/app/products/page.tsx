@@ -207,7 +207,7 @@ export default async function ProductsPage() {
     badge: isRtl ? `${design.arabicThemeGroup}` : `${design.themeGroup}`,
     image: design.url,
     description: isRtl
-      ? `استيكرات مدرسية متينة بتستحمل المية والغسيل ١٠٠٪ بنطبعها باسم طفلك ومدرسته. كل شيت فيه تيكيت كبير للدفاتر واستيكرات للأقلام والزمزمية.`
+      ? `استيكرات مدرسية متينة بتستحمل المية والغسيل ١٠٠٪. كل شيت فيه تيكيت كبير للدفاتر واستيكرات للأقلام والزمزمية.`
       : `Durable 100% waterproof school stickers personalized with your child's name, school, and class. Includes large notebook tickets and pen strips.`,
     features: isRtl
       ? ["فينيل ألماني أصلي ضد المية والغسيل", "طباعة الاسم والمدرسة والفصل بالطلب", `تصميم ${design.arabicTitle}`]

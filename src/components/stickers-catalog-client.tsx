@@ -348,7 +348,7 @@ export function StickersCatalogClient({
 
           <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 max-w-xl">
             {isAr
-              ? "تيكت وليبل باسم طفلك ومدرسته بتصميمات متنوعة."
+              ? "اختاري من تصميمات التيكت والليبل المتنوعة."
               : "Personalized tickets and labels in your favorite designs."}
           </p>
         </div>
@@ -637,8 +637,8 @@ export function StickersCatalogClient({
                           ? "صمم استيكرك الخاص بفكرتك وبيانات طفلك"
                           : "Design your custom sticker with your idea"
                         : isAr
-                        ? "فينيل مقاوم للماء باسم طفلك ومدرسته"
-                        : "Waterproof vinyl with child's name"}
+                        ? "تيكت وليبل بخامة مقاومة للماء"
+                        : "Waterproof tickets and labels"}
                     </p>
                   </div>
                 </div>

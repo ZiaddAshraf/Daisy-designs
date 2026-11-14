@@ -507,7 +507,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
             </h2>
           </div>
           <span className="text-xs text-[var(--muted-foreground)]">
-            {isAr ? "اضغط على أي تصميم لتخصيصه باسم طفلك ومدرسته" : "Click any design to personalize with your child's details"}
+            {isAr ? "اضغط على أي تصميم لاختيار باقتك" : "Choose a design to build your pack"}
           </span>
         </div>
 

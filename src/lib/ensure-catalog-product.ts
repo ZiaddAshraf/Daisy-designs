@@ -197,7 +197,7 @@ export async function ensureCatalogProductInTransaction(
         name: "Daisy Designs Custom Waterproof Stickers",
         arabicName: "استيكرات مدرسية مخصصة مقاومة للماء",
         description: "High-quality, durable waterproof stickers personalized with your child's name, school, and class.",
-        arabicDescription: "استيكرات مدرسية عالية الجودة ومقاومة للماء مخصصة باسم طفلك ومدرسته وفصله.",
+        arabicDescription: "استيكرات مدرسية عالية الجودة ومقاومة للماء بتصميمات متنوعة.",
         price: stickersData.product.price,
         sku: "DD-STK-050",
         stock: 500,
