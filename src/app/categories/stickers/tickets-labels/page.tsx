@@ -8,7 +8,6 @@ import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
 import { stickerPackageVariants } from "@/lib/product-pricing";
 import { getRequestLocale } from "@/lib/locale-server";
 import { ensureThermalLabelProduct } from "@/lib/ensure-thermal-label-product";
-import { ThermalLabelsCard } from "@/components/thermal-labels-card";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +34,6 @@ export default async function TicketsLabelsPage() {
       <Link href="/categories/stickers">{locale === "ar" ? "تيكت وليبل وميدالية" : "Tickets, Labels & Keychains"}</Link><span>/</span>
       <span>{locale === "ar" ? "تيكت وليبل" : "Tickets & Labels"}</span>
     </nav>
-    {product ? <StickersCatalogClient locale={locale} catalog={{ price: product.price, stock: product.stock, variants: stickerPackageVariants(product.variants) }} thermalLabelsCard={<ThermalLabelsCard locale={locale} />} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />}
+    {product ? <StickersCatalogClient locale={locale} catalog={{ price: product.price, stock: product.stock, variants: stickerPackageVariants(product.variants) }} /> : <DatabaseUnavailable messageKey="categoryUnavailable" />}
   </main>;
 }

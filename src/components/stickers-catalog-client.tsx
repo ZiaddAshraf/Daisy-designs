@@ -9,7 +9,8 @@ import { StickerMixPicker } from "@/components/sticker-mix-picker";
 import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
 import { STICKER_PACKAGE_COUNTS, serializeStickerMix, stickerMixTotal, type StickerKind, type StickerMix } from "@/lib/sticker-package-mix";
 
-import { useState, useMemo, useEffect, useRef, useCallback, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback, type ChangeEvent, type FormEvent } from "react";
+import Link from "next/link";
 import SiteImage from "@/components/site-image";
 import {
   Search,
@@ -43,8 +44,9 @@ import type { Locale } from "@/lib/locale";
 type StickersCatalogClientProps = {
   locale: Locale;
   catalog: { price: number; stock: number; variants: PricedVariant[] };
-  thermalLabelsCard?: ReactNode;
 };
+
+const THERMAL_LABEL_OPTION_ID = "thermal-labels-10-pack";
 
 // Design badges for the bottom-left arched cutout tab
 const DESIGN_BADGES: Record<number, { en: string; ar: string }> = {
@@ -80,11 +82,12 @@ type SortOption = "newest" | "price-asc" | "price-desc" | "alpha";
 type StickerDesign = (typeof stickersData.product.designs)[0];
 
 export function StickersCatalogClient({
-  locale, catalog, thermalLabelsCard,
+  locale, catalog,
 }: StickersCatalogClientProps) {
   const isAr = locale === "ar";
   const [selectedPackageId, setSelectedPackageId] = useState(catalog.variants[0]?.id || "");
   const selectedPackage = catalog.variants.find(v => v.id === selectedPackageId);
+  const thermalLabelsSelected = selectedPackageId === THERMAL_LABEL_OPTION_ID;
   const product = { ...stickersData.product, price: selectedPackage?.price ?? catalog.price };
   const { toggle, has } = useWishlist();
   const { add } = useCart();
@@ -361,7 +364,7 @@ export function StickersCatalogClient({
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           {isAr ? "اختاري الباقة، وبعدها أضيفي قطعة واحدة بكل ضغطة من الأزرار تحت التصميمات. ممكن توزّعي العدد على أكتر من تصميم." : "Choose a pack, then add one piece per tap using the buttons under each design. Mix several designs in one pack."}
         </p>
-        <PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={id => {
+        <PackageSelector variants={catalog.variants} value={selectedPackageId} extraOption={{ id: THERMAL_LABEL_OPTION_ID, label: isAr ? "١٠ ليبل حراري" : "10 thermal labels", price: 150 }} onChange={id => {
           setSelectedPackageId(id);
           const pack = catalog.variants.find(variant => variant.id === id);
           const counts = pack ? STICKER_PACKAGE_COUNTS[pack.sku ?? ""] : undefined;
@@ -369,6 +372,16 @@ export function StickersCatalogClient({
           setLabelMix({});
           setActiveKind(counts?.tickets ? "tickets" : "labels");
         }} locale={locale} basePrice={catalog.price} />
+        {thermalLabelsSelected && <div className="flex flex-col gap-4 rounded-2xl border border-teal-200 bg-teal-50 p-4 dark:border-teal-900 dark:bg-teal-950/30 sm:flex-row sm:items-center">
+          <div className="relative aspect-[3/2] w-full shrink-0 overflow-hidden rounded-xl bg-white sm:w-48">
+            <SiteImage src="/products/stickers/thermal-labels-10-pack.jpg" alt={isAr ? "ليبل حراري مخصص - ١٠ قطع" : "Custom thermal labels - 10 pack"} fill sizes="(max-width: 640px) 100vw, 192px" className="object-contain" />
+          </div>
+          <div className="text-start">
+            <p className="font-extrabold text-[var(--foreground)]">{isAr ? "ليبل حراري مخصص - ١٠ قطع" : "Custom thermal labels - 10 pack"}</p>
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">{isAr ? "باقة مستقلة؛ اكتبي اسم الطفل والتصميم المطلوب في صفحة تفاصيل المنتج." : "A separate pack. Enter your child's name and preferred design on the product page."}</p>
+            <Link href="/products/custom-thermal-clothing-labels" className="mt-3 inline-flex min-h-11 items-center rounded-xl bg-teal-700 px-4 py-2 text-sm font-extrabold text-white hover:bg-teal-800">{isAr ? "كمّلي بيانات الليبل الحراري" : "Continue with thermal labels"}</Link>
+          </div>
+        </div>}
         {packageCounts && <>
           <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label={isAr ? "اختاري نوع القطع" : "Choose piece type"}>
             {(["tickets", "labels"] as const).filter(kind => packageCounts[kind] > 0).map(kind =>
@@ -382,13 +395,14 @@ export function StickersCatalogClient({
           {!primaryDesign && <p className="text-sm text-[var(--muted-foreground)]">{isAr ? "ابدئي باختيار تصميم من الصور اللي تحت." : "Start by selecting a photo design below."}</p>}
           <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} showGallery={false} />
         </>}
-        <button type="button" disabled={!mixValid || !primaryDesign || catalog.stock < 1}
+        {!thermalLabelsSelected && <button type="button" disabled={!mixValid || !primaryDesign || catalog.stock < 1}
           onClick={() => { if (primaryDesign) handleOpenCustomize(primaryDesign); }}
           className="mt-4 min-h-12 w-full rounded-xl bg-teal-700 px-5 py-3 text-sm font-extrabold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50">
           {isAr ? "كمّلي بيانات الطلب" : "Continue to order details"}
-        </button>
+        </button>}
       </section>
 
+      {!thermalLabelsSelected && <>
       {/* 2. Top Filter & Search Bar */}
       <div className="mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Search Input */}
@@ -510,7 +524,6 @@ export function StickersCatalogClient({
       ) : (
         /* 3-Column Luxury Product Cards Grid with INLINE CUSTOMIZATION */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-7 lg:gap-8">
-          {currentKind === "labels" && selectedTheme === "all" && !searchQuery && thermalLabelsCard}
           {processedDesigns.map((design, idx) => {
             const wishlistSlug = `sticker-${design.id}-${design.slug}`;
             const isFavorite = has(wishlistSlug);
@@ -652,6 +665,7 @@ export function StickersCatalogClient({
           })}
         </div>
       )}
+      </>}
 
       {/* 3. Inline Customization Modal on the Same Page */}
       {customizingDesign && (
