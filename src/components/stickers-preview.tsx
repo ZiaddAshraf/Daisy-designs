@@ -740,7 +740,6 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
   setTicketMix(initialStickerMix(activeDesign.slug, counts?.tickets ?? 0));
   setLabelMix(initialStickerMix(activeDesign.slug, counts?.labels ?? 0));
 }} locale={locale} basePrice={catalog.price} />
-              {aiImageSelected && <p className="text-sm text-teal-800 dark:text-teal-300">{isAr ? "صورة الطفل الأصلية مطلوبة لعمل صورته بتصميم AI." : "The child's original photo is required for the AI image."}</p>}
               {packageCounts && <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} />}
 
               {/* Custom Design Idea / Character (Shown for Custom Sticker) */}

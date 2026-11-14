@@ -374,7 +374,6 @@ export function StickersCatalogClient({
           setLabelMix({});
           setActiveKind(counts?.tickets ? "tickets" : "labels");
         }} locale={locale} basePrice={catalog.price} />
-        {aiImageSelected && <p className="mb-3 text-sm text-teal-800 dark:text-teal-300">{isAr ? "صورة الطفل الأصلية مطلوبة لعمل صورته بتصميم AI. هترفعيها عند استكمال بيانات الباقة." : "Upload the child's original photo when completing the pack so it can be transformed into an AI image."}</p>}
         {thermalLabelsSelected && <div className="flex flex-col gap-4 rounded-2xl border border-teal-200 bg-teal-50 p-4 dark:border-teal-900 dark:bg-teal-950/30 sm:flex-row sm:items-center">
           <div className="relative aspect-[3/2] w-full shrink-0 overflow-hidden rounded-xl bg-white sm:w-48">
             <SiteImage src="/products/stickers/thermal-labels-10-pack.jpg" alt={isAr ? "ليبل حراري مخصص - ١٠ قطع" : "Custom thermal labels - 10 pack"} fill sizes="(max-width: 640px) 100vw, 192px" className="object-contain" />
