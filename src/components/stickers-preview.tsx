@@ -5,6 +5,9 @@ import { CustomizationReview } from "@/components/customization-review";
 
 import { PackageSelector } from "@/components/package-selector";
 import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
+import { StickerMixPicker } from "@/components/sticker-mix-picker";
+import { formatCustomizationValue } from "@/lib/customization-formatter";
+import { STICKER_PACKAGE_COUNTS, initialStickerMix, serializeStickerMix, stickerMixTotal, type StickerMix } from "@/lib/sticker-package-mix";
 
 import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -133,6 +136,11 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
   const photoUpload = useImageUpload("/api/uploads/customization", "url", 5, isAr);
   const { file: photoFile, preview: photoPreview, key: photoUrl, busy: isUploadingPhoto, clear: clearPhoto } = photoUpload;
   const [quantity, setQuantity] = useState(1);
+  const [ticketMix, setTicketMix] = useState<StickerMix>({});
+  const [labelMix, setLabelMix] = useState<StickerMix>({});
+  const packageCounts = selectedPackage ? STICKER_PACKAGE_COUNTS[selectedPackage.sku ?? ""] : undefined;
+  const mixValid = Boolean(packageCounts && stickerMixTotal(ticketMix) === packageCounts.tickets && stickerMixTotal(labelMix) === packageCounts.labels);
+  const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"]);
   const [phoneError, setPhoneError] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [customTextError, setCustomTextError] = useState(false);
@@ -260,10 +268,19 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
     setCustomTextError(false);
   };
 
+  useEffect(() => {
+    if (customizingIndex === null) return;
+    const design = product.designs[customizingIndex];
+    setTicketMix(initialStickerMix(design.slug, packageCounts?.tickets ?? 0));
+    setLabelMix(initialStickerMix(design.slug, packageCounts?.labels ?? 0));
+  // The design selection opens a new mix; changing package is handled by PackageSelector.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customizingIndex]);
+
   // Add to cart with full validation
   const handleAddToCart = (e?: FormEvent, andCheckout?: boolean) => {
     if (e) e.preventDefault();
-    if (!inStock || customizingIndex === null || photoUpload.blocked) return;
+    if (!inStock || customizingIndex === null || photoUpload.blocked || !selectedPackage || !mixValid) return;
 
     const trimmedName = childName.trim();
     if (!trimmedName) {
@@ -280,14 +297,16 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
     setPhoneError(false);
 
     const chosenDesign = product.designs[customizingIndex];
-    if (chosenDesign.id === 0 && !customDesignText.trim()) {
+    if (includesCustomDesign && !customDesignText.trim()) {
       setCustomTextError(true);
       return;
     }
     setCustomTextError(false);
 
     const customizationPayload: Record<string, string> = {
-      design_theme: chosenDesign.slug,
+      design_theme: Object.keys(ticketMix)[0] ?? Object.keys(labelMix)[0] ?? chosenDesign.slug,
+      ticket_designs: packageCounts?.tickets ? serializeStickerMix(ticketMix) : "",
+      label_designs: packageCounts?.labels ? serializeStickerMix(labelMix) : "",
       child_name: trimmedName, // Preserves exact case (e.g. Malak Khaled)
     };
 
@@ -295,7 +314,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
       customizationPayload.parent_phone = parentPhone.trim();
     }
 
-    if (chosenDesign.id === 0 && customDesignText.trim()) {
+    if (includesCustomDesign && customDesignText.trim()) {
       customizationPayload.custom_design_text = customDesignText.trim();
     }
 
@@ -712,10 +731,17 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
 
             {/* Customization Form */}
             <form onSubmit={handleAddToCart} className="p-4 sm:p-6 space-y-4 text-start">
-<PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={setSelectedPackageId} locale={locale} basePrice={catalog.price} />
+<PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={id => {
+  setSelectedPackageId(id);
+  const pack = catalog.variants.find(variant => variant.id === id);
+  const counts = pack ? STICKER_PACKAGE_COUNTS[pack.sku ?? ""] : undefined;
+  setTicketMix(initialStickerMix(activeDesign.slug, counts?.tickets ?? 0));
+  setLabelMix(initialStickerMix(activeDesign.slug, counts?.labels ?? 0));
+}} locale={locale} basePrice={catalog.price} />
+              {packageCounts && <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} />}
 
               {/* Custom Design Idea / Character (Shown for Custom Sticker) */}
-              {activeDesign.id === 0 && (
+              {includesCustomDesign && (
                 <div className="p-4 rounded-2xl border-2 border-teal-500/40 bg-teal-50/60 dark:bg-teal-950/30 space-y-2">
                   <label htmlFor="customDesignTextInput" className="block text-xs font-black text-teal-900 dark:text-teal-200">
                     {isAr ? "فكرة أو شخصية التصميم المطلوب" : "Requested Design Theme or Character"}{" "}
@@ -745,8 +771,8 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                   )}
                   <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium leading-relaxed">
                     {isAr
-                      ? "صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية أو رسمة تحبها وسيقوم فريق Daisy Designs بتصميم الباقة بالكامل وفق طلبك."
-                      : "Create any sticker you want: describe any character or artwork, and Daisy Designs will custom-craft the sheet for you."}
+                      ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا."
+                      : "Describe the artwork for the pieces you assigned to a custom design."}
                   </p>
                 </div>
               )}
@@ -952,7 +978,8 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
 
               <UploadFeedback isAr={isAr} busy={isUploadingPhoto} uploaded={Boolean(photoUrl)} error={photoUpload.error} retry={photoUpload.retry} remove={clearPhoto} />
               <CustomizationReview isAr={isAr} editTarget="childNameInput" rows={[
-                [isAr ? "التصميم" : "Design", isAr ? activeDesign.arabicTitle : activeDesign.title],
+                ...(packageCounts?.tickets ? [[isAr ? "توزيع التيكت" : "Ticket designs", formatCustomizationValue("ticket_designs", serializeStickerMix(ticketMix), locale).displayValue] as [string, string]] : []),
+                ...(packageCounts?.labels ? [[isAr ? "توزيع الليبل" : "Label designs", formatCustomizationValue("label_designs", serializeStickerMix(labelMix), locale).displayValue] as [string, string]] : []),
                 [isAr ? "اسم الطفل" : "Child's name", childName.trim()],
                 [isAr ? "المدرسة / الصف / الفصل" : "School / grade / class", [schoolName, grade, className].filter(Boolean).join(" / ") || (isAr ? "لم يُضف — اختياري" : "Not added \u2014 optional")],
                 [isAr ? "وصف التصميم" : "Design instructions", customDesignText.trim() || (isAr ? "التصميم المختار" : "Selected design")],
@@ -1006,7 +1033,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                 <button
                   type="button"
                   onClick={() => handleAddToCart(undefined, false)}
-                  disabled={!inStock || quantity > catalog.stock || photoUpload.blocked}
+                  disabled={!inStock || quantity > catalog.stock || photoUpload.blocked || !mixValid}
                   className="w-full sm:flex-1 py-3 px-4 rounded-xl border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--surface-hover)] text-[var(--foreground)] font-bold text-xs sm:text-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <ShoppingBag size={16} />

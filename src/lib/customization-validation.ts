@@ -1,5 +1,6 @@
 import { normalizeCustomization } from "@/lib/commerce-rules";
 import stickersData from "@/data/stickers-product.json";
+import { STICKER_PACKAGE_COUNTS, initialStickerMix, parseStickerMix, serializeStickerMix } from "@/lib/sticker-package-mix";
 
 type CustomizationFieldDefinition = {
     key: string;
@@ -102,6 +103,34 @@ export function validateCustomization(
     }
 
     return { success: true, data: Object.keys(validated).length ? validated : undefined };
+}
+
+export function validateStickerPackageCustomization(
+    fields: CustomizationFieldDefinition[],
+    input: Record<string, string> | undefined,
+    sku: string | undefined,
+): CustomizationValidation {
+    const counts = STICKER_PACKAGE_COUNTS[sku ?? ""];
+    if (!counts) return { success: false, reason: "INVALID_CUSTOMIZATION" };
+    const { ticket_designs, label_designs, ...baseInput } = input ?? {};
+    const base = validateCustomization(fields, baseInput);
+    if (!base.success || !base.data?.design_theme) return { success: false, reason: "INVALID_CUSTOMIZATION" };
+    const primary = base.data.design_theme;
+    const tickets = counts.tickets
+        ? ticket_designs === undefined ? initialStickerMix(primary, counts.tickets) : parseStickerMix(ticket_designs, counts.tickets)
+        : ticket_designs ? null : {};
+    const labels = counts.labels
+        ? label_designs === undefined ? initialStickerMix(primary, counts.labels) : parseStickerMix(label_designs, counts.labels)
+        : label_designs ? null : {};
+    if (!tickets || !labels) return { success: false, reason: "INVALID_CUSTOMIZATION" };
+    if ((tickets["custom-design"] || labels["custom-design"]) && !base.data.custom_design_text?.trim()) {
+        return { success: false, reason: "INVALID_CUSTOMIZATION" };
+    }
+    return { success: true, data: {
+        ...base.data,
+        ...(counts.tickets ? { ticket_designs: serializeStickerMix(tickets) } : {}),
+        ...(counts.labels ? { label_designs: serializeStickerMix(labels) } : {}),
+    } };
 }
 
 export const VALID_TSHIRT_COLORS = new Set(["white", "black", "gray"]);

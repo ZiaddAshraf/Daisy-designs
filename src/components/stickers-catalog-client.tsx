@@ -2,9 +2,12 @@
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { UploadFeedback } from "@/components/upload-feedback";
 import { CustomizationReview } from "@/components/customization-review";
+import { formatCustomizationValue } from "@/lib/customization-formatter";
 
 import { PackageSelector } from "@/components/package-selector";
+import { StickerMixPicker } from "@/components/sticker-mix-picker";
 import { variantLabel, type PricedVariant } from "@/lib/product-pricing";
+import { STICKER_PACKAGE_COUNTS, initialStickerMix, serializeStickerMix, stickerMixTotal, type StickerMix } from "@/lib/sticker-package-mix";
 
 import { useState, useMemo, useEffect, useRef, useCallback, type ChangeEvent, type FormEvent } from "react";
 import SiteImage from "@/components/site-image";
@@ -102,6 +105,11 @@ export function StickersCatalogClient({
   const photoUpload = useImageUpload("/api/uploads/customization", "url", 5, isAr);
   const { file: photoFile, preview: photoPreview, key: photoUrl, busy: isUploadingPhoto, clear: clearPhoto } = photoUpload;
   const [quantity, setQuantity] = useState(1);
+  const [ticketMix, setTicketMix] = useState<StickerMix>({});
+  const [labelMix, setLabelMix] = useState<StickerMix>({});
+  const packageCounts = selectedPackage ? STICKER_PACKAGE_COUNTS[selectedPackage.sku ?? ""] : undefined;
+  const mixValid = Boolean(packageCounts && stickerMixTotal(ticketMix) === packageCounts.tickets && stickerMixTotal(labelMix) === packageCounts.labels);
+  const includesCustomDesign = Boolean(ticketMix["custom-design"] || labelMix["custom-design"]);
 
   // Validation States
   const [nameError, setNameError] = useState(false);
@@ -220,10 +228,14 @@ export function StickersCatalogClient({
     setCustomDesignText("");
     clearPhoto();
     setQuantity(1);
+    const pack = catalog.variants.find(variant => variant.id === selectedPackageId);
+    const counts = pack ? STICKER_PACKAGE_COUNTS[pack.sku ?? ""] : undefined;
+    setTicketMix(initialStickerMix(design.slug, counts?.tickets ?? 0));
+    setLabelMix(initialStickerMix(design.slug, counts?.labels ?? 0));
     setNameError(false);
     setPhoneError(false);
     setCustomTextError(false);
-  }, [clearPhoto]);
+  }, [clearPhoto, catalog.variants, selectedPackageId]);
 
   // Handle Photo File Upload
   const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -236,7 +248,7 @@ export function StickersCatalogClient({
   // Add to cart with full validation
   const handleAddToCart = (e: FormEvent) => {
     e.preventDefault();
-    if (!customizingDesign || photoUpload.blocked || !selectedPackage || catalog.stock < quantity) return;
+    if (!customizingDesign || photoUpload.blocked || !selectedPackage || !mixValid || catalog.stock < quantity) return;
 
     // 1. Validate Child's Name (Required & Preserves Exact Case)
     const trimmedName = childName.trim();
@@ -255,7 +267,7 @@ export function StickersCatalogClient({
     setPhoneError(false);
 
     // 3. Validate Custom Design Description (Required for ID 0)
-    if (customizingDesign.id === 0 && !customDesignText.trim()) {
+    if (includesCustomDesign && !customDesignText.trim()) {
       setCustomTextError(true);
       return;
     }
@@ -264,12 +276,14 @@ export function StickersCatalogClient({
     setIsSubmitting(true);
 
     const customizationPayload: Record<string, string> = {
-      design_theme: customizingDesign.slug,
+      design_theme: Object.keys(ticketMix)[0] ?? Object.keys(labelMix)[0] ?? customizingDesign.slug,
+      ticket_designs: packageCounts?.tickets ? serializeStickerMix(ticketMix) : "",
+      label_designs: packageCounts?.labels ? serializeStickerMix(labelMix) : "",
       child_name: trimmedName, // Preserves exact case (e.g. Malak Khaled)
       parent_phone: trimmedPhone,
     };
 
-    if (customizingDesign.id === 0 && customDesignText.trim()) {
+    if (includesCustomDesign && customDesignText.trim()) {
       customizationPayload.custom_design_text = customDesignText.trim();
     }
 
@@ -673,10 +687,17 @@ export function StickersCatalogClient({
 
               {/* Right Column: Interactive Customization Form */}
               <form onSubmit={handleAddToCart} className="space-y-4">
-<PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={setSelectedPackageId} locale={locale} basePrice={catalog.price} />
+<PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={id => {
+  setSelectedPackageId(id);
+  const pack = catalog.variants.find(variant => variant.id === id);
+  const counts = pack ? STICKER_PACKAGE_COUNTS[pack.sku ?? ""] : undefined;
+  setTicketMix(initialStickerMix(customizingDesign.slug, counts?.tickets ?? 0));
+  setLabelMix(initialStickerMix(customizingDesign.slug, counts?.labels ?? 0));
+}} locale={locale} basePrice={catalog.price} />
+                {packageCounts && <StickerMixPicker locale={locale} tickets={packageCounts.tickets} labels={packageCounts.labels} ticketMix={ticketMix} labelMix={labelMix} onTicketMix={setTicketMix} onLabelMix={setLabelMix} />}
 
                 {/* 1. Custom Design Idea Description (Required for Design ID 0) */}
-                {customizingDesign.id === 0 && (
+                {includesCustomDesign && (
                   <div className="p-3.5 rounded-2xl bg-teal-50/70 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/50 space-y-2">
                     <label htmlFor="customDesignTextInput" className="block text-xs font-bold text-teal-900 dark:text-teal-200">
                       {isAr ? "فكرة أو وصف التصميم المطلوب" : "Custom Design Description"}{" "}
@@ -706,8 +727,8 @@ export function StickersCatalogClient({
                     )}
                     <p className="text-[11px] text-teal-800 dark:text-teal-300 font-medium">
                       {isAr
-                        ? "صمم الاستيكر اللي أنت عايزه: اكتب أي شخصية كرتونية تحبها وسيقوم فريق Daisy Designs بتصميم الباقة بالكامل وفق طلبك."
-                        : "Create any sticker you want: describe any character, and we'll craft the sheet for you."}
+                        ? "اكتبي فكرتك للقطع اللي اخترتِ لها تصميمًا مخصصًا."
+                        : "Describe the artwork for the pieces you assigned to a custom design."}
                     </p>
                   </div>
                 )}
@@ -895,7 +916,8 @@ export function StickersCatalogClient({
                 <UploadFeedback isAr={isAr} busy={isUploadingPhoto} uploaded={Boolean(photoUrl)} error={photoUpload.error} retry={photoUpload.retry} remove={clearPhoto} />
               <CustomizationReview isAr={isAr} editTarget="childNameInput" rows={[
                 [isAr ? "الباقة" : "Package", selectedPackage ? variantLabel(selectedPackage, locale) : ""],
-                [isAr ? "التصميم" : "Design", isAr ? customizingDesign.arabicTitle : customizingDesign.title],
+                ...(packageCounts?.tickets ? [[isAr ? "توزيع التيكت" : "Ticket designs", formatCustomizationValue("ticket_designs", serializeStickerMix(ticketMix), locale).displayValue] as [string, string]] : []),
+                ...(packageCounts?.labels ? [[isAr ? "توزيع الليبل" : "Label designs", formatCustomizationValue("label_designs", serializeStickerMix(labelMix), locale).displayValue] as [string, string]] : []),
                 [isAr ? "اسم الطفل" : "Child's name", childName.trim()],
                 [isAr ? "المدرسة / الصف / الفصل" : "School / grade / class", [schoolName, grade, className].filter(Boolean).join(" / ") || (isAr ? "لم يُضف — اختياري" : "Not added \u2014 optional")],
                 [isAr ? "وصف التصميم" : "Design instructions", customDesignText.trim() || (isAr ? "التصميم المختار" : "Selected design")],
@@ -947,7 +969,7 @@ export function StickersCatalogClient({
                   {/* Primary Action Button: "أضف للسلة" */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || photoUpload.blocked || !selectedPackage || catalog.stock < quantity}
+                    disabled={isSubmitting || photoUpload.blocked || !selectedPackage || !mixValid || catalog.stock < quantity}
                     className="w-full py-3.5 px-6 rounded-2xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-extrabold text-sm sm:text-base shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-h-[48px]"
                   >
                     <ShoppingBag size={18} />

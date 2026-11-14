@@ -1,4 +1,6 @@
 import type { Locale } from "@/lib/locale";
+import stickersData from "@/data/stickers-product.json";
+import { parseStickerMix } from "@/lib/sticker-package-mix";
 
 const FIELD_LABELS_AR: Record<string, string> = {
   child_name: "اسم الطفل",
@@ -7,6 +9,8 @@ const FIELD_LABELS_AR: Record<string, string> = {
   grade: "الصف الدراسي",
   class_name: "الفصل / المجموعة",
   design_theme: "التصميم",
+  ticket_designs: "توزيع الـ٢٠ تيكت",
+  label_designs: "توزيع الـ٢٥ ليبل",
   child_photo: "صورة الطفل",
   garment_color: "لون التيشيرت",
   garment_size: "المقاس",
@@ -22,6 +26,8 @@ const FIELD_LABELS_EN: Record<string, string> = {
   grade: "Grade",
   class_name: "Class",
   design_theme: "Design",
+  ticket_designs: "20 ticket designs",
+  label_designs: "25 label designs",
   child_photo: "Child's Photo",
   garment_color: "T-Shirt Color",
   garment_size: "Size",
@@ -111,6 +117,16 @@ export function formatCustomizationValue(
 ): { displayValue: string; isPhoto: boolean; photoUrl?: string } {
   if (!value) {
     return { displayValue: "", isPhoto: false };
+  }
+  if (key === "ticket_designs" || key === "label_designs") {
+    const mix = parseStickerMix(value, key === "ticket_designs" ? 20 : 25);
+    if (mix) {
+      const displayValue = Object.entries(mix).map(([slug, count]) => {
+        const design = stickersData.product.designs.find(item => item.slug === slug);
+        return `${count} × ${locale === "ar" ? design?.arabicTitle : design?.title}`;
+      }).join(locale === "ar" ? "، " : ", ");
+      return { displayValue, isPhoto: false };
+    }
   }
 
   if (value === "private:story_child_whatsapp_pending.jpg") {
@@ -218,6 +234,8 @@ export function formatCustomizationEntries(
     "custom_design_text",
     "child_name",
     "design_theme",
+    "ticket_designs",
+    "label_designs",
     "school_name",
     "grade",
     "class_name",

@@ -6,7 +6,7 @@ import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
 import { CashOnDeliveryProvider } from "@/lib/payments";
 import { checkoutSchema } from "@/lib/order-validation";
 import { calculateDiscount, calculateShipping, storyCardsDiscount } from "@/lib/commerce-rules";
-import { validateCustomization, validateTshirtCustomization } from "@/lib/customization-validation";
+import { validateCustomization, validateStickerPackageCustomization, validateTshirtCustomization } from "@/lib/customization-validation";
 import { isDemoCatalogProduct } from "@/lib/demo-preview-safety";
 import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
 import { resolveProductPrice, usesProductStock } from "@/lib/product-pricing";
@@ -56,6 +56,8 @@ export async function POST(request: Request) {
                 const { variant, unitPrice } = resolveProductPrice(product, item.variantId);
                 const customization = product.slug === "custom-printed-tshirt"
                     ? validateTshirtCustomization(item.customization)
+                    : product.slug === "custom-waterproof-stickers"
+                    ? validateStickerPackageCustomization(product.customizationFields, item.customization, variant?.sku)
                     : validateCustomization(product.customizationFields, item.customization);
                 if (!customization.success) throw new Error(customization.reason ?? "INVALID_CUSTOMIZATION");
                 return { item: { ...item, customization: customization.data }, product, variant, unitPrice };

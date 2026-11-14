@@ -11,7 +11,10 @@ const variants = [
   { id: "tickets", sku: "DD-STK-050-TICKETS", name: "٢٠ تيكت", price: 150, stock: 0, options: { inventory: "product", tickets: 20, labels: 0 } },
   { id: "labels", sku: "DD-STK-050-LABELS", name: "٢٥ ليبل", price: 150, stock: 0, options: { inventory: "product", tickets: 0, labels: 25 } },
 ];
-const product = { id: "p1", slug: "custom-waterproof-stickers", name: "Tickets & Labels", arabicName: "تيكت وليبل", sku: "PK", price: 300, stock: 10, published: true, tags: [], variants, images: [], customizationFields: [] };
+const product = { id: "p1", slug: "custom-waterproof-stickers", name: "Tickets & Labels", arabicName: "تيكت وليبل", sku: "PK", price: 300, stock: 10, published: true, tags: [], variants, images: [], customizationFields: [
+  { key: "design_theme", type: "SELECT", required: true, maxLength: 80, options: [{ value: "super-cool-dino" }] },
+  { key: "child_name", type: "TEXT", required: true, maxLength: 80, options: [] },
+] };
 
 test("packages use DB prices, require a valid selection, and share unchanged product stock", () => {
   for (const v of variants) {
@@ -50,7 +53,10 @@ test("actual order handler ignores forged prices, aggregates shared inventory an
   };
   const originalTransaction = prisma.$transaction;
   prisma.$transaction = (async (callback: (tx: unknown) => Promise<unknown>) => callback(transaction)) as typeof prisma.$transaction;
-  const input = { fullName: "Test Customer", phone: "01012345678", governorate: "Cairo", city: "Cairo", address: "Test address", paymentMethod: "COD", couponCode: "TEN", items: variants.map(v => ({ slug: product.slug, variantId: v.id, quantity: 1, price: 1, unitPrice: 1 })) };
+  const input = { fullName: "Test Customer", phone: "01012345678", governorate: "Cairo", city: "Cairo", address: "Test address", paymentMethod: "COD", couponCode: "TEN", items: variants.map(v => ({ slug: product.slug, variantId: v.id, quantity: 1, price: 1, unitPrice: 1, customization: {
+    design_theme: "super-cool-dino", child_name: "Omar",
+    ...(v.id === "combined" ? { ticket_designs: '[["super-cool-dino",12],["kuromi-sanrio",8]]', label_designs: '[["super-cool-dino",10],["kuromi-sanrio",15]]' } : {}),
+  } })) };
   const request = (body: unknown) => new Request("http://localhost/api/orders", { method: "POST", body: JSON.stringify(body) });
   try {
     const response = await createOrder(request(input));
@@ -59,14 +65,16 @@ test("actual order handler ignores forged prices, aggregates shared inventory an
     assert.equal(saved?.discount, 60);
     assert.equal(saved?.shipping, 60);
     assert.equal(saved?.total, 600);
-    const snapshots = (saved?.items as { create: { unitPrice: number; selectedVariant: unknown; productName: string }[] }).create;
+    const snapshots = (saved?.items as { create: { unitPrice: number; selectedVariant: unknown; productName: string; customization: Record<string, string> }[] }).create;
     assert.deepEqual(snapshots.map(i => i.unitPrice), [300, 150, 150]);
     assert.deepEqual(snapshots.map(i => i.selectedVariant), variants.map(v => v.options));
+    assert.equal(snapshots[0].customization.ticket_designs, '[["kuromi-sanrio",8],["super-cool-dino",12]]');
+    assert.equal(snapshots[0].customization.label_designs, '[["kuromi-sanrio",15],["super-cool-dino",10]]');
   assert.match(snapshots[0].productName, /٢٠ تيكت/);
     assert.deepEqual(decrements, [{ where: { id: product.id, stock: { gte: 3 } }, data: { stock: { decrement: 3 } } }]);
     assert.equal((await createOrder(request({ ...input, items: [{ slug: product.slug, quantity: 1 }] }))).status, 422);
     assert.equal((await createOrder(request({ ...input, items: [{ slug: product.slug, quantity: 1, variantId: "foreign" }] }))).status, 422);
-    assert.equal((await createOrder(request({ ...input, items: variants.map(v => ({ slug: product.slug, variantId: v.id, quantity: 4 })) }))).status, 409);
+    assert.equal((await createOrder(request({ ...input, items: variants.map(v => ({ slug: product.slug, variantId: v.id, quantity: 4, customization: { design_theme: "super-cool-dino", child_name: "Omar" } })) }))).status, 409);
   } finally { prisma.$transaction = originalTransaction; authMock.mock.restore(); }
 });
 
