@@ -1,3 +1,4 @@
+import { shippingFeeFor } from "@/lib/shipping";
 import { z } from "zod";
 import { validateEgyptianPhone } from "@/lib/customization-validation";
 
@@ -7,7 +8,7 @@ export const checkoutSchema = z.object({
         message: "رقم الهاتف غير صحيح، يرجى إدخال رقم محمول مصري يبدأ بـ 010 أو 011 أو 012 أو 015",
     }),
     email: z.string().email().optional().or(z.literal("")),
-    governorate: z.string().trim().min(2).max(80),
+    governorate: z.string().trim().min(2).max(80).refine(value => shippingFeeFor(value) !== null),
     city: z.string().trim().min(2).max(80),
     address: z.string().trim().min(5).max(300),
     notes: z.string().max(500).optional(),

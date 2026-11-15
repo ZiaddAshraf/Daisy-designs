@@ -1,3 +1,4 @@
+import { calculateShipping } from "@/lib/shipping";
 import { after, NextResponse } from "next/server";
 import { createHash, randomBytes } from "node:crypto";
 import { getServerSession } from "next-auth";
@@ -5,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
 import { CashOnDeliveryProvider } from "@/lib/payments";
 import { checkoutSchema } from "@/lib/order-validation";
-import { calculateDiscount, calculateShipping, storyCardsDiscount } from "@/lib/commerce-rules";
+import { calculateDiscount, storyCardsDiscount } from "@/lib/commerce-rules";
 import { validateCustomization, validateStickerPackageCustomization, validateTshirtCustomization } from "@/lib/customization-validation";
 import { isDemoCatalogProduct } from "@/lib/demo-preview-safety";
 import { isDemoModeEnabled, shouldBlockDemoTransactions } from "@/lib/demo-mode";
@@ -106,9 +107,7 @@ export async function POST(request: Request) {
                 });
                 if (claimed.count !== 1) throw new Error("INVALID_COUPON");
             }
-            const settings = await transaction.siteSetting.findMany({ where: { key: { in: ["shippingFee", "freeShippingThreshold"] } } });
-            const setting = (key: string, fallback: number) => Number(settings.find(item => item.key === key)?.value ?? fallback);
-            const shipping = calculateShipping(subtotal - discount, setting("shippingFee", 60), setting("freeShippingThreshold", 700));
+            const shipping = calculateShipping(input.governorate);
             const total = Math.max(0, subtotal - discount + shipping);
 
             // Execute single atomic decrement per unique inventory target

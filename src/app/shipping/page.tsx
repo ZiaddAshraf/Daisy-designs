@@ -1,3 +1,4 @@
+import { EGYPTIAN_GOVERNORATES } from "@/lib/shipping";
 import { ContentPage } from "@/components/content-page";
 import { getRequestLocale } from "@/lib/locale-server";
 
@@ -26,11 +27,15 @@ export default async function ShippingPage() {
             : "All other governorates: Delivery takes 3 to 6 business days via trusted shipping carriers."}
         </p>
         <div className="rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-4">
-          <p className="font-semibold text-amber-800 dark:text-amber-300">
-            {isRtl
-              ? "مصاريف الشحن ٦٠ ج.م بس لأي مكان في مصر، والشحن مجاني تماماً لأي أوردر يعدي ٧٠٠ ج.م 🚚"
-              : "Standard shipping fee is 60 EGP nationwide, and completely free on orders exceeding 700 EGP."}
-          </p>
+          <h2 className="font-semibold">{isRtl ? "تكلفة الشحن لكل طلب" : "Delivery fee per order"}</h2>
+          <ul className="mt-3 space-y-2">
+            {Array.from(new Set(EGYPTIAN_GOVERNORATES.map(region => region.fee))).filter(fee => fee !== null).sort((a, b) => a - b).map(fee => (
+              <li key={fee}>
+                <strong>{fee.toLocaleString(isRtl ? "ar-EG" : "en")} {isRtl ? "ج.م" : "EGP"}</strong>
+                {" — "}{EGYPTIAN_GOVERNORATES.filter(region => region.fee === fee).map(region => isRtl ? region.nameAr : region.nameEn).join(isRtl ? "، " : ", ")}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </ContentPage>

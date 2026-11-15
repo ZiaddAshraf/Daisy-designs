@@ -2,7 +2,7 @@
 
 import { DiscountRows } from "@/components/story-cards-offer";
 import { validateEgyptianPhone } from "@/lib/customization-validation";
-import { shippingProgress } from "@/lib/commerce-rules";
+import { EGYPTIAN_GOVERNORATES } from "@/lib/shipping";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -17,7 +17,6 @@ import { formatMessage } from "@/lib/i18n/messages";
 import {
     ArrowLeft,
     ArrowRight,
-    CheckCircle2,
     ChevronDown,
     ChevronUp,
     ShieldCheck,
@@ -25,43 +24,8 @@ import {
     Truck,
 } from "lucide-react";
 
-export const EGYPTIAN_GOVERNORATES = [
-    { id: "cairo", nameAr: "القاهرة", nameEn: "Cairo", etaAr: "توصيل سريع خلال ٢٤ - ٤٨ ساعة", etaEn: "Fast delivery within 24-48 hours" },
-    { id: "giza", nameAr: "الجيزة", nameEn: "Giza", etaAr: "توصيل سريع خلال ٢٤ - ٤٨ ساعة", etaEn: "Fast delivery within 24-48 hours" },
-    { id: "alexandria", nameAr: "الإسكندرية", nameEn: "Alexandria", etaAr: "توصيل خلال ٢ - ٣ أيام عمل", etaEn: "Delivery within 2-3 business days" },
-    { id: "qalyubia", nameAr: "القليوبية", nameEn: "Qalyubia", etaAr: "توصيل خلال ٢ - ٣ أيام عمل", etaEn: "Delivery within 2-3 business days" },
-    { id: "sharqia", nameAr: "الشرقية", nameEn: "Sharqia", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "dakahlia", nameAr: "الدقهلية (المنصورة)", nameEn: "Dakahlia (Mansoura)", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "gharbia", nameAr: "الغربية (طنطا / المحلة)", nameEn: "Gharbia (Tanta / Mahalla)", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "monufia", nameAr: "المنوفية", nameEn: "Monufia", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "damietta", nameAr: "دمياط", nameEn: "Damietta", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "port_said", nameAr: "بورسعيد", nameEn: "Port Said", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "ismailia", nameAr: "الإسماعيلية", nameEn: "Ismailia", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "suez", nameAr: "السويس", nameEn: "Suez", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "kafr_el_sheikh", nameAr: "كفر الشيخ", nameEn: "Kafr El-Sheikh", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "beheira", nameAr: "البحيرة", nameEn: "Beheira", etaAr: "توصيل خلال ٢ - ٤ أيام عمل", etaEn: "Delivery within 2-4 business days" },
-    { id: "fayoum", nameAr: "الفيوم", nameEn: "Fayoum", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "beni_suef", nameAr: "بني سويف", nameEn: "Beni Suef", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "minya", nameAr: "المنيا", nameEn: "Minya", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "asyut", nameAr: "أسيوط", nameEn: "Asyut", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "sohag", nameAr: "سوهاج", nameEn: "Sohag", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "qena", nameAr: "قنا", nameEn: "Qena", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "luxor", nameAr: "الأقصر", nameEn: "Luxor", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "aswan", nameAr: "أسوان", nameEn: "Aswan", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "red_sea", nameAr: "البحر الأحمر (الغردقة)", nameEn: "Red Sea (Hurghada)", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "matrouh", nameAr: "مطروح والساحل الشمالي", nameEn: "Matrouh & North Coast", etaAr: "توصيل خلال ٣ - ٥ أيام عمل", etaEn: "Delivery within 3-5 business days" },
-    { id: "new_valley", nameAr: "الوادي الجديد", nameEn: "New Valley", etaAr: "توصيل خلال ٤ - ٦ أيام عمل", etaEn: "Delivery within 4-6 business days" },
-    { id: "north_sinai", nameAr: "شمال سيناء", nameEn: "North Sinai", etaAr: "توصيل خلال ٤ - ٦ أيام عمل", etaEn: "Delivery within 4-6 business days" },
-    { id: "south_sinai", nameAr: "جنوب سيناء (شرم الشيخ)", nameEn: "South Sinai (Sharm El-Sheikh)", etaAr: "توصيل خلال ٤ - ٦ أيام عمل", etaEn: "Delivery within 4-6 business days" },
-] as const;
-
-
-
-
-
 export default function CheckoutPage() {
-    const { items, clear, demoMode, quote, pricingError, pricingPending, couponCode, setCouponCode } = useCart();
-    const progress = shippingProgress(quote);
+    const { items, clear, demoMode, quote, pricingError, pricingPending, couponCode, setCouponCode, selectedGov, setSelectedGov } = useCart();
     const locale = useLocale();
     const t = useTranslation();
     const direction = directionForLocale(locale);
@@ -74,7 +38,6 @@ export default function CheckoutPage() {
 
     const priceMessage = pricingPending ? (locale === "ar" ? "جاري تحديث الأسعار…" : "Updating prices…") : pricingError ? (locale === "ar" ? "تعذر تأكيد الأسعار. راجعي الباقة المختارة في السلة وكود الخصم." : "Prices could not be confirmed. Check your package selection and coupon.") : "";
     const defaultPhone = items.find(item => item.customization?.parent_phone)?.customization?.parent_phone ?? "";
-    const [selectedGov, setSelectedGov] = useState<string>("cairo");
     const [phone, setPhone] = useState(defaultPhone);
 
     const currentGov = EGYPTIAN_GOVERNORATES.find(g => g.id === selectedGov) || EGYPTIAN_GOVERNORATES[0];
@@ -296,11 +259,7 @@ export default function CheckoutPage() {
                                     <div className="flex justify-between text-[var(--muted-foreground)]">
                                         <span>{t("shippingFee")}</span>
                                         <span>
-                                            {!quote ? "—" : shipping === 0 ? (
-                                                <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">{t("freeShipping")}</strong>
-                                            ) : (
-                                                formatPrice(shipping, locale)
-                                            )}
+                                            {quote ? formatPrice(shipping, locale) : "—"}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-t border-[var(--border)] pt-2 text-sm font-bold text-[var(--foreground)]">
@@ -417,8 +376,8 @@ export default function CheckoutPage() {
                                             className="w-full min-w-0 min-h-12 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3.5 text-base sm:text-sm text-[var(--foreground)] transition focus:border-[var(--foreground)] focus:outline-hidden cursor-pointer"
                                         >
                                             {EGYPTIAN_GOVERNORATES.map((gov) => (
-                                                <option key={gov.id} value={gov.id}>
-                                                    {locale === "ar" ? gov.nameAr : gov.nameEn}
+                                                <option key={gov.id} value={gov.id} disabled={gov.fee === null}>
+                                                    {locale === "ar" ? gov.nameAr : gov.nameEn} — {gov.fee === null ? (locale === "ar" ? "تواصلي معنا للسعر" : "Contact us for pricing") : formatPrice(gov.fee, locale)}
                                                 </option>
                                             ))}
                                         </select>
@@ -607,32 +566,6 @@ export default function CheckoutPage() {
                                     ))}
                                 </div>
 
-                                {/* Free Shipping Progress Bar */}
-                                {progress && (<div className="mt-5 rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span className="font-semibold text-[var(--foreground)] flex items-center gap-1.5">
-                                            <Truck size={14} className="text-teal-600 dark:text-teal-400" />
-                                            {progress.remaining === 0 ? (
-                                                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                                                    {t("freeShippingUnlocked")}
-                                                </span>
-                                            ) : (
-                                                <span>
-                                                    {formatMessage(t("freeShippingProgress"), {
-                                                        amount: progress.remaining.toLocaleString(locale === "ar" ? "ar-EG" : "en-US"),
-                                                    })}
-                                                </span>
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--border)]">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300"
-                                            style={{ width: `${progress.percent}%` }}
-                                        />
-                                    </div>
-                                </div>)}
-
                                 {/* Totals Breakdown */}
                                 <div className="mt-5 space-y-2.5 border-t border-[var(--border)] pt-4 text-sm">
                                     <div className="flex justify-between text-[var(--muted-foreground)]">
@@ -643,14 +576,7 @@ export default function CheckoutPage() {
                                     <div className="flex justify-between text-[var(--muted-foreground)]">
                                         <span>{t("shippingFee")}</span>
                                         <span>
-                                            {!quote ? "—" : shipping === 0 ? (
-                                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                                                    <CheckCircle2 size={12} />
-                                                    {t("freeShipping")}
-                                                </span>
-                                            ) : (
-                                                <span className="font-medium text-[var(--foreground)]">{formatPrice(shipping, locale)}</span>
-                                            )}
+                                            {quote ? formatPrice(shipping, locale) : "—"}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-t border-[var(--border)] pt-3 text-base font-bold text-[var(--foreground)]">

@@ -24,7 +24,7 @@ import {
 } from "../src/lib/customization-formatter";
 import { cartLineId, checkoutLinePayload } from "../src/lib/cart-line-state";
 import { checkoutSchema } from "../src/lib/order-validation";
-import { calculateShipping } from "../src/lib/commerce-rules";
+import { calculateShipping } from "../src/lib/shipping";
 import { GET as getAdminTshirtArtwork } from "../src/app/api/admin/orders/[id]/tshirt-artwork/route";
 
 test("T-Shirt fixture has confirmed 450 EGP price, center chest placement, and DD-TS-001 SKU", () => {
@@ -351,14 +351,14 @@ test("Adding customized T-shirt to cart and submitting valid COD order schema su
   assert.equal(validation.data?.garment_size, "6");
   assert.equal(validation.data?.print_placement, "center_chest");
 
-  // 4. Server calculation: 450 EGP unit price, subtotal 900, shipping 60, total 960
+  // 4. Server calculation: 450 EGP unit price, subtotal 900, shipping 80, total 980
   const unitPrice = tshirtProductData.product.price; // 450
   const subtotal = unitPrice * linePayload.quantity;
   assert.equal(subtotal, 900);
-  const shipping = calculateShipping(subtotal, 60, 2500);
-  assert.equal(shipping, 60);
+  const shipping = calculateShipping("Cairo");
+  assert.equal(shipping, 80);
   const total = subtotal + shipping;
-  assert.equal(total, 960);
+  assert.equal(total, 980);
 });
 
 test("Multiple T-shirts with different sizes, colors, and artwork aggregate into single inventory target", () => {

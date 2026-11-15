@@ -1,6 +1,7 @@
+import { calculateShipping, EGYPTIAN_GOVERNORATES } from "@/lib/shipping";
 import assert from "node:assert/strict";
 import test from "node:test";
-import { calculateDiscount, calculateShipping, storyCardsDiscount, mergeQuantities, shippingProgress } from "@/lib/commerce-rules";
+import { calculateDiscount, storyCardsDiscount, mergeQuantities } from "@/lib/commerce-rules";
 import { adjustCartLine, cartLineId, checkoutLinePayload, removeCartLine } from "@/lib/cart-line-state";
 import { checkoutSchema } from "@/lib/order-validation";
 import { getProductGalleryImage } from "@/lib/product-gallery";
@@ -8,7 +9,7 @@ import { validateCustomization } from "@/lib/customization-validation";
 
 test("merges identical product variant customizations", () => { const result = mergeQuantities([{ productId: "p1", quantity: 1, customization: { name: "Mira" } }, { productId: "p1", quantity: 2, customization: { name: "Mira" } }, { productId: "p1", quantity: 1, customization: { name: "Omar" } }]); assert.equal(result.length, 2); assert.equal(result.find(item => item.customization?.name === "Mira")?.quantity, 3); });
 test("calculates percentage and maximum discount", () => { assert.equal(calculateDiscount(1000, { type: "PERCENTAGE", value: 20, minimumOrder: 0, maximumDiscount: 100 }), 100); assert.equal(calculateDiscount(100, { type: "FIXED", value: 200, minimumOrder: 0 }), 100); });
-test("requires minimum order and applies free shipping threshold", () => { assert.equal(calculateDiscount(100, { type: "FIXED", value: 50, minimumOrder: 200 }), 0); assert.equal(calculateShipping(2500, 60, 2500), 0); assert.equal(calculateShipping(500, 60, 2500), 60); });
+test("requires minimum order for discounts", () => { assert.equal(calculateDiscount(100, { type: "FIXED", value: 50, minimumOrder: 200 }), 0); });
 test("cart identities normalize customizations and distinguish variants", () => {
   assert.equal(cartLineId({ slug: "p1", customization: { theme: " stars ", name: "Mira" } }), cartLineId({ slug: "p1", customization: { name: "Mira", theme: "stars" } }));
   assert.notEqual(cartLineId({ slug: "p1", customization: { name: "Mira" } }), cartLineId({ slug: "p1", customization: { name: "Omar" } }));
@@ -50,11 +51,13 @@ test("customization validation checks required text, allowed choices, and unsupp
   assert.equal(validateCustomization(fields, { name: "Mira", photo: "https://example.com/photo.jpg" }).success, false);
 });
 
-test("shipping progress reflects the confirmed fee and the subtotal after discount", () => {
-  assert.equal(shippingProgress(null), null);
-  assert.deepEqual(shippingProgress({ subtotal: 750, discount: 100, threshold: 700, shipping: 60 }), { remaining: 50, percent: 92 });
-  assert.deepEqual(shippingProgress({ subtotal: 750, discount: 50, threshold: 700, shipping: 0 }), { remaining: 0, percent: 100 });
-  assert.deepEqual(shippingProgress({ subtotal: 100, discount: 0, threshold: 0, shipping: 0 }), { remaining: 0, percent: 100 });
+test("regional delivery fees match in both checkout languages", () => {
+  for (const gov of EGYPTIAN_GOVERNORATES.filter(region => region.fee !== null)) {
+    assert.equal(calculateShipping(gov.nameAr), gov.fee);
+    assert.equal(calculateShipping(gov.nameEn), gov.fee);
+    assert.ok(calculateShipping(gov.id) > 0);
+  }
+  assert.throws(() => calculateShipping("unknown"));
 });
 
 test("story and card bundles pair quantities across customized lines", () => {

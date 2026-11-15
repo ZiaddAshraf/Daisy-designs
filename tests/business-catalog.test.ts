@@ -82,8 +82,8 @@ test("actual order handler ignores forged prices, aggregates shared inventory an
     assert.equal(response.status, 201);
     assert.equal(saved?.subtotal, 600);
     assert.equal(saved?.discount, 60);
-    assert.equal(saved?.shipping, 60);
-    assert.equal(saved?.total, 600);
+    assert.equal(saved?.shipping, 80);
+    assert.equal(saved?.total, 620);
     const snapshots = (saved?.items as { create: { unitPrice: number; selectedVariant: unknown; productName: string; customization: Record<string, string> }[] }).create;
     assert.deepEqual(snapshots.map(i => i.unitPrice), [300, 150, 150]);
     assert.deepEqual(snapshots.map(i => i.selectedVariant), variants.map(v => v.options));

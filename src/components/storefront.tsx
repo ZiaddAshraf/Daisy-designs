@@ -1,7 +1,6 @@
 "use client";
 
 import { DiscountRows } from "@/components/story-cards-offer";
-import { shippingProgress } from "@/lib/commerce-rules";
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,7 +15,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { adjustCartLine, cartLineId, checkoutLinePayload, mergeCartLine, normalizeStoredCartLine, removeCartLine } from "@/lib/cart-line-state";
-import { directionForLocale, formatLocaleNumber, type Locale } from "@/lib/locale";
+import { directionForLocale, type Locale } from "@/lib/locale";
 import { formatMessage, getTranslation, type TranslationKey } from "@/lib/i18n/messages";
 import { BrandLogo } from "@/components/brand-logo";
 import { formatCustomizationEntries } from "@/lib/customization-formatter";
@@ -25,7 +24,7 @@ import { WhatsAppFloatingButton } from "@/components/whatsapp-floating-button";
 type CartVariant = { id: string; name: string; stock: number };
 type CartItem = Product & { lineId: string; quantity: number; customization?: Record<string, string>; variantId?: string; variantName?: string };
 type CartQuote = { bundleDiscount: number; subtotal: number; discount: number; shipping: number; total: number; fee: number; threshold: number };
-type CartContextType = { quote: CartQuote | null; pricingError: string; pricingPending: boolean; couponCode: string; setCouponCode: (value: string) => void; items: CartItem[]; demoMode: boolean; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number, openDrawer?: boolean) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
+type CartContextType = { selectedGov: string; setSelectedGov: (value: string) => void; quote: CartQuote | null; pricingError: string; pricingPending: boolean; couponCode: string; setCouponCode: (value: string) => void; items: CartItem[]; demoMode: boolean; add: (product: Product, customization?: Record<string, string>, variant?: CartVariant, quantity?: number, openDrawer?: boolean) => void; update: (lineId: string, amount: number) => void; remove: (lineId: string) => void; clear: () => void };
 const CartContext = createContext<CartContextType | null>(null);
 export function useCart() { const context = useContext(CartContext); if (!context) throw new Error("useCart must be used inside StoreShell"); return context; }
 type WishlistContextType = { items: Product[]; demoMode: boolean; toggle: (product: Product) => void; has: (slug: string) => boolean };
@@ -45,7 +44,8 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
   const [pricingError, setPricingError] = useState("");
   const [pricedKey, setPricedKey] = useState("");
   const [couponCode, setCouponCode] = useState("");
-  const quoteKey = JSON.stringify({ locale, couponCode, items: items.map(checkoutLinePayload) });
+  const [selectedGov, setSelectedGov] = useState("cairo");
+  const quoteKey = JSON.stringify({ locale, couponCode, governorate: selectedGov, items: items.map(checkoutLinePayload) });
   const pricingPending = !demoMode && pricedKey !== quoteKey;
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -159,7 +159,7 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
 
   return <LocaleContext.Provider value={locale}>
     <WishlistContext.Provider value={{ items: wishlist, demoMode, toggle, has: slug => wishlist.some(item => item.slug === slug) }}>
-      <CartContext.Provider value={{ items, demoMode, add, update, remove, clear, quote: pricingPending ? null : quote, pricingError: pricingPending ? "" : pricingError, pricingPending, couponCode, setCouponCode }}>
+      <CartContext.Provider value={{ selectedGov, setSelectedGov, items, demoMode, add, update, remove, clear, quote: pricingPending ? null : quote, pricingError: pricingPending ? "" : pricingError, pricingPending, couponCode, setCouponCode }}>
         <ScrollReveal />
         <Header count={items.reduce((sum, item) => sum + item.quantity, 0)} wishlistCount={wishlist.length} onCart={() => setCartOpen(true)} locale={locale} />
         {demoMode && <div className="daisy-demo-notice" role="status" dir={directionForLocale(locale)}><strong>{getTranslation(locale, "previewBannerTitle")}</strong><span>{getTranslation(locale, "previewBannerDescription")}</span></div>}
@@ -206,7 +206,6 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
 function Header({ count, wishlistCount, onCart, locale }: { count: number; wishlistCount: number; onCart: () => void; locale: Locale }) {
   const t = (key: TranslationKey) => getTranslation(locale, key);
   const isAr = locale === "ar";
-  const { quote } = useCart();
   const SearchArrow = isAr ? ArrowLeft : ArrowRight;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -266,9 +265,7 @@ function Header({ count, wishlistCount, onCart, locale }: { count: number; wishl
   };
   if (pathname.startsWith("/admin")) return null;
   return <>
-    <div className="daisy-announcement">{quote && quote.fee > 0 && quote.threshold > 0
-      ? formatMessage(t("shippingAnnouncement"), { amount: formatPrice(quote.threshold, locale) })
-      : t("announcement")}</div>
+    <div className="daisy-announcement">{t("announcement")}</div>
     <header className={`daisy-header daisy-header--storefront ${pathname === "/" ? "daisy-header--home" : ""}`}>
       <div className="daisy-header__inner">
         <button ref={menuButtonRef} className="daisy-icon-button daisy-menu-toggle" aria-label={t("menuOpen")} aria-expanded={mobileOpen} aria-controls="daisy-mobile-menu" onClick={() => setMobileOpen(true)}><Menu size={19} strokeWidth={1.5} /></button>
@@ -461,7 +458,6 @@ export function WishlistButton({ product }: { product: Product }) {
 
 function CartDrawer({ onClose }: { onClose: () => void }) {
   const { items, update, remove, demoMode, quote } = useCart();
-  const progress = shippingProgress(quote);
   const t = useTranslation();
   const locale = useLocale();
   const Arrow = locale === "ar" ? ArrowLeft : ArrowRight;
@@ -477,24 +473,6 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        {items.length > 0 && !demoMode && progress && (
-          <div className="daisy-cart-drawer__shipping-bar px-4 py-3 bg-[var(--surface-soft)] border-b border-[var(--border)] text-xs">
-            <div className="flex items-center justify-between font-medium mb-1.5 text-[var(--foreground)]">
-              <span>
-                {progress.remaining === 0
-                  ? t("freeShippingProgressAchieved")
-                  : formatMessage(t("freeShippingProgress"), { amount: formatLocaleNumber(locale, progress.remaining) })}
-              </span>
-              <span className="font-bold text-amber-600 dark:text-amber-400">{progress.percent}%</span>
-            </div>
-            <div className="h-1.5 w-full rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-amber-500 transition-all duration-300"
-                style={{ width: `${progress.percent}%` }}
-              />
-            </div>
-          </div>
-        )}
 
         <div className="daisy-cart-drawer__body">
           {items.length === 0 ? (

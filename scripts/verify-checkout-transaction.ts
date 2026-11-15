@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
 import { CashOnDeliveryProvider } from "../src/lib/payments";
-import { calculateShipping } from "../src/lib/commerce-rules";
+import { calculateShipping } from "../src/lib/shipping";
 import { randomBytes } from "node:crypto";
 
 async function verifyCheckoutTransaction() {
@@ -35,7 +35,7 @@ async function verifyCheckoutTransaction() {
   const orderQuantity = 1;
   const unitPrice = product.price;
   const subtotal = unitPrice * orderQuantity;
-  const shipping = calculateShipping(subtotal, 60, 2500);
+  const shipping = calculateShipping("Cairo");
   const total = subtotal + shipping;
 
   const testOrderNumber = `ST-TEST-${randomBytes(4).toString("hex").toUpperCase()}`;

@@ -44,7 +44,7 @@ test("actual COD handler: price tampering, coupon contention, replay ownership a
     }
     assert.equal((await POST(request({ ...input, paymentMethod: "PAYMOB" }))).status, 400);
     assert.equal((await POST(request(input))).status, 201);
-    assert.equal(saved?.subtotal, 200); assert.equal(saved?.discount, 20); assert.equal(saved?.shipping, 60); assert.equal(saved?.total, 240);
+    assert.equal(saved?.subtotal, 200); assert.equal(saved?.discount, 20); assert.equal(saved?.shipping, 80); assert.equal(saved?.total, 260);
     assert.equal(saved?.status, "PENDING"); assert.equal(saved?.paymentStatus, "PENDING");
     assert.equal((await POST(request(input))).status, 201);
     assert.equal(creations, 1); assert.equal(decrements, 1);

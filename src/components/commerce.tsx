@@ -1,12 +1,11 @@
 "use client";
 import { DiscountRows } from "@/components/story-cards-offer";
-import { shippingProgress } from "@/lib/commerce-rules";
 import { usesProductStock, variantLabel } from "@/lib/product-pricing";
 
 import Image from "@/components/site-image";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, Truck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, Truck } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/products";
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from "@/lib/product-image";
@@ -105,7 +104,6 @@ export function ProductDetail({ product, images = [], variants = [], customizati
 
 export function CartView() {
   const { items, update, remove, demoMode, quote, pricingError } = useCart();
-  const progress = shippingProgress(quote);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const locale = useLocale();
   const t = useTranslation();
@@ -253,30 +251,6 @@ export function CartView() {
                 {t("cartSummary")}
               </h2>
 
-              {/* Free shipping progress bar */}
-              {progress && (<div className="rounded-xl bg-[var(--surface-soft)] p-3.5 border border-[var(--border)]">
-                <div className="text-xs font-semibold text-[var(--foreground)] flex items-center gap-1.5">
-                  <Truck size={14} className="text-teal-600 dark:text-teal-400 shrink-0" />
-                  {progress.remaining === 0 ? (
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                      {t("freeShippingUnlocked")}
-                    </span>
-                  ) : (
-                    <span>
-                      {formatMessage(t("freeShippingProgress"), {
-                        amount: progress.remaining.toLocaleString(locale === "ar" ? "ar-EG" : "en-US"),
-                      })}
-                    </span>
-                  )}
-                </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--border)]">
-                  <div
-                    className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300"
-                    style={{ width: `${progress.percent}%` }}
-                  />
-                </div>
-              </div>)}
-
               {/* Pricing lines */}
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-[var(--muted-foreground)]">
@@ -285,16 +259,9 @@ export function CartView() {
                 </div>
                 {quote && <DiscountRows locale={locale} {...quote} />}
                 <div className="flex justify-between text-[var(--muted-foreground)]">
-                  <span>{t("shippingFee")}</span>
+                  <span>{locale === "ar" ? "الشحن التقديري حسب الوجهة" : "Estimated delivery by destination"}</span>
                   <span>
-                    {quote?.shipping === 0 ? (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                        <CheckCircle2 size={12} />
-                        {t("freeShipping")}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-[var(--muted-foreground)]">{quote ? formatPrice(quote.shipping, locale) : locale === "ar" ? "يُحسب عند الدفع" : "Calculated at checkout"}</span>
-                    )}
+                    {quote ? formatPrice(quote.shipping, locale) : "—"}
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-[var(--border)] pt-3 text-base font-bold text-[var(--foreground)]">
