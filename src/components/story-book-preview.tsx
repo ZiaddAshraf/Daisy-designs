@@ -572,7 +572,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
   return (
     <div className="sb-product-layout pb-20 md:pb-0">
       {/* 1. Hero: Two-column editorial presentation */}
-      <section className="sb-hero" aria-labelledby="sb-hero-heading">
+      <section className="sb-hero product-detail-layout entry-layout" aria-labelledby="sb-hero-heading">
         {/* Media Column (Left) - COVER ONLY PROTECTED VIEW */}
         <div className="sb-hero__media">
           <div
@@ -676,7 +676,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
         </div>
 
         {/* Product Details & Selection Column (Right) */}
-        <div className="sb-hero__content">
+        <div className="sb-hero__content entry-fields">
           <div className="sb-hero__eyebrow">
             <span className="sb-hero__eyebrow-text">
               DAISY DESIGNS / {isAr ? "قصص مخصصة للأطفال" : "CUSTOMIZED STORIES"}
@@ -684,7 +684,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
             <TinyDaisyDoodle size={14} className="sb-hero__eyebrow-icon" />
           </div>
 
-          <h1 id="sb-hero-heading" className="sb-hero__title">
+          <h1 id="sb-hero-heading" className="sb-hero__title entry-title">
             {displayedTitle}
           </h1>
 

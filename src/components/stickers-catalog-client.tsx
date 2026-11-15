@@ -672,14 +672,14 @@ export function StickersCatalogClient({
       {/* 3. Inline Customization Modal on the Same Page */}
       {customizingDesign && (
         <div
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+          className="entry-screen"
           onClick={() => setCustomizingDesign(null)}
           role="dialog"
           aria-modal="true"
           aria-label={isAr ? `تخصيص ${customizingDesign.arabicTitle}` : `Customize ${customizingDesign.title}`}
         >
           <div
-            className="relative max-w-4xl w-full bg-[var(--card)] rounded-3xl overflow-hidden shadow-2xl border border-[var(--border)] flex flex-col my-auto max-h-[92vh] animate-in fade-in zoom-in-95 duration-200"
+            className="entry-sheet product-detail-page"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -722,10 +722,10 @@ export function StickersCatalogClient({
             </div>
 
             {/* Modal Scrollable Content: 2 Columns on Desktop */}
-            <div className="overflow-y-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] gap-6 lg:gap-8 text-start">
+            <div className="product-detail-layout entry-layout">
               {/* Left Column: Visual Sheet Preview & Quality Pillars */}
               <div className="flex flex-col gap-4">
-                <div className="relative aspect-[3/4] max-h-[460px] rounded-2xl overflow-hidden border border-[var(--border)] bg-white dark:bg-neutral-900 p-2 flex items-center justify-center">
+                <div className="product-detail-media relative rounded-2xl overflow-hidden border border-[var(--border)] bg-white dark:bg-neutral-900 p-2 flex items-center justify-center">
                   <SiteImage
                     src={customizingDesign.url}
                     alt={isAr ? customizingDesign.arabicTitle : customizingDesign.title}
@@ -748,7 +748,7 @@ export function StickersCatalogClient({
               </div>
 
               {/* Right Column: Interactive Customization Form */}
-              <form onSubmit={handleAddToCart} className="space-y-4">
+              <form onSubmit={handleAddToCart} className="entry-fields space-y-4"><h2 className="entry-title">{isAr ? customizingDesign.arabicTitle : customizingDesign.title}</h2><strong>{formatPrice(product.price, locale)}</strong>
                 <div className="rounded-2xl border border-teal-200 bg-teal-50/60 p-3 text-sm dark:border-teal-900 dark:bg-teal-950/30">
                   <strong>{selectedPackage ? variantLabel(selectedPackage, locale) : ""}</strong>
                   {packageCounts?.tickets ? <p className="mt-1">{isAr ? "التيكت: " : "Tickets: "}{formatCustomizationValue("ticket_designs", serializeStickerMix(ticketMix), locale).displayValue}</p> : null}

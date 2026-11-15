@@ -692,13 +692,13 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
       {/* 5. Pre-Cart Personalization Modal */}
       {customizingIndex !== null && activeDesign && (
         <div
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+          className="entry-screen"
           onClick={() => setCustomizingIndex(null)}
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="relative max-w-xl w-full bg-[var(--card)] rounded-2xl shadow-2xl border border-[var(--border)] overflow-hidden my-auto"
+            className="entry-sheet product-detail-page"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -732,7 +732,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
             </div>
 
             {/* Customization Form */}
-            <form onSubmit={handleAddToCart} className="p-4 sm:p-6 space-y-4 text-start">
+            <div className="product-detail-layout entry-layout"><div className="product-detail-media relative"><SiteImage src={activeDesign.url} alt={isAr ? activeDesign.arabicTitle : activeDesign.title} fill sizes="(max-width: 760px) 100vw, 50vw" className="object-contain" /></div><form onSubmit={handleAddToCart} className="entry-fields space-y-4 text-start"><h2 className="entry-title">{isAr ? activeDesign.arabicTitle : activeDesign.title}</h2><strong>{formatPrice(product.price, locale)}</strong>
 <PackageSelector variants={catalog.variants} value={selectedPackageId} onChange={id => {
   setSelectedPackageId(id);
   const pack = catalog.variants.find(variant => variant.id === id);
@@ -1052,7 +1052,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                   <span>{isAr ? "اشتري الآن (دفع عند الاستلام)" : "Buy Now (Cash on Delivery)"}</span>
                 </button>
               </div>
-            </form>
+            </form></div>
           </div>
         </div>
       )}

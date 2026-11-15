@@ -171,9 +171,9 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
   return (
     <div className="w-full min-w-0 pb-20 md:pb-0">
       {/* Main Studio Two-Column Grid */}
-      <div className="grid gap-8 lg:grid-cols-12 lg:items-start min-w-0">
+      <div className="product-detail-layout entry-layout min-w-0">
         {/* Left Column: Interactive Garment Mockup & Chest Overlay */}
-        <div className="lg:col-span-7 flex flex-col gap-4 min-w-0">
+        <div className="flex flex-col gap-4 min-w-0">
           <div className="relative aspect-square w-full overflow-hidden rounded-[32px] border border-slate-200/80 bg-gradient-to-b from-slate-50/80 to-slate-100/50 p-6 shadow-sm dark:border-neutral-800 dark:from-neutral-900/60 dark:to-neutral-900/30">
             {/* Top-Start Wishlist Floating Heart Button */}
             <button
@@ -292,14 +292,14 @@ export function TShirtPreview({ locale, price, inStock = false }: TShirtPreviewP
         </div>
 
         {/* Right Column: Customizer Studio & Purchase Controls */}
-        <div className="lg:col-span-5 flex flex-col gap-6 min-w-0">
+        <div className="entry-fields flex flex-col gap-6 min-w-0">
           {/* Header Info */}
           <div>
             <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400 text-xs font-bold tracking-wider uppercase mb-1">
               <span>DAISY DESIGNS / {isAr ? "تيشيرتات كبار وأطفال" : "ADULT & KIDS APPAREL"}</span>
               <TinyDaisyDoodle size={13} />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-neutral-100 tracking-tight">
+            <h1 className="entry-title text-slate-900 dark:text-neutral-100 tracking-tight">
               {isAr ? product.arabicName : product.name}
             </h1>
           </div>

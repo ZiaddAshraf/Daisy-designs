@@ -10985,3 +10985,18 @@ body:has(.daisy-home--storefront) .daisy-footer__bottom,
     transition: none;
   }
 }
+
+/* Personalization screens share the thermal label product layout and form controls. */
+.entry-screen { position: fixed; inset: 0; z-index: 100; background: var(--background); overflow-y: auto; overscroll-behavior: contain; }
+.entry-sheet { min-height: 100%; }
+.entry-sheet > div:first-child { position: sticky; top: 0; z-index: 2; background: var(--background); }
+.product-detail-layout.entry-layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: start; gap: clamp(36px, 6vw, 84px); }
+.entry-sheet .entry-layout { margin-block: 24px; }
+.entry-fields { min-width: 0; }
+.entry-fields .entry-title { font-size: clamp(2rem, 4vw, 3.75rem); font-weight: 500; line-height: 1.2; }
+.entry-fields :is(input[type=text], input[type=tel], textarea, select) { border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; min-height: 42px; }
+.entry-fields :is(input, textarea, select):focus-visible { outline: 2px solid var(--foreground); outline-offset: 2px; }
+@media (max-width: 760px) {
+  .product-detail-layout.entry-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .entry-sheet .product-detail-media { max-height: 48svh; width: 100%; }
+}
