@@ -69,7 +69,12 @@ export function collectionTextForLocale(value: string | null, _locale: Locale): 
 
 export function toStorefrontProduct(product: { slug: string; name: string; arabicName?: string; tags?: string[]; price: number; compareAtPrice: number | null; description: string; arabicDescription?: string; customizable: boolean; images: { url: string }[]; variants?: { id: string }[]; category?: { name?: string; arabicName?: string } | null; badge?: string; featured?: boolean; bestSeller?: boolean; newArrival?: boolean }, locale: Locale = "ar"): StorefrontProduct {
     const demo = product.tags?.includes("DEMO_CATALOG_V1") ?? false;
-    const visibleName = selectLocalizedText(locale, product.name, product.arabicName).replace(/^DEMO — /, "");
+    const isCustomStory = product.slug === "first-year-at-school" || product.slug === "cats-friends";
+    const visibleName = isCustomStory && (locale === "ar" || !locale)
+      ? "قصة يحيى وأصدقائه الميااو (لولو وتوتو)"
+      : isCustomStory && locale === "en"
+        ? "The Meow Friends: Lulu & Toto"
+        : selectLocalizedText(locale, product.name, product.arabicName).replace(/^DEMO — /, "");
     const categoryName = product.category ? selectLocalizedText(locale, product.category.name, product.category.arabicName) : "";
     const visibleCategory = categoryName.replace(/^DEMO — /, "");
     const badge = product.badge ?? (demo && product.bestSeller ? getTranslation(locale, "demoPick") : undefined);
@@ -91,13 +96,17 @@ export function toStorefrontProduct(product: { slug: string; name: string; arabi
           : (locale === "ar" ? "مخصص بالكامل" : "Customizable"))
       : undefined;
 
+    const imageUrl = isCustomStory
+      ? "/products/customized-stories/story-03-cats-friends.jpeg"
+      : getProductImageUrl(product.images[0]?.url);
+
     return {
       slug: product.slug,
       name: visibleName,
       category: visibleCategory || getTranslation(locale, "customProducts"),
       price: product.price,
       compareAtPrice: product.compareAtPrice ?? undefined,
-      image: getProductImageUrl(product.images[0]?.url),
+      image: imageUrl,
       description: selectLocalizedText(locale, product.description, product.arabicDescription),
       customizable: product.customizable,
       hasVariants: Boolean(product.variants?.length),

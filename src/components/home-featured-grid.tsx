@@ -19,7 +19,9 @@ export function HomeFeaturedGrid({ products }: { products: Product[] }) {
         const designId = product.slug.match(/^sticker-(\d+)/)?.[1] ?? "0";
         const href = product.slug.startsWith("sticker-")
           ? `/products/custom-waterproof-stickers?design=${designId}`
-          : `/products/${product.slug}`;
+          : product.slug === "first-year-at-school"
+            ? `/products/first-year-at-school?story=cats-friends`
+            : `/products/${product.slug}`;
 
         const cta = product.slug.includes("tshirt")
           ? (isAr ? "اختاري المقاس والتصميم" : "Choose size & design")

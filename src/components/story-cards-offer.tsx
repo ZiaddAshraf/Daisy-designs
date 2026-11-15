@@ -9,7 +9,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export function BundlePhotos() {
   return <span aria-hidden="true" className="flex h-full w-full items-center justify-center" dir="ltr">
-    <Image src="/products/customized-stories/first-year-at-school/cover.jpeg" alt="" width={120} height={150} className="h-[84%] w-[45%] -rotate-6 rounded-md object-cover shadow-md" />
+    <Image src="/products/customized-stories/story-03-cats-friends.jpeg" alt="" width={120} height={150} className="h-[84%] w-[45%] -rotate-6 rounded-md object-cover shadow-md" style={{ objectPosition: "center 15%" }} />
     <Image src="/products/reward-cards/reward-cards-box-set.jpeg" alt="" width={120} height={100} className="-ms-2 mt-4 h-[60%] w-[50%] rotate-3 rounded-md object-cover shadow-md" />
   </span>;
 }
@@ -25,7 +25,7 @@ export function BundlePrice({ locale }: { locale: Locale }) {
 export function BundleOffer({ locale }: { locale: Locale }) {
   const ar = locale === "ar";
   const Arrow = ar ? ArrowLeft : ArrowRight;
-  return <Link href="/products/first-year-at-school?bundle=cards" data-scroll-reveal="card" className="bundle-offer">
+  return <Link href="/products/first-year-at-school?story=cats-friends&bundle=cards" data-scroll-reveal="card" className="bundle-offer">
     <span className="bundle-offer__visual"><BundlePhotos /></span>
     <span className="bundle-offer__content">
       <span className="bundle-offer__eyebrow">{ar ? "باقة أوفر · وفّري ٥٠ ج.م" : "BUNDLE OFFER · SAVE 50 EGP"}</span>

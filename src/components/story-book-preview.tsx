@@ -68,6 +68,19 @@ export type UploadedStoryPhoto = {
 
 export const AVAILABLE_STORIES: StoryItem[] = [
   {
+    id: "cats-friends",
+    slug: "cats-friends",
+    titleAr: "قصة يحيى وأصدقائه الميااو (لولو وتوتو)",
+    titleEn: "The Meow Friends: Lulu & Toto",
+    badgeAr: "مغامرة القطط",
+    badgeEn: "Meow Friends",
+    descriptionAr: "مغامرة لطيفة ودافئة عن حب الحيوانات الأليفة والرفق بها ومواقف مضحكة ومحببة مع القطط الصغيرة لولو وتوتو.",
+    descriptionEn: "A gentle and adorable story nurturing kindness to animals and playful fun with sweet kittens Lulu and Toto.",
+    coverUrl: "/products/customized-stories/story-03-cats-friends.jpeg",
+    sampleHero: "يحيى",
+    dimensions: { width: 1128, height: 1600 },
+  },
+  {
     id: "first-year-at-school",
     slug: "first-year-at-school",
     titleAr: "قصة أول سنة في المدرسة",
@@ -90,19 +103,6 @@ export const AVAILABLE_STORIES: StoryItem[] = [
     descriptionAr: "قصة مبهجة ولطيفة للأطفال الصغار عن اللعب والمرح واكتشاف الألوان والأنشطة والابتسامة الحلوة بالكرة الحمراء.",
     descriptionEn: "A joyful and colorful story for little ones celebrating playtime, smiles, and playful discovery with the red ball.",
     coverUrl: "/products/customized-stories/story-02-red-ball.jpeg",
-    sampleHero: "يحيى",
-    dimensions: { width: 1128, height: 1600 },
-  },
-  {
-    id: "cats-friends",
-    slug: "cats-friends",
-    titleAr: "قصة يحيى وأصدقائه الميااو (لولو وتوتو)",
-    titleEn: "The Meow Friends: Lulu & Toto",
-    badgeAr: "مغامرة القطط",
-    badgeEn: "Meow Friends",
-    descriptionAr: "مغامرة لطيفة ودافئة عن حب الحيوانات الأليفة والرفق بها ومواقف مضحكة ومحببة مع القطط الصغيرة لولو وتوتو.",
-    descriptionEn: "A gentle and adorable story nurturing kindness to animals and playful fun with sweet kittens Lulu and Toto.",
-    coverUrl: "/products/customized-stories/story-03-cats-friends.jpeg",
     sampleHero: "يحيى",
     dimensions: { width: 1128, height: 1600 },
   },
@@ -240,7 +240,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
   const [selectedStoryId, setSelectedStoryId] = useState<string>(
     initialStoryId && AVAILABLE_STORIES.some((s) => s.id === initialStoryId)
       ? initialStoryId
-      : "first-year-at-school"
+      : "cats-friends"
   );
 
   const activeStory = AVAILABLE_STORIES.find((s) => s.id === selectedStoryId) ?? AVAILABLE_STORIES[0];
@@ -330,7 +330,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
       category: isAr ? "قصص مخصصة" : "Customized Stories",
       price: unitPrice,
       image: isCustomMode
-        ? "/products/customized-stories/first-year-at-school/cover.jpeg"
+        ? "/products/customized-stories/story-03-cats-friends.jpeg"
         : activeStory.coverUrl,
       description: isCustomMode
         ? isAr
@@ -492,7 +492,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
         category: isAr ? "قصص مخصصة" : "Customized Stories",
         price: unitPrice,
         image: isCustomMode
-          ? "/products/customized-stories/first-year-at-school/cover.jpeg"
+          ? "/products/customized-stories/story-03-cats-friends.jpeg"
           : activeStory.coverUrl,
         description: isCustomMode
           ? isAr
@@ -566,7 +566,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
     : activeStory.descriptionEn;
 
   const displayedCoverUrl = isCustomMode
-    ? "/products/customized-stories/first-year-at-school/cover.jpeg"
+    ? "/products/customized-stories/story-03-cats-friends.jpeg"
     : activeStory.coverUrl;
 
   return (

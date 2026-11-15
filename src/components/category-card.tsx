@@ -21,7 +21,8 @@ type CategoryCardProps = {
 const CATEGORY_IMAGES: Record<string, string> = {
   "stickers": "/products/stickers/tickets-labels-studio.jpeg",
   "reward-cards": "/products/reward-cards/reward-cards-box-set.jpeg",
-  "customized-stories": "/products/customized-stories/first-year-at-school/cover.jpeg",
+  "customized-stories": "/products/customized-stories/story-03-cats-friends.jpeg",
+  "stories": "/products/customized-stories/story-03-cats-friends.jpeg",
   "printed-t-shirts": "/products/t-shirts/kids-tshirt-studio.jpeg",
 };
 
@@ -62,6 +63,7 @@ export function CategoryCard({
     <Link
       href={`/categories/${category.slug}`}
       className="store-category-card group"
+      data-category={category.slug}
       data-scroll-reveal
       suppressHydrationWarning
       aria-label={`${name} — ${actionLabel}`}
