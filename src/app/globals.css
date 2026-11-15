@@ -11000,3 +11000,18 @@ body:has(.daisy-home--storefront) .daisy-footer__bottom,
   .product-detail-layout.entry-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .entry-sheet .product-detail-media { max-height: 48svh; width: 100%; }
 }
+
+.entry-icon-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .5rem;
+  padding-inline-end: .75rem;
+  border-bottom: 1px solid var(--border);
+}
+.entry-fields .entry-icon-field > input {
+  min-width: 0;
+  border-bottom: 0;
+  text-overflow: ellipsis;
+}
+.entry-icon-field > svg { position: static; }

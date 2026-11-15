@@ -762,7 +762,7 @@ export function StickersCatalogClient({
                       {isAr ? "فكرة أو وصف التصميم المطلوب" : "Custom Design Description"}{" "}
                       {customIdeaRequired && <span className="text-rose-500 font-black">*</span>}
                     </label>
-                    <div className="relative">
+                    <div className="entry-icon-field">
                       <input
                         id="customDesignTextInput"
                         type="text"
@@ -801,7 +801,7 @@ export function StickersCatalogClient({
                       {isAr ? "(يدعم العربية والإنجليزية مع الحفاظ على حالة الأحرف)" : "(Exact letter case preserved)"}
                     </span>
                   </label>
-                  <div className="relative">
+                  <div className="entry-icon-field">
                     <input
                       id="childNameInput"
                       type="text"
@@ -832,7 +832,7 @@ export function StickersCatalogClient({
                       {isAr ? "اسم المدرسة" : "School Name"}{" "}
                       <span className="text-[var(--muted-foreground)] font-normal text-[11px]">{isAr ? "(اختياري)" : "(Optional)"}</span>
                     </label>
-                    <div className="relative">
+                    <div className="entry-icon-field">
                       <input
                         id="schoolNameInput"
                         type="text"
@@ -850,7 +850,7 @@ export function StickersCatalogClient({
                       {isAr ? "الصف الدراسي" : "Grade / Year"}{" "}
                       <span className="text-[var(--muted-foreground)] font-normal text-[11px]">{isAr ? "(اختياري)" : "(Optional)"}</span>
                     </label>
-                    <div className="relative">
+                    <div className="entry-icon-field">
                       <input
                         id="gradeInput"
                         type="text"
@@ -871,7 +871,7 @@ export function StickersCatalogClient({
                       {isAr ? "الفصل / المجموعة" : "Class / Section"}{" "}
                       <span className="text-[var(--muted-foreground)] font-normal text-[11px]">{isAr ? "(اختياري)" : "(Optional)"}</span>
                     </label>
-                    <div className="relative">
+                    <div className="entry-icon-field">
                       <input
                         id="classNameInput"
                         type="text"
@@ -892,7 +892,7 @@ export function StickersCatalogClient({
                         {isAr ? "(مصر: 01X)" : "(Egypt: 01X)"}
                       </span>
                     </label>
-                    <div className="relative">
+                    <div className="entry-icon-field">
                       <input
                         id="parentPhoneInput"
                         type="tel"

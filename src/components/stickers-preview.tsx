@@ -749,7 +749,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     {isAr ? "فكرة أو شخصية التصميم المطلوب" : "Requested Design Theme or Character"}{" "}
                     {customIdeaRequired && <span className="text-rose-500 font-black">*</span>}
                   </label>
-                  <div className="relative">
+                  <div className="entry-icon-field">
                     <input
                       id="customDesignTextInput"
                       type="text"
@@ -790,7 +790,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                       : "(Supports Arabic & English with exact case preservation)"}
                   </span>
                 </label>
-                <div className="relative">
+                <div className="entry-icon-field">
                   <input
                     id="childNameInput"
                     type="text"
@@ -821,7 +821,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     {isAr ? "اسم المدرسة" : "School Name"}{" "}
                     <span className="text-[var(--muted-foreground)] font-normal text-[11px]">{isAr ? "(اختياري)" : "(Optional)"}</span>
                   </label>
-                  <div className="relative">
+                  <div className="entry-icon-field">
                     <input
                       id="schoolNameInput"
                       type="text"
@@ -839,7 +839,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     {isAr ? "الصف الدراسي" : "Grade / Year"}{" "}
                     <span className="text-[var(--muted-foreground)] font-normal text-[11px]">{isAr ? "(اختياري)" : "(Optional)"}</span>
                   </label>
-                  <div className="relative">
+                  <div className="entry-icon-field">
                     <input
                       id="gradeInput"
                       type="text"
@@ -860,7 +860,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                     {isAr ? "الفصل / المجموعة" : "Class / Section"}{" "}
                     <span className="text-[var(--muted-foreground)] font-normal text-[11px]">{isAr ? "(اختياري)" : "(Optional)"}</span>
                   </label>
-                  <div className="relative">
+                  <div className="entry-icon-field">
                     <input
                       id="classNameInput"
                       type="text"
@@ -880,7 +880,7 @@ export function StickersPreview({ locale, catalog }: StickersPreviewProps) {
                       {isAr ? "(اختياري - مصر: 01X)" : "(Optional - Egypt)"}
                     </span>
                   </label>
-                  <div className="relative">
+                  <div className="entry-icon-field">
                     <input
                       id="parentPhoneInput"
                       type="tel"
