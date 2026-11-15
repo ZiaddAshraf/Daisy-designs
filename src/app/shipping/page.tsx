@@ -13,13 +13,8 @@ export default async function ShippingPage() {
       <div className="space-y-4">
         <p>
           {isRtl
-            ? "القاهرة والجيزة: التوصيل بياخد من يوم لـ ٣ أيام عمل بعد ما نجهز ونطبع المنتج المخصص."
-            : "Cairo & Giza: Delivery takes 1 to 3 business days once personalization and printing are ready."}
-        </p>
-        <p>
-          {isRtl
-            ? "باقي محافظات مصر: التوصيل بياخد من ٣ لـ ٥ أيام عمل مع مندوبين شحن موثوقين."
-            : "All other governorates: Delivery takes 3 to 6 business days via trusted shipping carriers."}
+            ? "توصيل سريع لباب بيتك لجميع محافظات مصر مع مندوبين شحن موثوقين."
+            : "Fast delivery to your doorstep across Egypt with trusted carriers."}
         </p>
         <div className="rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-4">
           <h2 className="font-semibold">{isRtl ? "تكلفة الشحن لكل طلب" : "Delivery fee per order"}</h2>

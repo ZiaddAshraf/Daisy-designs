@@ -444,46 +444,18 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
       return;
     }
 
-    const summaryParts: string[] = [];
-    if (childName.trim()) {
-      summaryParts.push(`${childGender === "boy" ? "اسم بطل القصة" : "اسم بطلة القصة"}: ${childName.trim()}`);
-    }
-
-    summaryParts.push(`جنس البطل: ${childGender === "boy" ? "ولد (بطل)" : "بنت (بطلة)"}`);
-
-    if (isCustomMode) {
-      summaryParts.push(`نوع القصة: صمم قصتك (فكرة خاصة)`);
-      if (customIdeaText.trim()) {
-        summaryParts.push(`تفاصيل وفكرة القصة: ${customIdeaText.trim()}`);
-      }
-      if (dedicationText.trim()) {
-        summaryParts.push(`إهداء خاص: ${dedicationText.trim()}`);
-      }
-    } else {
-      summaryParts.push(`القصة المختارة: ${isAr ? activeStory.titleAr : activeStory.titleEn}`);
-    }
-
-    summaryParts.push(`عدد الصور المرفقة: ${uploadedPhotos.length}`);
-
-    const customText = summaryParts.join(" | ");
-
-    const lineProductName = isCustomMode
-      ? isAr
-        ? childName.trim()
-          ? `صمم قصتك لطفلك (${childName.trim()})`
-          : "صمم قصتك لطفلك ✨"
-        : childName.trim()
-        ? `Design Your Story (${childName.trim()})`
-        : "Design Your Story ✨"
-      : isAr
-      ? childName.trim()
-        ? `${activeStory.titleAr} (${childName.trim()})`
-        : activeStory.titleAr
-      : childName.trim()
-      ? `${activeStory.titleEn} (${childName.trim()})`
-      : activeStory.titleEn;
+    const lineProductName = isAr ? "قصة مخصصة" : "Customized Story";
 
     const aggregateStorageKey = uploadedPhotos.map((p) => p.storageKey).join(",");
+
+    const customizationPayload: Record<string, string> = {
+      child_name: childName.trim(),
+      child_photo: aggregateStorageKey,
+    };
+    if (isCustomMode && (customIdeaText.trim() || dedicationText.trim())) {
+      const notes = [customIdeaText.trim(), dedicationText.trim()].filter(Boolean).join(" - ");
+      if (notes) customizationPayload.custom_design_text = notes;
+    }
 
     add(
       {
@@ -494,20 +466,13 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
         image: isCustomMode
           ? "/products/customized-stories/story-03-cats-friends.jpeg"
           : activeStory.coverUrl,
-        description: isCustomMode
-          ? isAr
-            ? "قصة ورقية مطبوعة فاخرة نؤلفها ونرسمها خصيصاً لطفلك بفكرته الخاصة."
-            : "Bespoke printed storybook authored and illustrated around your child."
-          : isAr
-          ? activeStory.descriptionAr
-          : activeStory.descriptionEn,
+        description: isAr
+          ? "قصة ورقية مطبوعة ومخصصة باسم وصورة طفلك"
+          : "Personalized printed storybook",
         customizable: true,
         hasVariants: false,
       },
-      {
-        child_photo: aggregateStorageKey,
-        custom_design_text: customText,
-      },
+      customizationPayload,
       undefined,
       quantity,
       shouldOpen
@@ -652,10 +617,10 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
             </div>
 
             <div className="sb-fact">
-              <span className="sb-fact__label">{isAr ? "مدة التجهيز" : "Prep Time"}</span>
+              <span className="sb-fact__label">{isAr ? "الشحن والتوصيل" : "Delivery"}</span>
               <span className="sb-fact__detail">
-                <Clock size={13} style={{ display: "inline", verticalAlign: "middle", marginInlineEnd: 4 }} />
-                {isAr ? "يوم عمل واحد للتجهيز والطباعة" : "1 business day prep & print"}
+                <Truck size={13} style={{ display: "inline", verticalAlign: "middle", marginInlineEnd: 4 }} />
+                {isAr ? "توصيل سريع" : "Fast delivery"}
               </span>
             </div>
 
@@ -1256,7 +1221,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
               </div>
               <div className="sb-assurance-item">
                 <Truck size={16} />
-                <span>{isAr ? "شحن لجميع المحافظات" : "Nationwide Delivery"}</span>
+                <span>{isAr ? "توصيل سريع" : "Fast Delivery"}</span>
               </div>
               <div className="sb-assurance-item">
                 <Lock size={16} />
@@ -1361,7 +1326,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
               </span>
               <span className="sb-craftsmanship-pill">
                 <Check size={14} />
-                <span>{isAr ? "تجهيز خلال يوم عمل واحد" : "1 Business day preparation"}</span>
+                <span>{isAr ? "توصيل سريع" : "Fast delivery"}</span>
               </span>
             </div>
           </div>

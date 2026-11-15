@@ -127,17 +127,20 @@ export async function POST(request: Request) {
                     ...(telegramConfigured() ? { telegramNotice: { create: {} } } : {}),
                     ...(session?.user?.id ? { userId: session.user.id } : {}),
                     shippingAddress: { fullName: input.fullName, phone: input.phone, email: input.email, governorate: input.governorate, city: input.city, address: input.address },
-                    items: { create: pricedItems.map(entry => ({
-                        productId: entry.product.id,
-                        ...(entry.variant?.id ? { variantId: entry.variant.id } : {}),
-                        productName: entry.variant ? `${entry.product.name} — ${entry.variant.name}` : entry.product.name,
-                        productSku: entry.variant?.sku ?? entry.product.sku,
-                        productSnapshot: { name: entry.product.name, arabicName: entry.product.arabicName, sku: entry.product.sku, price: entry.unitPrice, image: entry.product.images[0]?.url },
-                        ...(entry.item.customization ? { customization: entry.item.customization } : {}),
-                        quantity: entry.item.quantity,
-                        unitPrice: entry.unitPrice,
-                        ...(entry.variant?.options ? { selectedVariant: entry.variant.options } : {}),
-                    })) },
+                    items: { create: pricedItems.map(entry => {
+                        const baseProductName = entry.product.slug === "first-year-at-school" ? "قصة مخصصة" : entry.product.name;
+                        return {
+                            productId: entry.product.id,
+                            ...(entry.variant?.id ? { variantId: entry.variant.id } : {}),
+                            productName: entry.variant ? `${baseProductName} — ${entry.variant.name}` : baseProductName,
+                            productSku: entry.variant?.sku ?? entry.product.sku,
+                            productSnapshot: { name: entry.product.name, arabicName: entry.product.arabicName, sku: entry.product.sku, price: entry.unitPrice, image: entry.product.images[0]?.url },
+                            ...(entry.item.customization ? { customization: entry.item.customization } : {}),
+                            quantity: entry.item.quantity,
+                            unitPrice: entry.unitPrice,
+                            ...(entry.variant?.options ? { selectedVariant: entry.variant.options } : {}),
+                        };
+                    }) },
                 },
                 include: { items: true },
             });
