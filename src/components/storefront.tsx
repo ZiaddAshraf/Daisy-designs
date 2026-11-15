@@ -165,7 +165,7 @@ export function StoreShell({ children, demoMode = false, locale = "ar" }: { chil
         {demoMode && <div className="daisy-demo-notice" role="status" dir={directionForLocale(locale)}><strong>{getTranslation(locale, "previewBannerTitle")}</strong><span>{getTranslation(locale, "previewBannerDescription")}</span></div>}
         {children}
         <Footer locale={locale} />
-        {cartOpen && !pathname?.startsWith("/checkout") && !pathname?.startsWith("/cart") && <CartDrawer onClose={() => setCartOpen(false)} />}
+        {cartOpen && <CartDrawer onClose={() => setCartOpen(false)} />}
         <WhatsAppFloatingButton locale={locale} />
         {wishlistToast && (
           <aside

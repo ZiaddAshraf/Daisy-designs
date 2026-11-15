@@ -17,7 +17,7 @@ export async function ContentPage({
   const dir = directionForLocale(locale);
 
   return (
-    <main dir={dir} className="mx-auto max-w-[1000px] px-6 py-20 lg:px-0">
+    <main dir={dir} className="mx-auto max-w-[1000px] px-4 py-9 sm:px-6 sm:py-20 lg:px-0">
       <header data-scroll-reveal suppressHydrationWarning>
         <p className="text-xs font-semibold tracking-[.2em] text-[var(--muted-foreground)] uppercase">
           DAISY DESIGNS / {eyebrow}
@@ -34,7 +34,7 @@ export async function ContentPage({
       <div
         data-scroll-reveal
         suppressHydrationWarning
-        className="mt-12 max-w-3xl space-y-6 text-sm sm:text-base leading-relaxed text-[var(--foreground)] rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-10 shadow-sm"
+        className="mt-7 sm:mt-12 max-w-3xl space-y-6 text-sm sm:text-base leading-relaxed text-[var(--foreground)] rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-10 shadow-sm"
       >
         {children}
       </div>
