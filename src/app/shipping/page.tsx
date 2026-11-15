@@ -9,11 +9,6 @@ export default async function ShippingPage() {
     <ContentPage
       eyebrow={isRtl ? "الشحن والتوصيل" : "Shipping & Delivery"}
       title={isRtl ? "يوصلك لحد باب بيتك بأمان وسرعة." : "Delivered safely to your doorstep."}
-      intro={
-        isRtl
-          ? "بنشحن لكل محافظات مصر بكل حب واهتمام بأدق تفاصيل منتجات أطفالكم."
-          : "We ship nationwide across all Egyptian governorates with utmost care and attention."
-      }
     >
       <div className="space-y-4">
         <p>

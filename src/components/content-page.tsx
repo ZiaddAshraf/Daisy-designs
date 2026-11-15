@@ -10,7 +10,7 @@ export async function ContentPage({
 }: {
   eyebrow: string;
   title: string;
-  intro: string;
+  intro?: string;
   children: ReactNode;
 }) {
   const locale = await getRequestLocale();
@@ -25,9 +25,11 @@ export async function ContentPage({
         <h1 className="mt-5 max-w-3xl text-3xl font-bold leading-tight text-[var(--foreground)] sm:text-5xl">
           {title}
         </h1>
-        <p className="mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-[var(--muted-foreground)]">
-          {intro}
-        </p>
+        {intro && (
+          <p className="mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-[var(--muted-foreground)]">
+            {intro}
+          </p>
+        )}
       </header>
       <div
         data-scroll-reveal
