@@ -14,3 +14,9 @@ test("product imagery preserves a real client-provided image URL", () => {
   const clientImage = "/uploads/products/approved-catalog-image.webp";
   assert.equal(getProductImageUrl(clientImage), clientImage);
 });
+
+test("legacy T-shirt artwork resolves to the matching product photography", () => {
+  assert.equal(getProductImageUrl("/products/t-shirts/white-tshirt.svg"), "/products/t-shirts/kids-tshirt-studio.jpeg");
+  assert.equal(getProductImageUrl("/products/t-shirts/black-tshirt.svg"), "/products/t-shirts/kids-tshirt-black-studio.jpeg");
+  assert.equal(getProductImageUrl("/products/t-shirts/gray-tshirt.svg"), "/products/t-shirts/kids-tshirt-gray-studio.jpeg");
+});

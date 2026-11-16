@@ -228,7 +228,7 @@ export default async function ProductsPage() {
     price: priceFor("custom-printed-tshirt"),
     priceUnit: isRtl ? "للقطعة الواحدة" : "per shirt",
     badge: isRtl ? "كبار وأطفال" : "Adults & Kids",
-    image: "/products/t-shirts/white-tshirt.svg",
+    image: "/products/t-shirts/kids-tshirt-studio.jpeg",
     description: isRtl
       ? "تيشيرت قطن مصري ١٠٠٪ مريح وناعم للكبار والأطفال، متاح بالأبيض والأسود والرمادي، بنطبع عليه تصميمك الخاص في منتصف الصدر ومقاساته شاملة من سنتين لـ XXL."
       : "High-quality comfortable plain cotton T-shirt for adults and kids in white, black, or gray, customized with your own artwork printed at center chest. Sizes from 2 years to adult XXL.",

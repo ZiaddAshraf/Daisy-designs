@@ -18,7 +18,7 @@ const CATEGORY_PAYLOAD = {
   arabicName: "تيشيرتات مطبوعة",
   description:
     "Custom printed children's T-shirts featuring personalized artwork or written ideas on comfortable plain cotton garments.",
-  image: "/products/t-shirts/white-tshirt.svg",
+  image: "/products/t-shirts/kids-tshirt-studio.jpeg",
   published: true,
 };
 
@@ -44,9 +44,9 @@ const PRODUCT_PAYLOAD = {
 };
 
 const IMAGES = [
-  { position: 0, url: "/products/t-shirts/white-tshirt.svg", alt: "White Children's T-Shirt / تيشيرت أطفال أبيض" },
-  { position: 1, url: "/products/t-shirts/black-tshirt.svg", alt: "Black Children's T-Shirt / تيشيرت أطفال أسود" },
-  { position: 2, url: "/products/t-shirts/gray-tshirt.svg", alt: "Gray Children's T-Shirt / تيشيرت أطفال رمادي" },
+  { position: 0, url: "/products/t-shirts/kids-tshirt-studio.jpeg", alt: "White Children's T-Shirt / تيشيرت أطفال أبيض" },
+  { position: 1, url: "/products/t-shirts/kids-tshirt-black-studio.jpeg", alt: "Black Children's T-Shirt / تيشيرت أطفال أسود" },
+  { position: 2, url: "/products/t-shirts/kids-tshirt-gray-studio.jpeg", alt: "Gray Children's T-Shirt / تيشيرت أطفال رمادي" },
 ];
 
 async function main() {

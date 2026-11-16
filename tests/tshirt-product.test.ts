@@ -92,7 +92,7 @@ test("Exact source size-chart measurements match children (2-16) and adults (S-X
   }
 });
 
-test("Size chart images and vector garment mockups exist on disk", () => {
+test("Size charts and T-shirt product photos exist on disk", () => {
   const chartFiles = [
     path.join(process.cwd(), "public", "size-charts", "children-size-chart.jpeg"),
     path.join(process.cwd(), "public", "size-charts", "adult-size-chart.jpeg"),
@@ -105,16 +105,15 @@ test("Size chart images and vector garment mockups exist on disk", () => {
     assert.equal(validateMagicBytes(buf), "jpg", `${file} must be valid JPEG image`);
   }
 
-  const mockupFiles = [
-    path.join(process.cwd(), "public", "products", "t-shirts", "white-tshirt.svg"),
-    path.join(process.cwd(), "public", "products", "t-shirts", "black-tshirt.svg"),
-    path.join(process.cwd(), "public", "products", "t-shirts", "gray-tshirt.svg"),
+  const photoFiles = [
+    path.join(process.cwd(), "public", "products", "t-shirts", "kids-tshirt-studio.jpeg"),
+    path.join(process.cwd(), "public", "products", "t-shirts", "kids-tshirt-black-studio.jpeg"),
+    path.join(process.cwd(), "public", "products", "t-shirts", "kids-tshirt-gray-studio.jpeg"),
   ];
 
-  for (const file of mockupFiles) {
-    assert.ok(fs.existsSync(file), `Mockup SVG asset missing: ${file}`);
-    const content = fs.readFileSync(file, "utf8");
-    assert.match(content, /<svg/i, `${file} must be valid SVG`);
+  for (const file of photoFiles) {
+    assert.ok(fs.existsSync(file), `T-shirt photo missing: ${file}`);
+    assert.equal(validateMagicBytes(fs.readFileSync(file)), "jpg", `${file} must be valid JPEG image`);
   }
 });
 
