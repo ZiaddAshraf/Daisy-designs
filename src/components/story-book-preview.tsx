@@ -21,7 +21,6 @@ import {
   BookOpen,
   Lock,
   Upload,
-  Clock,
   Truck,
   Plus,
   Minus,

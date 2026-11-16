@@ -1,29 +1,34 @@
 # Daisy Designs
 
-متجر عربي لمنتجات الأطفال المخصصة، مبني باستخدام Next.js 16 وPrisma 7 وPostgreSQL وAuth.js. الدفع المتاح حاليًا هو الدفع عند الاستلام فقط.
+متجر إلكتروني لمنتجات الأطفال المخصصة، بواجهة عربية تدعم اتجاه القراءة من اليمين لليسار، مع تجربة متجاوبة للموبايل والكمبيوتر.
 
-## Local development
+**[جرّب المتجر](https://daisy-designs-snowy.vercel.app/)** · **[تصفح الكود](https://github.com/ZiaddAshraf/Daisy-designs)**
 
-1. Install dependencies with `npm install`.
-2. Set `DATABASE_URL`, `SHADOW_DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` in `.env`.
-3. Generate Prisma Client with `npm run db:generate` (also runs after dependency installation).
-4. Apply development migrations with `npm run db:migrate`.
-5. Start the application with `npm run dev`.
+## ما الذي يقدمه المشروع؟
 
-`.env.example` contains blank secret fields. Do not put credentials in it or commit `.env`.
+- تصفح المنتجات والأقسام، البحث، المفضلة، وسلة مشتريات تحفظ اختيارات العميل.
+- تخصيص قصص الأطفال، التيشيرتات، الاستيكرز، وكروت المكافآت، مع رفع صور أو تصميمات عند الحاجة.
+- إتمام الطلب بالدفع عند الاستلام، مع حساب الأسعار والشحن والتحقق من البيانات على الخادم.
+- لوحة إدارة للمنتجات والطلبات، وإشعارات الطلبات، وحماية لملفات التخصيص المرفوعة.
+- واجهة باللغتين العربية والإنجليزية، مع وضع فاتح وداكن.
 
-## Database commands
+## التقنيات
 
-- `npm run db:migrate` creates and applies migrations for local development.
-- `npm run db:deploy` applies committed migrations with `prisma migrate deploy`.
-- `npm run db:validate` validates the Prisma schema.
-- `npm run db:health` performs a read-only database health check.
+Next.js 16 · React 19 · TypeScript · Prisma 7 · PostgreSQL · Auth.js · Tailwind CSS · Vercel
 
-Review the database target and migration status before running `db:deploy` against any production database. Do not use `db push` in place of the migration history.
+## التشغيل محليًا
 
-`npm run db:seed` is a destructive development seed. It deletes existing catalog, customer, order, cart, review, coupon, and settings records, then creates demo data. It is blocked in production and refuses non-local databases; to run it locally, explicitly set `ALLOW_DESTRUCTIVE_SEED=true`. Demo-account passwords are random and unavailable. Never run it against a database containing data you need to keep.
+يتطلب Node.js 20.9 إلى أقل من 23 وPostgreSQL. ابدأ بنسخ `.env.example` إلى `.env` وإضافة قيم `DATABASE_URL` و`SHADOW_DATABASE_URL` و`NEXTAUTH_SECRET` و`NEXTAUTH_URL`.
 
-## Validation
+```bash
+npm install
+npm run db:migrate
+npm run dev
+```
+
+يُولَّد Prisma Client تلقائيًا بعد تثبيت الحزم. لتطبيق migrations موجودة في بيئة نشر، استخدم `npm run db:deploy` بعد مراجعة قاعدة البيانات المستهدفة. لا تشغّل `db:seed` على بيانات تريد الاحتفاظ بها؛ هذا الأمر يحذف بيانات التطوير، ويتطلب `ALLOW_DESTRUCTIVE_SEED=true` على قاعدة محلية فقط.
+
+## التحقق
 
 ```bash
 npx tsc --noEmit
@@ -31,3 +36,5 @@ npm run lint
 npm test
 npm run build
 ```
+
+ملفات `.env` والصور المرفوعة إلى `storage/` غير مخصصة للنشر في Git. استخدم `.env.example` لأسماء المتغيرات فقط، واضبط تخزينًا دائمًا للملفات الخاصة عند النشر على Vercel.

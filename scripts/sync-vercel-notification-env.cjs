@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS script uses require. */
 const fs = require('node:fs');
 const { randomBytes } = require('node:crypto');
 const { spawn } = require('node:child_process');
