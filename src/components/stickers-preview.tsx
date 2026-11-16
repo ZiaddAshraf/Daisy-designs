@@ -92,7 +92,7 @@ const CRAFTSMANSHIP = [
   },
   {
     icon: Droplets,
-    titleAr: "ألوان مبهجة وطباعة عالية الووضوح",
+    titleAr: "ألوان مبهجة وطباعة عالية الوضوح",
     titleEn: "Vibrant High-Definition Inks",
     descAr: "ألوان ساطعة تحافظ على بهجتها ولمعانها طوال العام الدراسي.",
     descEn: "High-resolution, fade-proof vivid inks designed for lasting vibrancy.",

@@ -6207,7 +6207,6 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--surface-soft) 85%, var(--card) 15%);
   box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
   transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
   outline: none;
   display: flex;
@@ -6216,10 +6215,29 @@ html[data-scroll-reveal-ready="true"] [data-scroll-reveal][data-scroll-revealed=
 }
 
 .rc-hero__media-frame:hover,
-.rc-hero__media-frame:focus-visible {
+.rc-hero__media-frame:focus-within {
   transform: translateY(-2px);
   border-color: var(--foreground);
   box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.12);
+}
+
+.rc-hero__zoom {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.rc-hero__zoom:focus-visible {
+  outline: 3px solid var(--foreground);
+  outline-offset: -4px;
 }
 
 .rc-hero__media-img {

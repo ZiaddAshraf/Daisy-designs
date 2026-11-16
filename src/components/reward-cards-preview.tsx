@@ -467,26 +467,8 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
         <div className="rc-hero__media">
           <div
             className="rc-hero__media-frame"
-            role="button"
-            tabIndex={0}
-            onClick={() => setSelectedCardIndex(activePreviewIndex)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                setSelectedCardIndex(activePreviewIndex);
-              } else if (e.key === "ArrowLeft") {
-                e.preventDefault();
-                if (isAr) handleNextPreview();
-                else handlePrevPreview();
-              } else if (e.key === "ArrowRight") {
-                e.preventDefault();
-                if (isAr) handlePrevPreview();
-                else handleNextPreview();
-              }
-            }}
             onTouchStart={handleHeroTouchStart}
             onTouchEnd={handleHeroTouchEnd}
-            title={isAr ? "انقر لتكبير ومعاينة الصورة بالحجم الكامل" : "Click to view full-size"}
-            aria-label={previewZoomLabel}
           >
             {/* Left navigation arrow button */}
             <button
@@ -517,16 +499,35 @@ export function RewardCardsPreview({ locale, inStock: inStockProp }: RewardCards
                 : `${safeSeqIndex + 1} / ${ALL_PREVIEW_INDEXES.length}`}
             </span>
 
-            <SiteImage
-              key={previewImageUrl}
-              src={previewImageUrl}
-              alt={previewImageAlt}
-              width={previewWidth}
-              height={previewHeight}
-              priority
-              sizes="(max-width: 960px) 100vw, 55vw"
-              className={`rc-hero__media-img ${isBoxPreview ? "rc-hero__media-img--box" : "rc-hero__media-img--card"}`}
-            />
+            <button
+              type="button"
+              className="rc-hero__zoom"
+              onClick={() => setSelectedCardIndex(activePreviewIndex)}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowLeft") {
+                  e.preventDefault();
+                  if (isAr) handleNextPreview();
+                  else handlePrevPreview();
+                } else if (e.key === "ArrowRight") {
+                  e.preventDefault();
+                  if (isAr) handlePrevPreview();
+                  else handleNextPreview();
+                }
+              }}
+              title={isAr ? "انقر لتكبير ومعاينة الصورة بالحجم الكامل" : "Click to view full-size"}
+              aria-label={previewZoomLabel}
+            >
+              <SiteImage
+                key={previewImageUrl}
+                src={previewImageUrl}
+                alt={previewImageAlt}
+                width={previewWidth}
+                height={previewHeight}
+                priority
+                sizes="(max-width: 960px) 100vw, 55vw"
+                className={`rc-hero__media-img ${isBoxPreview ? "rc-hero__media-img--box" : "rc-hero__media-img--card"}`}
+              />
+            </button>
           </div>
 
           {/* Compact Responsive Thumbnails Grid */}
