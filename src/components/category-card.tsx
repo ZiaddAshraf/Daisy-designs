@@ -75,7 +75,7 @@ export function CategoryCard({
             src={categoryImage}
             alt={name}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1040px) 50vw, 25vw"
+            sizes="(max-width: 650px) 50vw, 25vw"
             className="store-category-card__cover-image"
           />
         ) : null}
