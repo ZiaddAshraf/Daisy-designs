@@ -721,7 +721,7 @@ export function StoryBookPreview({ locale, inStock = true, initialStoryId, initi
                   <span>{isAr ? `اختاري القصة المطلوبة من ${AVAILABLE_STORIES.length.toLocaleString("ar-EG")} قصة:` : "Select Story Title:"}</span>
                 </label>
 
-                <div className="grid grid-cols-2 gap-2.5" role="radiogroup" aria-label={isAr ? "اختيار القصة" : "Select Story"}>
+                <div className="sb-story-grid grid grid-cols-2 gap-2.5" role="radiogroup" aria-label={isAr ? "اختيار القصة" : "Select Story"}>
                   {AVAILABLE_STORIES.map((story) => {
                     const isSelected = selectedStoryId === story.id;
                     return (

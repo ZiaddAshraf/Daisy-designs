@@ -103,9 +103,9 @@ export function ProductsCatalogClient({
     <div className="w-full">
       {/* Filter and Search Bar */}
       <div className="mb-8 flex flex-col gap-3.5 xl:flex-row xl:items-center xl:justify-between border-b border-[var(--border)] pb-5">
-        {/* Category Pills - Smooth horizontal swipeable strip on mobile */}
+        {/* Category filters */}
         <div className="relative min-w-0 max-w-full">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 max-w-full touch-pan-x scroll-smooth md:flex-wrap" role="tablist" aria-label={isRtl ? "أقسام المنتجات" : "Product categories"}>
+          <div className="catalog-category-tabs flex items-center gap-2 max-w-full md:flex-wrap" role="tablist" aria-label={isRtl ? "أقسام المنتجات" : "Product categories"}>
             {categories.map((cat) => {
               const isActive = activeCategory === cat.id;
               return (
@@ -115,7 +115,7 @@ export function ProductsCatalogClient({
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all min-h-[40px] select-none cursor-pointer active:scale-95 ${
+                  className={`catalog-category-tab inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all min-h-[44px] select-none cursor-pointer active:scale-95 ${
                     isActive
                       ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 shadow-sm"
                       : "border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:border-[var(--foreground)]/40 hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
@@ -278,7 +278,7 @@ export function ProductsCatalogClient({
                       </span>
 
                       {/* Line 2: Product Name (Title) */}
-                      <h2 className="catalog-card__title text-base sm:text-lg font-extrabold line-clamp-1 mb-1.5 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                      <h2 className="catalog-card__title text-base sm:text-lg font-extrabold line-clamp-2 mb-1.5 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
                         {prod.title}
                       </h2>
 

@@ -20,7 +20,7 @@ function revealDelay(element: Element) {
 export function ScrollReveal() {
   useEffect(() => {
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (motionPreference.matches || !("IntersectionObserver" in window) || typeof Element.prototype.animate !== "function") return;
+    if (motionPreference.matches || window.matchMedia("(max-width: 767px)").matches || !("IntersectionObserver" in window) || typeof Element.prototype.animate !== "function") return;
 
     let stopped = false;
     const revealed = new WeakSet<Element>();

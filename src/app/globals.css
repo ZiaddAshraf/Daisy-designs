@@ -10664,6 +10664,78 @@ body:has(.daisy-home--storefront) .daisy-footer__bottom,
   }
 }
 
+@media (max-width: 480px) {
+  .home-featured-grid,
+  .daisy-home-category-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .daisy-home-category-grid > :last-child:nth-child(odd),
+  .daisy-home-category-grid > :nth-child(4) {
+    grid-column: auto;
+    width: auto;
+  }
+
+  .home-featured-media,
+  .daisy-home-category-grid .store-category-card__cover {
+    aspect-ratio: 16 / 10;
+  }
+
+  .home-featured-details {
+    padding: 15px 17px 17px;
+    gap: 8px;
+  }
+
+  .home-featured-name {
+    font-size: 16px;
+  }
+
+  .home-featured-price {
+    font-size: 16px;
+  }
+
+  .home-featured-cta {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .daisy-home-category-grid .store-category-card__content {
+    padding: 16px 18px 18px;
+  }
+
+  .daisy-home-category-grid .store-category-card__action {
+    min-height: 44px;
+  }
+
+  .catalog-category-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .catalog-category-tab {
+    min-width: 0;
+    width: 100%;
+    justify-content: space-between;
+    padding-inline: 10px;
+    text-align: start;
+  }
+
+  .catalog-category-tab > span:first-child {
+    min-width: 0;
+    line-height: 1.3;
+  }
+
+  .sb-story-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sb-story-grid [role="radio"] {
+    min-height: 76px;
+  }
+}
+
 /* Compact Daisy picks retain the shared product actions. */
 .home-picks-grid {
   display: grid;
