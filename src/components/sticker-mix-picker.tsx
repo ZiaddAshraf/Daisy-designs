@@ -28,8 +28,8 @@ export function StickerMixPicker({ locale, tickets, labels, ticketMix, labelMix,
     return () => window.removeEventListener("keydown", close);
   }, [previewSlug]);
   const sections = [
-    { kind: "tickets", count: tickets, mix: ticketMix, change: onTicketMix, search: ticketSearch, setSearch: setTicketSearch, title: isAr ? "اختاري تصميمات الـ٢٠ تيكت" : "Choose ticket designs" },
-    { kind: "labels", count: labels, mix: labelMix, change: onLabelMix, search: labelSearch, setSearch: setLabelSearch, title: isAr ? "اختاري تصميمات الـ٢٥ ليبل" : "Choose label designs" },
+    { kind: "tickets", count: tickets, mix: ticketMix, change: onTicketMix, search: ticketSearch, setSearch: setTicketSearch, title: isAr ? `اختاري تصميمات الـ${tickets} تيكت` : `Choose ${tickets} ticket designs` },
+    { kind: "labels", count: labels, mix: labelMix, change: onLabelMix, search: labelSearch, setSearch: setLabelSearch, title: isAr ? `اختاري تصميمات الـ${labels} ليبل` : `Choose ${labels} label designs` },
   ];
   return <div className="space-y-4">
     {sections.filter(section => section.count > 0 && (showGallery || stickerMixTotal(section.mix) > 0)).map(section => {

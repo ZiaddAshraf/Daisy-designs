@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
 
 const packages = [
-  { code: "combined", price: 300, arabicName: "٢٠ تيكت + ٢٥ ليبل — صورة حقيقية", englishName: "20 tickets + 25 labels — real photo", tickets: 20, labels: 25 },
-  { code: "combined-ai", price: 400, arabicName: "٢٠ تيكت + ٢٥ ليبل — صورة AI", englishName: "20 tickets + 25 labels — AI image", tickets: 20, labels: 25 },
-  { code: "tickets", price: 150, arabicName: "٢٠ تيكت", englishName: "20 tickets", tickets: 20, labels: 0 },
-  { code: "tickets-ai", price: 200, arabicName: "٢٠ تيكت — صورة AI", englishName: "20 tickets — AI image", tickets: 20, labels: 0 },
-  { code: "labels", price: 150, arabicName: "٢٥ ليبل", englishName: "25 labels", tickets: 0, labels: 25 },
-  { code: "labels-ai", price: 200, arabicName: "٢٥ ليبل — صورة AI", englishName: "25 labels — AI image", tickets: 0, labels: 25 },
+  { code: "combined", price: 300, arabicName: "٤٠ تيكت + ٥٤ ليبل — صورة حقيقية", englishName: "40 tickets + 54 labels — real photo", tickets: 40, labels: 54 },
+  { code: "combined-ai", price: 400, arabicName: "٤٠ تيكت + ٥٤ ليبل — صورة AI", englishName: "40 tickets + 54 labels — AI image", tickets: 40, labels: 54 },
+  { code: "tickets", price: 150, arabicName: "٤٠ تيكت", englishName: "40 tickets", tickets: 40, labels: 0 },
+  { code: "tickets-ai", price: 200, arabicName: "٤٠ تيكت — صورة AI", englishName: "40 tickets — AI image", tickets: 40, labels: 0 },
+  { code: "labels", price: 150, arabicName: "٥٤ ليبل", englishName: "54 labels", tickets: 0, labels: 54 },
+  { code: "labels-ai", price: 200, arabicName: "٥٤ ليبل — صورة AI", englishName: "54 labels — AI image", tickets: 0, labels: 54 },
 ] as const;
 
 export async function ensureStickerPackages(): Promise<void> {
@@ -20,8 +20,8 @@ export async function ensureStickerPackages(): Promise<void> {
       where: { id: product.id },
       data: {
         price: 300,
-        description: "The combined pack costs EGP 300 with a real photo or EGP 400 with an AI image made from your child's photo. Tickets or labels alone cost EGP 150, or EGP 200 with an AI image made from your child's photo.",
-        arabicDescription: "الباقة المجمعة بـ٣٠٠ ج.م بصورة الطفل الحقيقية أو ٤٠٠ ج.م بصورة AI معمولة من صورة طفلك. التيكت أو الليبل منفردًا بـ١٥٠ ج.م، أو ٢٠٠ ج.م بصورة AI معمولة من صورة طفلك.",
+        description: "The combined pack (40 tickets + 54 labels) costs EGP 300 with a real photo or EGP 400 with an AI image made from your child's photo. 40 tickets or 54 labels alone cost EGP 150, or EGP 200 with an AI image made from your child's photo.",
+        arabicDescription: "الباقة المجمعة (٤٠ تيكت + ٥٤ ليبل) بـ٣٠٠ ج.م بصورة الطفل الحقيقية أو ٤٠٠ ج.م بصورة AI معمولة من صورة طفلك. ٤٠ تيكت أو ٥٤ ليبل منفردًا بـ١٥٠ ج.م، أو ٢٠٠ ج.م بصورة AI معمولة من صورة طفلك.",
       },
     });
     for (const pack of packages) {

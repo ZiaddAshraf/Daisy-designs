@@ -9,8 +9,8 @@ const FIELD_LABELS_AR: Record<string, string> = {
   grade: "الصف الدراسي",
   class_name: "الفصل / المجموعة",
   design_theme: "التصميم",
-  ticket_designs: "توزيع الـ٢٠ تيكت",
-  label_designs: "توزيع الـ٢٥ ليبل",
+  ticket_designs: "توزيع الـ٤٠ تيكت",
+  label_designs: "توزيع الـ٥٤ ليبل",
   child_photo: "صورة الطفل",
   garment_color: "لون التيشيرت",
   garment_size: "المقاس",
@@ -30,8 +30,8 @@ const FIELD_LABELS_EN: Record<string, string> = {
   grade: "Grade",
   class_name: "Class",
   design_theme: "Design",
-  ticket_designs: "20 ticket designs",
-  label_designs: "25 label designs",
+  ticket_designs: "40 ticket designs",
+  label_designs: "54 label designs",
   child_photo: "Child's Photo",
   garment_color: "T-Shirt Color",
   garment_size: "Size",
@@ -127,7 +127,9 @@ export function formatCustomizationValue(
     return { displayValue: "", isPhoto: false };
   }
   if (key === "ticket_designs" || key === "label_designs") {
-    const mix = parseStickerMix(value, key === "ticket_designs" ? 20 : 25);
+    const expectedCount = key === "ticket_designs" ? 40 : 54;
+    const legacyCount = key === "ticket_designs" ? 20 : 25;
+    const mix = parseStickerMix(value, expectedCount) || parseStickerMix(value, legacyCount);
     if (mix) {
       const displayValue = Object.entries(mix).map(([slug, count]) => {
         const design = stickersData.product.designs.find(item => item.slug === slug);

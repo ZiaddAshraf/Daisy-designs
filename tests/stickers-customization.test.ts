@@ -102,14 +102,14 @@ test("sticker unit price is 300 EGP for the combined package and calculates tota
 });
 
 test("a sticker pack can contain several designs with exact ticket and label totals", () => {
-  assert.deepEqual(addStickerDesign({ "super-cool-dino": 20 }, "kuromi-sanrio", 20), { "super-cool-dino": 19, "kuromi-sanrio": 1 });
-  assert.deepEqual(addStickerDesign({ "super-cool-dino": 18 }, "kuromi-sanrio", 20), { "super-cool-dino": 18, "kuromi-sanrio": 1 });
+  assert.deepEqual(addStickerDesign({ "super-cool-dino": 40 }, "kuromi-sanrio", 40), { "super-cool-dino": 39, "kuromi-sanrio": 1 });
+  assert.deepEqual(addStickerDesign({ "super-cool-dino": 38 }, "kuromi-sanrio", 40), { "super-cool-dino": 38, "kuromi-sanrio": 1 });
   const fields = [
     { key: "design_theme", type: "SELECT" as const, required: true, maxLength: 80, options: [{ value: "super-cool-dino" }] },
     { key: "child_name", type: "TEXT" as const, required: true, maxLength: 80, options: [] },
   ];
-  const ticketMix = serializeStickerMix({ "super-cool-dino": 12, "kuromi-sanrio": 8 });
-  const labelMix = serializeStickerMix({ "super-cool-dino": 10, "kuromi-sanrio": 15 });
+  const ticketMix = serializeStickerMix({ "super-cool-dino": 24, "kuromi-sanrio": 16 });
+  const labelMix = serializeStickerMix({ "super-cool-dino": 24, "kuromi-sanrio": 30 });
   const input = { design_theme: "super-cool-dino", child_name: "Omar", ticket_designs: ticketMix, label_designs: labelMix };
   const combined = validateStickerPackageCustomization(fields, input, "DD-STK-050-COMBINED");
   assert.equal(combined.success, true);
@@ -118,8 +118,8 @@ test("a sticker pack can contain several designs with exact ticket and label tot
   assert.equal(aiCombined.success, true);
   if (aiCombined.success) assert.match(aiCombined.data?.child_photo ?? "", /^private:story_child_/);
   if (combined.success) {
-    assert.deepEqual(parseStickerMix(combined.data?.ticket_designs, 20), { "kuromi-sanrio": 8, "super-cool-dino": 12 });
-    assert.match(formatCustomizationValue("label_designs", combined.data?.label_designs ?? "", "ar").displayValue, /15/);
+    assert.deepEqual(parseStickerMix(combined.data?.ticket_designs, 40), { "kuromi-sanrio": 16, "super-cool-dino": 24 });
+    assert.match(formatCustomizationValue("label_designs", combined.data?.label_designs ?? "", "ar").displayValue, /30/);
   }
   const ticketsOnly = validateStickerPackageCustomization(fields, { design_theme: "super-cool-dino", child_name: "Omar", ticket_designs: ticketMix }, "DD-STK-050-TICKETS");
   const labelsOnly = validateStickerPackageCustomization(fields, { design_theme: "super-cool-dino", child_name: "Omar", label_designs: labelMix }, "DD-STK-050-LABELS");
@@ -134,12 +134,12 @@ test("a sticker pack can contain several designs with exact ticket and label tot
     assert.equal(validateStickerPackageCustomization(fields, { ...aiInput, child_photo: "private:story_child_12345678-1234-1234-1234-123456789abc.png" }, sku).success, true);
     assert.equal(validateStickerPackageCustomization(fields, { ...aiInput, child_photo: "private:not-a-child-photo.jpg" }, sku).success, false);
   }
-  assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: serializeStickerMix({ "super-cool-dino": 19 }) }, "DD-STK-050-COMBINED").success, false);
+  assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: serializeStickerMix({ "super-cool-dino": 39 }) }, "DD-STK-050-COMBINED").success, false);
   assert.equal(validateStickerPackageCustomization(fields, input, "DD-STK-050-TICKETS").success, false);
   assert.equal(validateStickerPackageCustomization(fields, { ...input, label_designs: "" }, "DD-STK-050-COMBINED").success, false);
-  assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: JSON.stringify([["unknown", 20]]) }, "DD-STK-050-COMBINED").success, false);
-  assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: JSON.stringify([["super-cool-dino", 10], ["super-cool-dino", 10]]) }, "DD-STK-050-COMBINED").success, false);
-  assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: serializeStickerMix({ "super-cool-dino": 19, "custom-design": 1 }) }, "DD-STK-050-COMBINED").success, false);
+  assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: JSON.stringify([["unknown", 40]]) }, "DD-STK-050-COMBINED").success, false);
+  assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: JSON.stringify([["super-cool-dino", 20], ["super-cool-dino", 20]]) }, "DD-STK-050-COMBINED").success, false);
+  assert.equal(validateStickerPackageCustomization(fields, { ...input, ticket_designs: serializeStickerMix({ "super-cool-dino": 39, "custom-design": 1 }) }, "DD-STK-050-COMBINED").success, false);
 });
 
 test("custom sticker design at index 0 validates custom design text correctly", () => {

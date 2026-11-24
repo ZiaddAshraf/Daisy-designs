@@ -4,12 +4,12 @@ export type StickerMix = Record<string, number>;
 export type StickerKind = "tickets" | "labels";
 
 export const STICKER_PACKAGE_COUNTS: Record<string, { tickets: number; labels: number }> = {
-  "DD-STK-050-COMBINED": { tickets: 20, labels: 25 },
-  "DD-STK-050-COMBINED-AI": { tickets: 20, labels: 25 },
-  "DD-STK-050-TICKETS": { tickets: 20, labels: 0 },
-  "DD-STK-050-TICKETS-AI": { tickets: 20, labels: 0 },
-  "DD-STK-050-LABELS": { tickets: 0, labels: 25 },
-  "DD-STK-050-LABELS-AI": { tickets: 0, labels: 25 },
+  "DD-STK-050-COMBINED": { tickets: 40, labels: 54 },
+  "DD-STK-050-COMBINED-AI": { tickets: 40, labels: 54 },
+  "DD-STK-050-TICKETS": { tickets: 40, labels: 0 },
+  "DD-STK-050-TICKETS-AI": { tickets: 40, labels: 0 },
+  "DD-STK-050-LABELS": { tickets: 0, labels: 54 },
+  "DD-STK-050-LABELS-AI": { tickets: 0, labels: 54 },
 };
 
 const knownDesigns = new Set(stickersData.product.designs.map(design => design.slug));

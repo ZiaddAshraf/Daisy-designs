@@ -59,3 +59,10 @@
   - [x] 9.5 Sub-routes & deep links: created `/categories/banners/toppers`, `/categories/banners/wall-banners`, `/categories/toppers`, and `/products/custom-cupcake-toppers`.
   - [x] 9.6 Catalog and seeders: wired Toppers product into homepage, catalog filters, fallback products, and seeder.
   - [x] 9.7 Ralph loop verification: run typecheck, unit tests, linter, and full production build.
+- [x] Step 10: Update Ticket & Label Package Counts (40 Tickets for 150, 54 Labels for 150, 40+54 for 300)
+  - [x] 10.1 Package data & seeds: updated `ensureStickerPackages` with 40 tickets (150 EGP), 54 labels (150 EGP), combined 40+54 (300 EGP).
+  - [x] 10.2 Mix counts: updated `STICKER_PACKAGE_COUNTS` in `src/lib/sticker-package-mix.ts` and `src/data/stickers-product.json`.
+  - [x] 10.3 UI and form components: made `StickerMixPicker` and `stickers-catalog-client` dynamic with the new counts.
+  - [x] 10.4 Formatter & validation: updated `customization-formatter` field labels and backward-compatible mix parsing.
+  - [x] 10.5 Unit tests: updated `tests/business-catalog.test.ts` and `tests/stickers-customization.test.ts`.
+  - [x] 10.6 Verification & deployment: run Ralph loop (typecheck, tests, lint, build) and deploy to production.

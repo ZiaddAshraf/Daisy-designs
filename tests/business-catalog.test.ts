@@ -7,9 +7,9 @@ import { prisma } from "../src/lib/prisma";
 import { POST as createOrder } from "../src/app/api/orders/route";
 
 const variants = [
-  { id: "combined", sku: "DD-STK-050-COMBINED", name: "٢٠ تيكت + ٢٥ ليبل", price: 300, stock: 0, options: { inventory: "product", tickets: 20, labels: 25 } },
-  { id: "tickets", sku: "DD-STK-050-TICKETS", name: "٢٠ تيكت", price: 150, stock: 0, options: { inventory: "product", tickets: 20, labels: 0 } },
-  { id: "labels", sku: "DD-STK-050-LABELS", name: "٢٥ ليبل", price: 150, stock: 0, options: { inventory: "product", tickets: 0, labels: 25 } },
+  { id: "combined", sku: "DD-STK-050-COMBINED", name: "٤٠ تيكت + ٥٤ ليبل", price: 300, stock: 0, options: { inventory: "product", tickets: 40, labels: 54 } },
+  { id: "tickets", sku: "DD-STK-050-TICKETS", name: "٤٠ تيكت", price: 150, stock: 0, options: { inventory: "product", tickets: 40, labels: 0 } },
+  { id: "labels", sku: "DD-STK-050-LABELS", name: "٥٤ ليبل", price: 150, stock: 0, options: { inventory: "product", tickets: 0, labels: 54 } },
 ];
 const product = { id: "p1", slug: "custom-waterproof-stickers", name: "Tickets & Labels", arabicName: "تيكت وليبل", sku: "PK", price: 300, stock: 10, published: true, tags: [], variants, images: [], customizationFields: [
   { key: "design_theme", type: "SELECT", required: true, maxLength: 80, options: [{ value: "super-cool-dino" }] },
@@ -30,7 +30,7 @@ test("packages use DB prices, require a valid selection, and share unchanged pro
 });
 
 test("AI combined pack is priced at 400 EGP and listed beside the real-photo pack", () => {
-  const aiVariant = { ...variants[0], id: "combined-ai", sku: "DD-STK-050-COMBINED-AI", name: "٢٠ تيكت + ٢٥ ليبل — صورة AI", price: 400 };
+  const aiVariant = { ...variants[0], id: "combined-ai", sku: "DD-STK-050-COMBINED-AI", name: "٤٠ تيكت + ٥٤ ليبل — صورة AI", price: 400 };
   const pricedProduct = { ...product, variants: [...variants, aiVariant] };
   assert.deepEqual(stickerPackageVariants([...pricedProduct.variants].reverse()).map(v => v.id), ["combined", "combined-ai", "tickets", "labels"]);
   assert.equal(resolveProductPrice(pricedProduct, "combined-ai").unitPrice, 400);
@@ -74,7 +74,7 @@ test("actual order handler ignores forged prices, aggregates shared inventory an
   prisma.$transaction = (async (callback: (tx: unknown) => Promise<unknown>) => callback(transaction)) as typeof prisma.$transaction;
   const input = { fullName: "Test Customer", phone: "01012345678", governorate: "Cairo", city: "Cairo", address: "Test address", paymentMethod: "COD", couponCode: "TEN", items: variants.map(v => ({ slug: product.slug, variantId: v.id, quantity: 1, price: 1, unitPrice: 1, customization: {
     design_theme: "super-cool-dino", child_name: "Omar",
-    ...(v.id === "combined" ? { ticket_designs: '[["super-cool-dino",12],["kuromi-sanrio",8]]', label_designs: '[["super-cool-dino",10],["kuromi-sanrio",15]]' } : {}),
+    ...(v.id === "combined" ? { ticket_designs: '[["super-cool-dino",20],["kuromi-sanrio",20]]', label_designs: '[["super-cool-dino",24],["kuromi-sanrio",30]]' } : {}),
   } })) };
   const request = (body: unknown) => new Request("http://localhost/api/orders", { method: "POST", body: JSON.stringify(body) });
   try {
@@ -87,9 +87,9 @@ test("actual order handler ignores forged prices, aggregates shared inventory an
     const snapshots = (saved?.items as { create: { unitPrice: number; selectedVariant: unknown; productName: string; customization: Record<string, string> }[] }).create;
     assert.deepEqual(snapshots.map(i => i.unitPrice), [300, 150, 150]);
     assert.deepEqual(snapshots.map(i => i.selectedVariant), variants.map(v => v.options));
-    assert.equal(snapshots[0].customization.ticket_designs, '[["kuromi-sanrio",8],["super-cool-dino",12]]');
-    assert.equal(snapshots[0].customization.label_designs, '[["kuromi-sanrio",15],["super-cool-dino",10]]');
-  assert.match(snapshots[0].productName, /٢٠ تيكت/);
+    assert.equal(snapshots[0].customization.ticket_designs, '[["kuromi-sanrio",20],["super-cool-dino",20]]');
+    assert.equal(snapshots[0].customization.label_designs, '[["kuromi-sanrio",30],["super-cool-dino",24]]');
+  assert.match(snapshots[0].productName, /٤٠ تيكت/);
     assert.deepEqual(decrements, [{ where: { id: product.id, stock: { gte: 3 } }, data: { stock: { decrement: 3 } } }]);
     assert.equal((await createOrder(request({ ...input, items: [{ slug: product.slug, quantity: 1 }] }))).status, 422);
     assert.equal((await createOrder(request({ ...input, items: [{ slug: product.slug, quantity: 1, variantId: "foreign" }] }))).status, 422);

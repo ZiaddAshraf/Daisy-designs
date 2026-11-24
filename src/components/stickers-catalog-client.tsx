@@ -390,7 +390,7 @@ export function StickersCatalogClient({
               <button key={kind} type="button" onClick={() => setActiveKind(kind)}
                 aria-pressed={currentKind === kind}
                 className={`min-h-11 rounded-xl px-4 py-2 text-sm font-bold ${currentKind === kind ? "bg-teal-700 text-white" : "border border-[var(--border)] bg-[var(--surface-soft)]"}`}>
-                {kind === "tickets" ? (isAr ? `التيكت ${stickerMixTotal(ticketMix)}/20` : `Tickets ${stickerMixTotal(ticketMix)}/20`) : (isAr ? `الليبل ${stickerMixTotal(labelMix)}/25` : `Labels ${stickerMixTotal(labelMix)}/25`)}
+                {kind === "tickets" ? (isAr ? `التيكت ${stickerMixTotal(ticketMix)}/${packageCounts.tickets}` : `Tickets ${stickerMixTotal(ticketMix)}/${packageCounts.tickets}`) : (isAr ? `الليبل ${stickerMixTotal(labelMix)}/${packageCounts.labels}` : `Labels ${stickerMixTotal(labelMix)}/${packageCounts.labels}`)}
               </button>
             )}
           </div>
@@ -492,7 +492,7 @@ export function StickersCatalogClient({
         {(["tickets", "labels"] as const).filter(kind => packageCounts[kind] > 0).map(kind =>
           <button key={kind} type="button" onClick={() => setActiveKind(kind)} aria-pressed={currentKind === kind}
             className={`min-h-10 rounded-lg px-3 text-xs font-bold ${currentKind === kind ? "bg-teal-700 text-white" : "bg-[var(--surface-soft)]"}`}>
-            {kind === "tickets" ? (isAr ? `التيكت ${stickerMixTotal(ticketMix)}/20` : `Tickets ${stickerMixTotal(ticketMix)}/20`) : (isAr ? `الليبل ${stickerMixTotal(labelMix)}/25` : `Labels ${stickerMixTotal(labelMix)}/25`)}
+            {kind === "tickets" ? (isAr ? `التيكت ${stickerMixTotal(ticketMix)}/${packageCounts.tickets}` : `Tickets ${stickerMixTotal(ticketMix)}/${packageCounts.tickets}`) : (isAr ? `الليبل ${stickerMixTotal(labelMix)}/${packageCounts.labels}` : `Labels ${stickerMixTotal(labelMix)}/${packageCounts.labels}`)}
           </button>
         )}
         <button type="button" disabled={!mixValid || !primaryDesign} onClick={() => { if (primaryDesign) handleOpenCustomize(primaryDesign); }}
@@ -741,7 +741,7 @@ export function StickersCatalogClient({
                   </div>
                   <ul className="space-y-1.5 text-[var(--muted-foreground)] ps-6 list-disc">
                     <li>{isAr ? "فينيل أصلي مقاوم للماء والحرارة والغسيل" : "100% Waterproof and dishwasher-safe vinyl"}</li>
-                    <li>{isAr ? "اختاري باقة ٢٠ تيكت، أو ٢٥ ليبل، أو الباقة المجمعة" : "Choose 20 tickets, 25 labels, or the combined pack"}</li>
+                    <li>{isAr ? "اختاري باقة ٤٠ تيكت، أو ٥٤ ليبل، أو الباقة المجمعة (٤٠ تيكت + ٥٤ ليبل)" : "Choose 40 tickets, 54 labels, or the combined pack (40 tickets + 54 labels)"}</li>
                     <li>{isAr ? "ألوان زاهية ثابتة تدوم طوال العام الدراسي" : "Vivid fade-resistant UV print"}</li>
                   </ul>
                 </div>

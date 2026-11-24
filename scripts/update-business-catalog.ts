@@ -2,9 +2,9 @@ import { prisma } from "../src/lib/prisma";
 
 // Targeted, repeatable catalog change. No deletes, stock resets, or order rewrites.
 const packages = [
-  { code: "combined", price: 300, arabicName: "٢٠ تيكت + ٢٥ ليبل", englishName: "20 tickets + 25 labels", tickets: 20, labels: 25 },
-  { code: "tickets", price: 150, arabicName: "٢٠ تيكت", englishName: "20 tickets", tickets: 20, labels: 0 },
-  { code: "labels", price: 150, arabicName: "٢٥ ليبل", englishName: "25 labels", tickets: 0, labels: 25 },
+  { code: "combined", price: 300, arabicName: "٤٠ تيكت + ٥٤ ليبل", englishName: "40 tickets + 54 labels", tickets: 40, labels: 54 },
+  { code: "tickets", price: 150, arabicName: "٤٠ تيكت", englishName: "40 tickets", tickets: 40, labels: 0 },
+  { code: "labels", price: 150, arabicName: "٥٤ ليبل", englishName: "54 labels", tickets: 0, labels: 54 },
 ];
 async function main() {
   const apply = process.argv.includes("--apply");
@@ -28,7 +28,7 @@ async function main() {
     console.log(JSON.stringify({ mode: apply ? "apply" : "dry-run", tickets: { id: tickets.id, slug: tickets.slug, price: 300, stockUnchanged: tickets.stock, packages }, tshirt: { id: tshirt.id, price: 450, stockUnchanged: tshirt.stock }, products: matches.map(({ spec, existing }) => ({ slug: existing?.slug ?? spec.slug, price: spec.price, action: existing ? "update" : "create with zero stock", stock: existing?.stock ?? 0 })) }, null, 2));
     if (!apply) return;
     await tx.category.updateMany({ where: { OR: [{ id: tickets.categoryId }, { arabicName: { in: ["ستيكرات وملصقات", "استيكرات وملصقات"] } }] }, data: { arabicName: "تيكت وليبل", name: "Tickets & Labels" } });
-    await tx.product.update({ where: { id: tickets.id }, data: { price: 300, compareAtPrice: null, name: "Tickets & Labels", arabicName: "تيكت وليبل", description: "Choose a pack of 20 tickets and 25 labels, 20 tickets, or 25 labels.", arabicDescription: "اختاري باقة ٢٠ تيكت و٢٥ ليبل، أو ٢٠ تيكت، أو ٢٥ ليبل." } });
+    await tx.product.update({ where: { id: tickets.id }, data: { price: 300, compareAtPrice: null, name: "Tickets & Labels", arabicName: "تيكت وليبل", description: "Choose a pack of 40 tickets and 54 labels, 40 tickets, or 54 labels.", arabicDescription: "اختاري باقة ٤٠ تيكت و٥٤ ليبل، أو ٤٠ تيكت، أو ٥٤ ليبل." } });
     for (const pack of packages) {
       const sku = `${tickets.sku}-${pack.code.toUpperCase()}`;
       const existing = tickets.variants.find(v => v.sku === sku);
