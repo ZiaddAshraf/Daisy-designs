@@ -10,17 +10,30 @@ import {
   categoryNoticeForLocale,
 } from "../src/lib/store-categories";
 
-test("store categories contains exactly four confirmed categories in stable order", () => {
+test("store categories contains confirmed categories in stable order", () => {
   const categories = getStoreCategories();
-  assert.equal(categories.length, 4);
+  assert.equal(categories.length, 5);
   assert.deepEqual(
     categories.map((c) => c.slug),
-    ["stickers", "reward-cards", "customized-stories", "printed-t-shirts"],
+    ["banners", "stickers", "reward-cards", "customized-stories", "printed-t-shirts"],
   );
   assert.deepEqual(
     categories.map((c) => c.letter),
-    ["S", "R", "C", "T"],
+    ["B", "S", "R", "C", "T"],
   );
+});
+
+test("banners category has valid English and Arabic content and typographic mark", () => {
+  const banners = getStoreCategory("banners");
+  assert.ok(banners, "banners category should exist");
+  assert.equal(banners.id, "banners");
+  assert.equal(banners.letter, "B");
+  assert.equal(categoryNameForLocale(banners, "en"), "Banners & Toppers");
+  assert.equal(categoryNameForLocale(banners, "ar"), "بانرز وتوبرز");
+  assert.ok(categoryTaglineForLocale(banners, "ar")?.includes("بانر"));
+  assert.ok(categoryTaglineForLocale(banners, "en")?.includes("banners"));
+  assert.equal(getStoreCategory("banner")?.slug, "banners");
+  assert.equal(getStoreCategory("toppers")?.slug, "banners");
 });
 
 test("stickers category has updated Tickets, Labels & Keychains content in English and Arabic", () => {
@@ -51,6 +64,7 @@ test("printed-t-shirts category has valid English and Arabic content and typogra
 
 test("slug aliases correctly resolve to primary category slugs", () => {
   assert.equal(getStoreCategory("t-shirts")?.slug, "printed-t-shirts");
+  assert.equal(getStoreCategory("banner")?.slug, "banners");
   assert.equal(getStoreCategory("tshirts")?.slug, "printed-t-shirts");
   assert.equal(getStoreCategory("school-stickers")?.slug, "stickers");
   assert.equal(getStoreCategory("non-existent"), undefined);

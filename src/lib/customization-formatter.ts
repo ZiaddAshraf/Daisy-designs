@@ -17,6 +17,10 @@ const FIELD_LABELS_AR: Record<string, string> = {
   custom_design_file: "التصميم المرفق",
   custom_design_text: "وصف فكرة التصميم",
   print_placement: "مكان الطباعة",
+  child_age: "عمر الطفل / السنة",
+  banner_size: "مقاس البانر",
+  topper_package: "محتويات باكدج التوبرز",
+  custom_notes: "ملاحظات إضافية للتصميم",
 };
 
 const FIELD_LABELS_EN: Record<string, string> = {
@@ -34,6 +38,10 @@ const FIELD_LABELS_EN: Record<string, string> = {
   custom_design_file: "Attached Artwork",
   custom_design_text: "Design Description",
   print_placement: "Print Placement",
+  child_age: "Child's Age / Milestone",
+  banner_size: "Banner Size",
+  topper_package: "Toppers Package Contents",
+  custom_notes: "Additional Design Notes",
 };
 
 const DESIGN_NAMES_AR: Record<string, string> = {

@@ -115,6 +115,50 @@ const CORE_FALLBACK_PRODUCTS: HomeProductRecord[] = [
     variants: [],
     tags: ["printed-t-shirts"],
   },
+  {
+    id: "custom-birthday-banner",
+    slug: "custom-birthday-banner",
+    name: "Daisy Designs Custom Celebration Banner (1.5x1.5m)",
+    arabicName: "بانر أعياد ميلاد مخصص (1.5*1.5 متر)",
+    price: 600,
+    compareAtPrice: null,
+    description: "Send us your child's photo and favorite theme, and we'll create the most beautiful custom celebration banner (1.5x1.5m)!",
+    arabicDescription: "ابعتيلنا صورة الطفل وال theme المفضل وهنعملك أجمل بانر! مقاس 1.5*1.5 متر خامة متينة وألوان زاهية تناسب أعياد الميلاد والاحتفالات والتصوير.",
+    customizable: true,
+    featured: true,
+    published: true,
+    images: [{ url: "/products/banners/birthday-banner.jpg" }],
+    category: {
+      id: "banners",
+      slug: "banners",
+      name: "Banners & Toppers",
+      arabicName: "بانرز وتوبرز",
+    },
+    variants: [],
+    tags: ["banners", "بانرز", "عيد ميلاد"],
+  },
+  {
+    id: "custom-cupcake-toppers",
+    slug: "custom-cupcake-toppers",
+    name: "Daisy Designs Personalized Cupcake Photo Toppers Kit (32 Photos)",
+    arabicName: "باكدج توبرز بصورة الطفل (32 صورة)",
+    price: 200,
+    compareAtPrice: null,
+    description: "Personalized cupcake photo toppers kit starring your child! Includes 32 printed photos of your child on a sheet (cut out by customer), 1 adhesive glue stick, 3 sheets of colorful glitter foam for mini party hats, 5 colored sticks, and a bag of wooden sticks.",
+    arabicDescription: "باكدج توبرز كب كيك مخصص بصورة طفلك لتزيين الكب كيك والحلويات في أعياد الميلاد والاحتفالات! الباكدج يحتوي على 32 صورة مطبوعة للطفل على شيت (يتم تفريغ الصور من قبل العميل) + شمعة لزق + 3 ورقات فوم جليتر ملون + 5 أعواد ملونة + كيس أعواد خشبية.",
+    customizable: true,
+    featured: true,
+    published: true,
+    images: [{ url: "/products/toppers/cupcake-toppers-closeup.jpg" }],
+    category: {
+      id: "banners",
+      slug: "banners",
+      name: "Banners & Toppers",
+      arabicName: "بانرز وتوبرز",
+    },
+    variants: [],
+    tags: ["banners", "toppers", "بانرز وتوبرز", "توبرز"],
+  },
 ];
 
 export default async function Home() {
@@ -149,10 +193,10 @@ export default async function Home() {
     void ensureCoreCatalogProducts();
   }
 
-  const featuredRecords = records.filter((product) => product.featured || product.slug === "custom-printed-tshirt");
+  const featuredRecords = records.filter((product) => product.featured || product.slug === "custom-printed-tshirt" || product.slug === "custom-birthday-banner");
   const featured = (featuredRecords.length >= 4 ? featuredRecords : records).slice(0, 4).map((product) => toStorefrontProduct(product, locale));
   
-  const categoryOrder = ["customized-stories", "stickers", "reward-cards", "printed-t-shirts"];
+  const categoryOrder = ["banners", "customized-stories", "stickers", "reward-cards", "printed-t-shirts"];
   const homepageCategories = categoryOrder
     .map((slug) => storeCategories.find((category) => category.slug === slug))
     .filter((category): category is (typeof storeCategories)[number] => Boolean(category));

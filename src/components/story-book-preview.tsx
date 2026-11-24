@@ -208,6 +208,24 @@ export const AVAILABLE_STORIES: StoryItem[] = [
     coverUrl: "/products/customized-stories/story-14-selim-dream-match.jpeg",
     sampleHero: "سليم", dimensions: { width: 1055, height: 1491 },
   },
+  {
+    id: "farouk-sonic-speed-portal", slug: "farouk-sonic-speed-portal",
+    titleAr: "فاروق وسونيك وبوابة السرعة", titleEn: "Farouk and Sonic's Speed Portal",
+    badgeAr: "سونيك وبوابة السرعة", badgeEn: "Sonic & Speed Portal",
+    descriptionAr: "فاروق ينطلق في مغامرة شيقة مع سونيك عبر بوابة السرعة الذهبية إلى عوالم ساحرة مليئة بالحماس والسرعة.",
+    descriptionEn: "Farouk leaps through the golden speed portal on a thrilling adventure with Sonic into magical worlds of speed and excitement.",
+    coverUrl: "/products/customized-stories/story-15-farouk-sonic-speed-portal.jpeg",
+    sampleHero: "فاروق", dimensions: { width: 724, height: 1024 },
+  },
+  {
+    id: "layla-cats-friends", slug: "layla-cats-friends",
+    titleAr: "ليلى وأصدقاؤها المياو (لولو وتوتو)", titleEn: "Layla and Her Meow Friends: Lulu & Toto",
+    badgeAr: "مغامرة القطط - ليلى", badgeEn: "Meow Friends - Layla",
+    descriptionAr: "ليلى تعيش أجمل اللحظات والمواقف اللطيفة والمرحة مع قطتيها الصغيرتين لولو وتوتو في الحديقة المليئة بالزهور.",
+    descriptionEn: "Layla shares gentle, joyful moments in a flower-filled garden with her sweet kittens Lulu and Toto.",
+    coverUrl: "/products/customized-stories/story-16-layla-cats-friends.jpeg",
+    sampleHero: "ليلى", dimensions: { width: 723, height: 1024 },
+  },
 ];
 
 export function StoryBookPreview({ locale, inStock = true, initialStoryId, initialBundle = false }: StoryBookPreviewProps) {

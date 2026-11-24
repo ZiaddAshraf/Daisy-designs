@@ -51,3 +51,11 @@
   - [x] 8.4 Admin Dashboard audit: Verified role-based server-side security (`isAdmin()` fails closed), full order/customer/customization inspection, and secure admin artwork streaming.
   - [x] 8.5 Automated verification: 127 automated tests passing (124 passed, 3 skipped DB tests), 0 TypeScript errors, 0 ESLint errors, Next.js production build compiling all 46 routes cleanly.
   - [x] 8.6 Generate comprehensive `FINAL_PRODUCTION_READINESS_REPORT.md`.
+- [x] Step 9: Banners & Toppers Category Restructuring and DIY Photo Toppers Package
+  - [x] 9.1 Asset preparation: copied 5 high-resolution cupcake toppers photos into `public/products/toppers/`.
+  - [x] 9.2 Product schema: created `src/data/toppers-product.json` with 200 EGP price, 32-photo package details, glitter foam, and sticks.
+  - [x] 9.3 Category restructuring: updated category to "بانرز وتوبرز" / "Banners & Toppers" in `store-categories.ts` and aliases.
+  - [x] 9.4 Studio components: created `src/components/toppers-preview.tsx` and `src/components/banners-category-landing.tsx`.
+  - [x] 9.5 Sub-routes & deep links: created `/categories/banners/toppers`, `/categories/banners/wall-banners`, `/categories/toppers`, and `/products/custom-cupcake-toppers`.
+  - [x] 9.6 Catalog and seeders: wired Toppers product into homepage, catalog filters, fallback products, and seeder.
+  - [x] 9.7 Ralph loop verification: run typecheck, unit tests, linter, and full production build.

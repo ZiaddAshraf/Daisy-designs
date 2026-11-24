@@ -23,13 +23,15 @@ export function HomeFeaturedGrid({ products }: { products: Product[] }) {
             ? `/products/first-year-at-school?story=cats-friends`
             : `/products/${product.slug}`;
 
-        const cta = product.slug.includes("tshirt")
-          ? (isAr ? "اختاري المقاس والتصميم" : "Choose size & design")
-          : product.slug.includes("sticker")
-            ? (isAr ? "اختاري الباقة والتصميم" : "Choose package & design")
-            : product.slug.includes("school") || product.slug.includes("story")
-              ? (isAr ? "خصّصي قصة طفلك" : "Personalize your story")
-              : (isAr ? "شوفي تفاصيل المنتج" : "View product details");
+        const cta = product.slug.includes("banner")
+          ? (isAr ? "صممي بانر طفلك" : "Design your banner")
+          : product.slug.includes("tshirt")
+            ? (isAr ? "اختاري المقاس والتصميم" : "Choose size & design")
+            : product.slug.includes("sticker")
+              ? (isAr ? "اختاري الباقة والتصميم" : "Choose package & design")
+              : product.slug.includes("school") || product.slug.includes("story")
+                ? (isAr ? "خصّصي قصة طفلك" : "Personalize your story")
+                : (isAr ? "شوفي تفاصيل المنتج" : "View product details");
 
         return (
           <article className="home-featured-card group" key={product.slug} data-scroll-reveal="card">

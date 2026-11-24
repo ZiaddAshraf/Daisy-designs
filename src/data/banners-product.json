@@ -1,0 +1,49 @@
+{
+  "draft": false,
+  "status": "ACTIVE_PUBLISHED",
+  "category": {
+    "id": "banners",
+    "slug": "banners",
+    "name": "Banners & Toppers",
+    "arabicName": "بانرز وتوبرز",
+    "description": "Custom 1.5x1.5m birthday and celebration banners personalized with your child's photo and favorite theme.",
+    "arabicDescription": "بانرات أعياد ميلاد واحتفالات مخصصة مقاس 1.5*1.5 متر بصورة الطفل والـ Theme المفضل."
+  },
+  "product": {
+    "slug": "custom-birthday-banner",
+    "name": "Custom Birthday & Celebration Banner (1.5x1.5m)",
+    "arabicName": "بانر أعياد ميلاد واحتفالات مخصص (1.5*1.5 متر)",
+    "format": "Physical Printed Vinyl/Flex Banner 1.5x1.5m",
+    "arabicFormat": "بانر احتفالات فاخر مقاس 1.5 × 1.5 متر بجودة طباعة فائقة",
+    "customizable": true,
+    "available": true,
+    "price": 600,
+    "compareAtPrice": null,
+    "sku": "DD-BN-001",
+    "stock": 100,
+    "lowStockThreshold": 5,
+    "published": true,
+    "size": "1.5 * 1.5 m",
+    "arabicSize": "1.5 × 1.5 متر (150 سم × 150 سم)",
+    "description": "Send us your child's photo and favorite theme, and we'll create the most beautiful personalized celebration banner (1.5x1.5m)! High-resolution vibrant printing on durable tear-resistant material.",
+    "arabicDescription": "ابعتيلنا صورة الطفل وال theme المفضل وهنعملك أجمل بانر! مقاس 1.5*1.5 متر خامة متينة وألوان زاهية تناسب أعياد الميلاد والاحتفالات والتصوير.",
+    "primaryImage": {
+      "url": "/products/banners/birthday-banner.jpg",
+      "alt": "Daisy Designs Custom Birthday Banner 1.5x1.5m",
+      "arabicAlt": "بانر عيد ميلاد مخصص مقاس 1.5*1.5 متر من Daisy Designs",
+      "dimensions": { "width": 800, "height": 800 }
+    },
+    "gallery": [
+      {
+        "url": "/products/banners/birthday-banner.jpg",
+        "alt": "Custom Birthday Banner Yehia Tom & Jerry Theme",
+        "arabicAlt": "معاينة البانر المخصص بتصميم توم وجيري واسم الطفل يحيى"
+      },
+      {
+        "url": "/products/banners/birthday-banner-setup.jpg",
+        "alt": "Birthday Party Setup with Custom Wall Banner",
+        "arabicAlt": "تنسيق طاولة الحفلة مع البانر على الحائط مقاس 1.5*1.5 متر"
+      }
+    ]
+  }
+}

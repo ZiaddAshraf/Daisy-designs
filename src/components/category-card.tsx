@@ -19,6 +19,7 @@ type CategoryCardProps = {
 };
 
 const CATEGORY_IMAGES: Record<string, string> = {
+  "banners": "/products/banners/birthday-banner-setup.jpg",
   "stickers": "/products/stickers/tickets-labels-studio.jpeg",
   "reward-cards": "/products/reward-cards/reward-cards-box-set.jpeg",
   "customized-stories": "/products/customized-stories/story-03-cats-friends.jpeg",
@@ -27,6 +28,10 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 const SHORT_SUBTITLES: Record<string, { ar: string; en: string }> = {
+  "banners": {
+    ar: "بانرز حفلات وتوبرز كب كيك مخصصة",
+    en: "Custom party banners & cupcake toppers",
+  },
   "stickers": {
     ar: "استيكرات وميداليات مقاومة للماء",
     en: "Waterproof labels & keychains",

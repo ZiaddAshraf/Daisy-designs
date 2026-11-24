@@ -80,6 +80,8 @@ export function toStorefrontProduct(product: { slug: string; name: string; arabi
     const badge = product.badge ?? (demo && product.bestSeller ? getTranslation(locale, "demoPick") : undefined);
 
     const isTshirt = product.slug === "custom-printed-tshirt";
+    const isBanner = product.slug === "custom-birthday-banner";
+    const isTopper = product.slug === "custom-cupcake-toppers" || product.slug === "toppers";
     const colors = isTshirt ? [
       { id: "white", name: "White", arabicName: "أبيض", hex: "#FFFFFF", image: "/products/t-shirts/kids-tshirt-studio.jpeg" },
       { id: "black", name: "Black", arabicName: "أسود", hex: "#18181B", image: "/products/t-shirts/kids-tshirt-black-studio.jpeg" },
@@ -88,12 +90,20 @@ export function toStorefrontProduct(product: { slug: string; name: string; arabi
 
     const subtitle = isTshirt
       ? (locale === "ar" ? "قطن مصري ١٠٠٪ • طباعة على الصدر" : "100% Egyptian Cotton • Center Chest Print")
-      : undefined;
+      : isBanner
+        ? (locale === "ar" ? "مقاس 1.5*1.5 متر • بصورة الطفل والـ Theme" : "1.5x1.5m • Child's Photo & Theme")
+        : isTopper
+          ? (locale === "ar" ? "باكدج 32 صورة • فوم جليتر وأعواد ولزق" : "32 Photo Pack • Glitter Foam & Sticks")
+          : undefined;
 
     const customizationTag = product.customizable
       ? (isTshirt
           ? (locale === "ar" ? "كبار وأطفال" : "Adults & Kids")
-          : (locale === "ar" ? "مخصص بالكامل" : "Customizable"))
+          : isBanner
+            ? (locale === "ar" ? "مقاس 1.5*1.5 متر" : "1.5x1.5m")
+            : isTopper
+              ? (locale === "ar" ? "باكدج 32 صورة" : "32 Photo Pack")
+              : (locale === "ar" ? "مخصص بالكامل" : "Customizable"))
       : undefined;
 
     const imageUrl = isCustomStory

@@ -1,0 +1,89 @@
+{
+  "draft": false,
+  "status": "ACTIVE_PUBLISHED",
+  "category": {
+    "id": "banners",
+    "slug": "banners",
+    "name": "Banners & Toppers",
+    "arabicName": "بانرز وتوبرز",
+    "description": "Custom celebration wall banners and personalized cupcake photo toppers.",
+    "arabicDescription": "بانرز احتفالات مقاس 1.5*1.5 متر وباكدج توبرز كب كيك مخصصة بصورة طفلك."
+  },
+  "product": {
+    "slug": "custom-cupcake-toppers",
+    "name": "Personalized Child Photo Cupcake Toppers Kit (32 Photos)",
+    "arabicName": "باكدج توبرز بصورة الطفل (32 صورة)",
+    "format": "DIY Photo Cupcake Toppers Kit",
+    "arabicFormat": "باكدج توبرز كب كيك مخصص بصورة الطفل (32 صورة + فوم جليتر + أعواد + شمعة لزق)",
+    "customizable": true,
+    "available": true,
+    "price": 200,
+    "compareAtPrice": null,
+    "sku": "DD-TP-001",
+    "stock": 100,
+    "lowStockThreshold": 5,
+    "published": true,
+    "packageContents": [
+      {
+        "id": "photos",
+        "ar": "32 صورة مطبوعة للطفل على شيت (يتم تفريغ الصور من قبل العميل)",
+        "en": "32 printed photos of child on a sheet (cut out by customer)"
+      },
+      {
+        "id": "glue",
+        "ar": "شمعة لزق",
+        "en": "Adhesive glue stick"
+      },
+      {
+        "id": "glitter-foam",
+        "ar": "3 ورقات فوم جليتر ملون لعمل طراطير الاحتفال",
+        "en": "3 sheets of colored glitter foam for mini party hats"
+      },
+      {
+        "id": "colored-sticks",
+        "ar": "5 أعواد ملونة",
+        "en": "5 colored sticks"
+      },
+      {
+        "id": "wooden-sticks",
+        "ar": "كيس أعواد خشبية",
+        "en": "Bag of wooden sticks"
+      }
+    ],
+    "description": "Personalized cupcake photo toppers kit starring your child! Includes 32 printed photos of your child on a sheet (cut out by customer), 1 adhesive glue stick, 3 sheets of colorful glitter foam for mini party hats, 5 colored sticks, and a bag of wooden sticks.",
+    "arabicDescription": "باكدج توبرز كب كيك مخصص بصورة طفلك لتزيين الكب كيك والحلويات في أعياد الميلاد والاحتفالات! الباكدج يحتوي على 32 صورة مطبوعة للطفل على شيت (يتم تفريغ الصور من قبل العميل) + شمعة لزق + 3 ورقات فوم جليتر ملون + 5 أعواد ملونة + كيس أعواد خشبية.",
+    "primaryImage": {
+      "url": "/products/toppers/cupcake-toppers-closeup.jpg",
+      "alt": "Daisy Designs Personalized Cupcake Photo Toppers Kit",
+      "arabicAlt": "باكدج توبرز كب كيك بصورة الطفل وفوم جليتر من Daisy Designs",
+      "dimensions": { "width": 800, "height": 800 }
+    },
+    "gallery": [
+      {
+        "url": "/products/toppers/cupcake-toppers-closeup.jpg",
+        "alt": "Child Photo Cupcake Toppers with Glitter Party Hats",
+        "arabicAlt": "توبرز كب كيك بصورة الطفل وطراطير فوم جليتر ملونة"
+      },
+      {
+        "url": "/products/toppers/cupcake-toppers-plate.jpg",
+        "alt": "Golden Plate with Decorated Cupcakes and Child Photo Toppers",
+        "arabicAlt": "طبق تقديم ذهبي يضم كب كيك مزين بتوبرز صورة الطفل"
+      },
+      {
+        "url": "/products/toppers/cupcake-toppers-group.jpg",
+        "alt": "Delicious Cupcakes with Child Face Toppers",
+        "arabicAlt": "مجموعة كب كيك شيك ومبهجة مزينة بتوبرز طفلك"
+      },
+      {
+        "url": "/products/toppers/cupcake-toppers-angle.jpg",
+        "alt": "Angle Shot of Personalized Cupcake Toppers",
+        "arabicAlt": "لقطة قريبة تبرز تفاصيل التوبرز والأعواد وفوم الجليتر"
+      },
+      {
+        "url": "/products/toppers/party-table-setup.jpg",
+        "alt": "Party Table Setup with Banners and Cupcake Toppers",
+        "arabicAlt": "تنسيق كامل لطاولة الحفلة مع البانر والكب كيك والتوبرز"
+      }
+    ]
+  }
+}

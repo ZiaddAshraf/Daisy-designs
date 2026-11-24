@@ -13,6 +13,8 @@ test("getCustomizationFieldLabel formats labels correctly in Arabic and English"
   assert.equal(getCustomizationFieldLabel("parent_phone", "en"), "Parent Phone");
   assert.equal(getCustomizationFieldLabel("design_theme", "ar"), "التصميم");
   assert.equal(getCustomizationFieldLabel("design_theme", "en"), "Design");
+  assert.equal(getCustomizationFieldLabel("topper_package", "ar"), "محتويات باكدج التوبرز");
+  assert.equal(getCustomizationFieldLabel("topper_package", "en"), "Toppers Package Contents");
 });
 
 test("formatCustomizationValue localizes sticker design themes", () => {

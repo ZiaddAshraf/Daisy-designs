@@ -22,6 +22,7 @@ import { RewardCardsPreview } from "@/components/reward-cards-preview";
 import { StickersCategoryLanding } from "@/components/stickers-category-landing";
 import { StoryBookPreview } from "@/components/story-book-preview";
 import { TShirtPreview } from "@/components/tshirt-preview";
+import { BannersCategoryLanding } from "@/components/banners-category-landing";
 
 type SearchFilters = { collection?: string; story?: string; mode?: string; min?: string; max?: string; availability?: string; customizable?: string; sort?: string; page?: string };
 function normalizeFilters(params: SearchFilters) { const numeric = (value?: string) => value && /^\d{1,8}$/.test(value) ? value : undefined; return { collection: params.collection?.slice(0, 80), min: numeric(params.min), max: numeric(params.max), availability: params.availability === "in-stock" ? params.availability : undefined, customizable: params.customizable === "true" ? params.customizable : undefined, sort: ["price-asc", "price-desc", "best-selling", "newest"].includes(params.sort ?? "") ? params.sort : "newest", page: numeric(params.page), limit: "12" }; }
@@ -90,7 +91,11 @@ export default async function CategoryPage({ params, searchParams }: { params: P
   }
 
   let specialProduct: Awaited<ReturnType<typeof getPublishedProduct>> = null;
-  const specialSlug = ["printed-t-shirts", "t-shirts", "tshirts"].includes(slug) ? "custom-printed-tshirt" : null;
+  const specialSlug = ["printed-t-shirts", "t-shirts", "tshirts"].includes(slug)
+    ? "custom-printed-tshirt"
+    : ["banners", "banner"].includes(slug)
+      ? "custom-birthday-banner"
+      : null;
   if (specialSlug) {
     try { specialProduct = await getPublishedProduct(specialSlug); }
     catch (error) { if (!isDatabaseUnavailable(error)) throw error; }
@@ -113,7 +118,7 @@ export default async function CategoryPage({ params, searchParams }: { params: P
         <span>{categoryName}</span>
       </nav>
 
-      {slug !== "reward-cards" && slug !== "stickers" && slug !== "school-stickers" && slug !== "customized-stories" && slug !== "stories" && slug !== "printed-t-shirts" && slug !== "t-shirts" && slug !== "tshirts" && (
+      {slug !== "banners" && slug !== "banner" && slug !== "reward-cards" && slug !== "stickers" && slug !== "school-stickers" && slug !== "customized-stories" && slug !== "stories" && slug !== "printed-t-shirts" && slug !== "t-shirts" && slug !== "tshirts" && (
         <header className="catalog-page__heading" data-scroll-reveal suppressHydrationWarning>
           <div>
             <p className="eyebrow">DAISY DESIGNS / {t("categoryLabel")}</p>
@@ -130,7 +135,9 @@ export default async function CategoryPage({ params, searchParams }: { params: P
         </header>
       )}
 
-      {slug === "reward-cards" ? (
+      {slug === "banners" || slug === "banner" ? (
+        <BannersCategoryLanding locale={locale} />
+      ) : slug === "reward-cards" ? (
         <RewardCardsPreview locale={locale} inStock={result && result.items.length > 0 ? result.items[0].stock > 0 : true} />
       ) : slug === "stickers" || slug === "school-stickers" ? (
         <StickersCategoryLanding locale={locale} />

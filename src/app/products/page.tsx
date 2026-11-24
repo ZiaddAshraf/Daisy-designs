@@ -130,6 +130,8 @@ export default async function ProductsPage() {
     ["ezz-aunt-reem-airport", "عز وخالتو ريم في مغامرة المطار", "Ezz and Aunt Reem's Airport Adventure", "عز وخالتو ريم يستكشفان عالم السفر والطائرات.", "Ezz and Aunt Reem explore the airport and airplanes.", "story-12-ezz-aunt-reem-airport.jpeg"],
     ["ashraf-lulu-giraffe", "أشرف وصديقته الزرافة لولو", "Ashraf and Lulu the Giraffe", "أشرف يقابل الزرافة لولو في حديقة الحيوانات.", "Ashraf meets Lulu the giraffe at the zoo.", "story-13-ashraf-lulu-giraffe.jpeg"],
     ["selim-dream-match", "سليم ومباراة الأحلام", "Selim and the Dream Match", "سليم يخوض مباراة كرة القدم التي يحلم بها.", "Selim plays the football match of his dreams.", "story-14-selim-dream-match.jpeg"],
+    ["farouk-sonic-speed-portal", "فاروق وسونيك وبوابة السرعة", "Farouk and Sonic's Speed Portal", "فاروق ينطلق في مغامرة شيقة مع سونيك عبر بوابة السرعة الذهبية.", "Farouk leaps through the golden speed portal with Sonic.", "story-15-farouk-sonic-speed-portal.jpeg"],
+    ["layla-cats-friends", "ليلى وأصدقاؤها المياو (لولو وتوتو)", "Layla and Her Meow Friends: Lulu & Toto", "ليلى تعيش أجمل اللحظات والمواقف اللطيفة مع قطتيها الصغيرتين لولو وتوتو.", "Layla shares gentle and playful moments with sweet kittens Lulu and Toto.", "story-16-layla-cats-friends.jpeg"],
   ].map(([slug, titleAr, titleEn, descriptionAr, descriptionEn, image], index) => ({
     id: `story-${String(index + 5).padStart(2, "0")}-${slug}`,
     slug,
@@ -238,6 +240,50 @@ export default async function ProductsPage() {
     ctaText: isRtl ? "اشتري الآن" : "Buy Now",
   };
 
+  // 4c. Custom Birthday & Celebration Banner (1.5x1.5m)
+  const bannerProduct: CatalogProductItem = {
+    id: "custom-birthday-banner",
+    slug: "custom-birthday-banner",
+    href: "/products/custom-birthday-banner",
+    title: isRtl ? "بانر مخصص مقاس 1.5*1.5 متر" : "Custom Celebration Banner (1.5x1.5m)",
+    subtitle: isRtl ? "ابعتيلنا صورة الطفل والـ theme المفضل وهنعملك أجمل بانر" : "1.5x1.5m Child Photo & Theme Banner",
+    category: isRtl ? "بانرز وتوبرز" : "Banners & Toppers",
+    categoryId: "banners",
+    price: priceFor("custom-birthday-banner") || 600,
+    priceUnit: isRtl ? "للبانر المطبوع" : "per banner",
+    badge: isRtl ? "مقاس 1.5*1.5 متر" : "1.5x1.5m",
+    image: "/products/banners/birthday-banner.jpg",
+    description: isRtl
+      ? "ابعتيلنا صورة الطفل وال theme المفضل وهنعملك أجمل بانر! مقاس 1.5*1.5 متر خامة متينة وألوان زاهية تناسب أعياد الميلاد والاحتفالات والتصوير."
+      : "Send us your child's photo and favorite theme, and we'll create the most beautiful custom celebration banner (1.5x1.5m)!",
+    features: isRtl
+      ? ["مقاس مربع 1.5 × 1.5 متر (150×150 سم)", "بصورة طفلك والـ Theme المفضل", "خامة متينة ممتازة وألوان زاهية تدوم"]
+      : ["Square 1.5 × 1.5 m (150×150 cm)", "Personalized Child Photo & Theme", "Durable Material & Vibrant Colors"],
+    ctaText: isRtl ? "صممي البانر" : "Customize Banner",
+  };
+
+  // 4d. Custom Photo Cupcake Toppers Kit (32 Pcs)
+  const toppersProduct: CatalogProductItem = {
+    id: "custom-cupcake-toppers",
+    slug: "custom-cupcake-toppers",
+    href: "/products/custom-cupcake-toppers",
+    title: isRtl ? "باكدج توبرز بصورة الطفل (32 صورة)" : "Child Photo Cupcake Toppers Kit (32 Pcs)",
+    subtitle: isRtl ? "شيت 32 صورة + شمعة لزق + 3 ورقات فوم جليتر + 5 أعواد ملونة + كيس أعواد خشبية" : "32 child photos + glue stick + 3 glitter foam + 5 colored sticks + wooden sticks",
+    category: isRtl ? "بانرز وتوبرز" : "Banners & Toppers",
+    categoryId: "banners",
+    price: priceFor("custom-cupcake-toppers") || 200,
+    priceUnit: isRtl ? "للباكدج الكامل" : "per complete kit",
+    badge: isRtl ? "باكدج ٣٢ صورة" : "32 Pcs Kit",
+    image: "/products/toppers/cupcake-toppers-closeup.jpg",
+    description: isRtl
+      ? "باكدج توبرز كب كيك مخصص بصورة طفلك لتزيين الكب كيك والحلويات في أعياد الميلاد والاحتفالات! الباكدج يحتوي على 32 صورة مطبوعة للطفل على شيت (يتم تفريغ الصور من قبل العميل) + شمعة لزق + 3 ورقات فوم جليتر ملون + 5 أعواد ملونة + كيس أعواد خشبية."
+      : "Personalized cupcake photo toppers kit starring your child! Includes 32 printed photos of your child on a sheet (cut out by customer), 1 adhesive glue stick, 3 sheets of colorful glitter foam for mini party hats, 5 colored sticks, and a bag of wooden sticks.",
+    features: isRtl
+      ? ["32 صورة مطبوعة للطفل على شيت", "شمعة لزق + 3 فوم جليتر ملون", "5 أعواد ملونة + كيس أعواد خشبية"]
+      : ["32 printed child photos on a sheet", "Glue stick + 3 glitter foam sheets", "5 colored sticks + wooden sticks pack"],
+    ctaText: isRtl ? "صممي التوبرز" : "Customize Toppers",
+  };
+
 
   // 4b. Custom Acrylic Name Keychains
   const keychainAssortedProduct: CatalogProductItem = {
@@ -338,7 +384,9 @@ export default async function ProductsPage() {
       description: isRtl ? "اختاري القصة وخصّصيها لطفلك مع علبة كروت التشجيع." : "Customize a story for your child and add a box of reward cards.",
     }] : []),
     storySchoolProduct,
-    customStoryProduct,                               // 1b. Bespoke: Design Your Story
+    bannerProduct,                                    // 1a. Custom 1.5x1.5m Celebration Banner
+    toppersProduct,                                   // 1b. Custom Photo Cupcake Toppers Kit (32 Pcs)
+    customStoryProduct,                               // 1c. Bespoke: Design Your Story
     tshirtProduct,                                    // 2. Custom Printed Children's T-Shirt
     storyMinecraftProduct,                            // 3. Story 4: Minecraft Adventure
     stickerProducts[1],                               // 4. Super Cool Dino
@@ -378,9 +426,10 @@ export default async function ProductsPage() {
 
   const catalog = shuffledCatalog.filter(item => {
     const slug = item.categoryId === "customized-stories" ? "first-year-at-school" : item.href.split("?")[0].split("/").pop();
+    if (slug === "custom-birthday-banner" || slug === "custom-cupcake-toppers") return true;
     return records.some(p => p.slug === slug);
   });
-  const known = new Set(["custom-waterproof-stickers", "custom-printed-tshirt", "reward-cards-box-set", "first-year-at-school", "custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo", "personalized-school-id-card"]);
+  const known = new Set(["custom-waterproof-stickers", "custom-printed-tshirt", "reward-cards-box-set", "first-year-at-school", "custom-acrylic-name-keychain", "keychain-lamine-yamal", "keychain-cristiano-ronaldo", "personalized-school-id-card", "custom-birthday-banner", "custom-cupcake-toppers"]);
   for (const record of records.filter(p => !known.has(p.slug) && !p.slug.startsWith("demo-"))) {
     const product = toStorefrontProduct(record, locale);
     catalog.push({ id: record.id, slug: record.slug, href: `/products/${record.slug}`, title: product.name, subtitle: product.description, category: product.category, categoryId: record.category.slug, price: product.price, priceUnit: "", badge: "", image: product.image, description: product.description, features: [], ctaText: isRtl ? "عرض المنتج" : "View product" });
@@ -397,6 +446,7 @@ export default async function ProductsPage() {
     storiesFilter: isRtl ? "قصص مخصصة" : "Customized Stories",
     cardsFilter: isRtl ? "كروت التشجيع" : "Reward Cards",
     tshirtsFilter: isRtl ? "تيشيرتات (كبار وأطفال)" : "T-Shirts (Adults & Kids)",
+    bannersFilter: isRtl ? "بانرز وتوبرز" : "Banners & Toppers",
     noResultsTitle: isRtl ? "لم يتم العثور على منتجات مطابقة" : "No matching products found",
     noResultsHint: isRtl
       ? "جرب البحث بكلمات أخرى أو أعد ضبط الفلاتر لتصفح كامل المجموعة."

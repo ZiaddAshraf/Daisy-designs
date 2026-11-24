@@ -122,6 +122,110 @@ export async function ensureCatalogProductInTransaction(
     return;
   }
 
+  if (slug === "custom-birthday-banner") {
+    let cat = await tx.category.findUnique({ where: { slug: "banners" } });
+    if (!cat) {
+      cat = await tx.category.create({
+        data: {
+          slug: "banners",
+          name: "Banners",
+          arabicName: "بانرز",
+          description: "Custom 1.5x1.5m birthday and celebration banners personalized with child's photo and favorite theme.",
+          image: "/products/banners/birthday-banner.jpg",
+          published: true,
+        },
+      });
+    }
+    await tx.product.create({
+      data: {
+        slug: "custom-birthday-banner",
+        name: "Daisy Designs Custom Celebration Banner (1.5x1.5m)",
+        arabicName: "بانر مخصص مقاس 1.5*1.5 متر",
+        description:
+          "Send us your child's photo and favorite theme, and we'll create the most beautiful custom celebration banner (1.5x1.5m)!",
+        arabicDescription:
+          "ابعتيلنا صورة الطفل وال theme المفضل وهنعملك أجمل بانر! بانر احتفالات فاخر مقاس 1.5*1.5 متر مطبوع بألوان فائقة الجودة.",
+        price: 600,
+        sku: "DD-BN-001",
+        stock: 100,
+        lowStockThreshold: 5,
+        featured: true,
+        customizable: true,
+        published: true,
+        categoryId: cat.id,
+        tags: ["banners", "بانرز", "عيد ميلاد", "Daisy Designs", "أطفال"],
+        images: {
+          create: [
+            { position: 0, url: "/products/banners/birthday-banner.jpg", alt: "Daisy Designs Custom Birthday Banner" },
+            { position: 1, url: "/products/banners/birthday-banner-setup.jpg", alt: "Birthday Party Setup with Custom Wall Banner" },
+          ],
+        },
+        customizationFields: {
+          create: [
+            { position: 0, label: "صورة الطفل (اختياري)", key: "child_photo", type: "IMAGE", required: false },
+            { position: 1, label: "اسم الطفل المكتوب على البانر", key: "child_name", type: "TEXT", required: true, maxLength: 80 },
+            { position: 2, label: "الـ Theme المفضل أو شخصية الاحتفال", key: "design_theme", type: "TEXT", required: true, maxLength: 120 },
+            { position: 3, label: "عمر الطفل أو رقم العيد ميلاد (اختياري)", key: "child_age", type: "TEXT", required: false, maxLength: 40 },
+            { position: 4, label: "ملاحظات إضافية للتصميم (اختياري)", key: "custom_notes", type: "TEXT", required: false, maxLength: 300 },
+          ],
+        },
+      },
+    });
+    return;
+  }
+
+  if (slug === "custom-cupcake-toppers") {
+    let cat = await tx.category.findUnique({ where: { slug: "banners" } });
+    if (!cat) {
+      cat = await tx.category.create({
+        data: {
+          slug: "banners",
+          name: "Banners & Toppers",
+          arabicName: "بانرز وتوبرز",
+          description: "Custom celebration wall banners and personalized cupcake photo toppers.",
+          image: "/products/toppers/cupcake-toppers-closeup.jpg",
+          published: true,
+        },
+      });
+    }
+    await tx.product.create({
+      data: {
+        slug: "custom-cupcake-toppers",
+        name: "Daisy Designs Personalized Cupcake Photo Toppers Kit (32 Photos)",
+        arabicName: "باكدج توبرز بصورة الطفل (32 صورة)",
+        description:
+          "Personalized cupcake photo toppers kit starring your child! Includes 32 printed photos of your child on a sheet (cut out by customer), 1 adhesive glue stick, 3 sheets of colorful glitter foam for mini party hats, 5 colored sticks, and a bag of wooden sticks.",
+        arabicDescription:
+          "باكدج توبرز كب كيك مخصص بصورة طفلك لتزيين الكب كيك والحلويات في أعياد الميلاد والاحتفالات! الباكدج يحتوي على 32 صورة مطبوعة للطفل على شيت (يتم تفريغ الصور من قبل العميل) + شمعة لزق + 3 ورقات فوم جليتر ملون + 5 أعواد ملونة + كيس أعواد خشبية.",
+        price: 200,
+        sku: "DD-TP-001",
+        stock: 100,
+        lowStockThreshold: 5,
+        featured: true,
+        customizable: true,
+        published: true,
+        categoryId: cat.id,
+        tags: ["banners", "toppers", "بانرز وتوبرز", "توبرز", "عيد ميلاد", "Daisy Designs", "أطفال"],
+        images: {
+          create: [
+            { position: 0, url: "/products/toppers/cupcake-toppers-closeup.jpg", alt: "Personalized Cupcake Photo Toppers Kit" },
+            { position: 1, url: "/products/toppers/cupcake-toppers-plate.jpg", alt: "Golden Plate of Decorated Cupcakes with Photo Toppers" },
+            { position: 2, url: "/products/toppers/cupcake-toppers-group.jpg", alt: "Child Face Toppers with Mini Party Hats" },
+            { position: 3, url: "/products/toppers/party-table-setup.jpg", alt: "Party Table Setup with Banners and Cupcake Toppers" },
+          ],
+        },
+        customizationFields: {
+          create: [
+            { position: 0, label: "صورة الطفل (مطلوبة للطباعة)", key: "child_photo", type: "IMAGE", required: true },
+            { position: 1, label: "اسم الطفل (اختياري)", key: "child_name", type: "TEXT", required: false, maxLength: 80 },
+            { position: 2, label: "ملاحظات إضافية (اختياري)", key: "custom_notes", type: "TEXT", required: false, maxLength: 300 },
+          ],
+        },
+      },
+    });
+    return;
+  }
+
   if (slug === "first-year-at-school") {
     let cat = await tx.category.findUnique({ where: { slug: "customized-stories" } });
     if (!cat) {
@@ -443,6 +547,8 @@ export async function ensureCoreCatalogProducts(): Promise<void> {
     "first-year-at-school",
     "custom-waterproof-stickers",
     "custom-printed-tshirt",
+    "custom-birthday-banner",
+    "custom-cupcake-toppers",
   ];
   for (const slug of slugs) {
     try {

@@ -6,6 +6,7 @@ import { RewardCardsPreview } from "@/components/reward-cards-preview";
 import { StickersPreview } from "@/components/stickers-preview";
 import { StoryBookPreview } from "@/components/story-book-preview";
 import { TShirtPreview } from "@/components/tshirt-preview";
+import { BannerPreview } from "@/components/banner-preview";
 import { getPublishedProduct, isDemoMode, selectLocalizedText, toStorefrontProduct } from "@/lib/catalog";
 import { getDemoProducts } from "@/lib/demo-catalog-data";
 import { isDatabaseUnavailable, prisma } from "@/lib/prisma";
@@ -17,6 +18,9 @@ import stickersData from "@/data/stickers-product.json";
 import rewardCardsData from "@/data/reward-cards-product.json";
 import storyData from "@/data/story-product.json";
 import tshirtData from "@/data/tshirt-product.json";
+import bannerData from "@/data/banners-product.json";
+import toppersData from "@/data/toppers-product.json";
+import { ToppersPreview } from "@/components/toppers-preview";
 import { ensureKeychainCatalogProducts } from "@/lib/ensure-catalog-product";
 import { ensureStickerPackages } from "@/lib/ensure-sticker-packages";
 import { ensureThermalLabelProduct, THERMAL_LABEL_SLUG } from "@/lib/ensure-thermal-label-product";
@@ -41,12 +45,24 @@ const PRODUCT_SLUG_ALIASES: Record<string, string> = {
     "minecraft-adventure": "first-year-at-school",
     "story-minecraft-adventure": "first-year-at-school",
     "story-04-minecraft": "first-year-at-school",
+    "farouk-sonic-speed-portal": "first-year-at-school",
+    "story-farouk-sonic": "first-year-at-school",
+    "layla-cats-friends": "first-year-at-school",
+    "story-layla-cats": "first-year-at-school",
     "printed-t-shirts": "custom-printed-tshirt",
     "t-shirts": "custom-printed-tshirt",
     "t-shirt": "custom-printed-tshirt",
     "tshirts": "custom-printed-tshirt",
     "tshirt": "custom-printed-tshirt",
     "custom-tshirt": "custom-printed-tshirt",
+    "banners": "custom-birthday-banner",
+    "banner": "custom-birthday-banner",
+    "birthday-banner": "custom-birthday-banner",
+    "custom-banner": "custom-birthday-banner",
+    "toppers": "custom-cupcake-toppers",
+    "topper": "custom-cupcake-toppers",
+    "cupcake-toppers": "custom-cupcake-toppers",
+    "photo-toppers": "custom-cupcake-toppers",
 };
 
 type CoreFallbackProduct = {
@@ -139,6 +155,42 @@ function getCoreFallbackProduct(slug: string): CoreFallbackProduct | null {
             },
         };
     }
+    if (slug === "custom-birthday-banner") {
+        return {
+            id: "custom-birthday-banner",
+            slug: "custom-birthday-banner",
+            name: bannerData.product.name,
+            arabicName: bannerData.product.arabicName,
+            description: bannerData.product.description,
+            arabicDescription: bannerData.product.arabicDescription,
+            stock: bannerData.product.stock,
+            tags: ["banners"],
+            category: {
+                id: "banners",
+                slug: "banners",
+                name: bannerData.category.name,
+                arabicName: bannerData.category.arabicName,
+            },
+        };
+    }
+    if (slug === "custom-cupcake-toppers") {
+        return {
+            id: "custom-cupcake-toppers",
+            slug: "custom-cupcake-toppers",
+            name: toppersData.product.name,
+            arabicName: toppersData.product.arabicName,
+            description: toppersData.product.description,
+            arabicDescription: toppersData.product.arabicDescription,
+            stock: toppersData.product.stock,
+            tags: ["banners", "toppers"],
+            category: {
+                id: "banners",
+                slug: "banners",
+                name: toppersData.category.name,
+                arabicName: toppersData.category.arabicName,
+            },
+        };
+    }
     return null;
 }
 
@@ -217,7 +269,7 @@ export default async function ProductPage({
         else throw error;
     }
 
-    if (!product && !["custom-waterproof-stickers", "custom-printed-tshirt"].includes(resolvedSlug)) {
+    if (!product && !["custom-waterproof-stickers", "custom-printed-tshirt", "custom-birthday-banner", "custom-cupcake-toppers"].includes(resolvedSlug)) {
         const fallback = getCoreFallbackProduct(resolvedSlug);
         if (fallback) {
             product = fallback;
@@ -265,6 +317,8 @@ export default async function ProductPage({
         let initialStoryId: string | undefined = search?.story;
         if (!initialStoryId) {
             if (search?.mode === "custom" || slug.includes("custom") || slug.includes("design")) initialStoryId = "custom-story";
+            else if (slug.includes("farouk") || slug.includes("sonic-speed")) initialStoryId = "farouk-sonic-speed-portal";
+            else if (slug.includes("layla")) initialStoryId = "layla-cats-friends";
             else if (slug.includes("red-ball")) initialStoryId = "yahya-red-ball";
             else if (slug.includes("cats")) initialStoryId = "cats-friends";
             else if (slug.includes("minecraft")) initialStoryId = "minecraft-adventure";
@@ -297,6 +351,38 @@ export default async function ProductPage({
                 <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
             </nav>
             {"price" in product && <TShirtPreview locale={locale} price={product.price} inStock={product.stock > 0} />}
+        </main>;
+    }
+
+    if (resolvedSlug === "custom-birthday-banner") {
+        const t = (key: TranslationKey) => getTranslation(locale, key);
+        return <main className="catalog-page">
+            <nav className="catalog-breadcrumb" aria-label={t("breadcrumb")}>
+                <Link href="/">{t("home")}</Link>
+                <span>/</span>
+                <Link href="/categories">{t("categoriesHeading")}</Link>
+                <span>/</span>
+                <Link href="/categories/banners">{selectLocalizedText(locale, product.category.name, product.category.arabicName)}</Link>
+                <span>/</span>
+                <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
+            </nav>
+            {"price" in product && <BannerPreview locale={locale} price={product.price} inStock={product.stock > 0} />}
+        </main>;
+    }
+
+    if (resolvedSlug === "custom-cupcake-toppers") {
+        const t = (key: TranslationKey) => getTranslation(locale, key);
+        return <main className="catalog-page">
+            <nav className="catalog-breadcrumb" aria-label={t("breadcrumb")}>
+                <Link href="/">{t("home")}</Link>
+                <span>/</span>
+                <Link href="/categories">{t("categoriesHeading")}</Link>
+                <span>/</span>
+                <Link href="/categories/banners">{selectLocalizedText(locale, product.category.name, product.category.arabicName)}</Link>
+                <span>/</span>
+                <span>{selectLocalizedText(locale, product.name, product.arabicName)}</span>
+            </nav>
+            {"price" in product && <ToppersPreview locale={locale} price={product.price} inStock={product.stock > 0} />}
         </main>;
     }
 

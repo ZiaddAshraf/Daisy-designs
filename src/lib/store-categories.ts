@@ -20,6 +20,19 @@ export type StoreCategory = {
  */
 export const STORE_CATEGORIES: StoreCategory[] = [
   {
+    id: "banners",
+    slug: "banners",
+    name: "Banners & Toppers",
+    arabicName: "بانرز وتوبرز",
+    tagline: "Custom 1.5x1.5m celebration banners and personalized cupcake photo toppers",
+    arabicTagline: "بانر احتفالات مقاس 1.5*1.5 متر وباكدج توبرز كب كيك مخصصة بصورة طفلك",
+    description: "High-quality personalized party decorations: custom 1.5x1.5m wall banners and DIY child photo cupcake topper kits for birthdays and joyful celebrations.",
+    arabicDescription: "ديكورات واحتفالات مخصصة لأعياد الميلاد: بانر جداري فاخر مقاس 1.5*1.5 متر بصورة الطفل والـ theme المفضل، وباكدج توبرز كب كيك (32 صورة، شمعة لزق، فوم جليتر، وأعواد).",
+    surfaceNotice: "Custom celebration wall banners and child photo cupcake toppers kit.",
+    arabicSurfaceNotice: "بانرز احتفالات مقاس 1.5*1.5 متر وباكدج توبرز كب كيك بصورة طفلك وفوم جليتر ملون.",
+    letter: "B",
+  },
+  {
     id: "stickers",
     slug: "stickers",
     name: "Tickets, Labels & Keychains",
@@ -77,6 +90,12 @@ const SLUG_ALIASES: Record<string, string> = {
   "school-stickers": "stickers",
   "t-shirts": "printed-t-shirts",
   "tshirts": "printed-t-shirts",
+  "banner": "banners",
+  "birthday-banners": "banners",
+  "party-banners": "banners",
+  "toppers": "banners",
+  "topper": "banners",
+  "banners-toppers": "banners",
 };
 
 export function getStoreCategories(): StoreCategory[] {

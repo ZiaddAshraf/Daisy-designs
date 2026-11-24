@@ -41,6 +41,7 @@ type ProductsCatalogClientProps = {
     storiesFilter: string;
     cardsFilter: string;
     tshirtsFilter?: string;
+    bannersFilter?: string;
     noResultsTitle: string;
     noResultsHint: string;
     resetFilters: string;
@@ -63,6 +64,7 @@ export function ProductsCatalogClient({
   const counts = useMemo(() => {
     return {
       all: initialProducts.length,
+      banners: initialProducts.filter((p) => p.categoryId === "banners").length,
       "customized-stories": initialProducts.filter((p) => p.categoryId === "customized-stories").length,
       "reward-cards": initialProducts.filter((p) => p.categoryId === "reward-cards").length,
       stickers: initialProducts.filter((p) => p.categoryId === "stickers").length,
@@ -93,6 +95,7 @@ export function ProductsCatalogClient({
 
   const categories = [
     { id: "all", label: translations.allFilter, count: counts.all },
+    { id: "banners", label: translations.bannersFilter || (isRtl ? "بانرز وتوبرز" : "Banners & Toppers"), count: counts.banners },
     { id: "customized-stories", label: translations.storiesFilter, count: counts["customized-stories"] },
     { id: "reward-cards", label: translations.cardsFilter, count: counts["reward-cards"] },
     { id: "stickers", label: translations.stickersFilter, count: counts.stickers },
